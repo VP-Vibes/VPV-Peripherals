@@ -39,7 +39,8 @@
 
 #include "scc/utilities.h"
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 aon::aon(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
@@ -75,4 +76,5 @@ void aon::reset_cb() {
 
 void aon::reset_internal_cb() {}
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */

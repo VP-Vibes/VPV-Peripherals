@@ -36,7 +36,8 @@
 #include <sysc/utils/sc_vector.h>
 #include <tlm/tlm_signal.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 namespace spi_impl {
 class beh;
@@ -83,6 +84,7 @@ protected:
     , NAMED(irq_o){};
 };
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */
 
 #endif /* _SPI_H_ */

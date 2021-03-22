@@ -32,14 +32,15 @@
 
 #include "uart.h"
 #include "gen/uart_regs.h"
-#include "tlm_extensions.h"
+#include <generic/tlm_extensions.h>
 
 #include <scc/report.h>
 #include <scc/utilities.h>
 
 using namespace std;
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 using namespace sc_core;
 
 uart::uart(sc_core::sc_module_name nm)
@@ -177,4 +178,5 @@ void uart::receive_data(tlm::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {
     gp.set_response_status(tlm::TLM_OK_RESPONSE);
 }
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */

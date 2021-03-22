@@ -38,7 +38,8 @@
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 class prci_regs : public sc_core::sc_module, public scc::resetable {
 public:
@@ -80,12 +81,14 @@ public:
 
     template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
 };
-}
+} /* namespace sifive */
+} /* namespace vpvper */
+
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::prci_regs::prci_regs(sc_core::sc_module_name nm)
+inline vpvper::sifive::prci_regs::prci_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(hfrosccfg, r_hfrosccfg, 0, *this)
 , NAMED(hfxosccfg, r_hfxosccfg, 0x40000000, *this)
@@ -93,7 +96,7 @@ inline sysc::prci_regs::prci_regs(sc_core::sc_module_name nm)
 , NAMED(plloutdiv, r_plloutdiv, 0, *this)
 , NAMED(coreclkcfg, r_coreclkcfg, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void sysc::prci_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::prci_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
     target.addResource(hfrosccfg, 0x0UL);
     target.addResource(hfxosccfg, 0x4UL);
     target.addResource(pllcfg, 0x8UL);

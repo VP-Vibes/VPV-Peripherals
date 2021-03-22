@@ -38,7 +38,8 @@
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 class plic_regs : public sc_core::sc_module, public scc::resetable {
 public:
@@ -69,12 +70,14 @@ public:
 
     template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
 };
-}
+} /* namespace sifive */
+} /* namespace vpvper */
+
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::plic_regs::plic_regs(sc_core::sc_module_name nm)
+inline vpvper::sifive::plic_regs::plic_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(priority, r_priority, 0, *this)
 , NAMED(pending, r_pending, 0, *this)
@@ -82,7 +85,7 @@ inline sysc::plic_regs::plic_regs(sc_core::sc_module_name nm)
 , NAMED(threshold, r_threshold, 0, *this)
 , NAMED(claim_complete, r_claim_complete, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void sysc::plic_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::plic_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
     target.addResource(priority, 0x0UL);
     target.addResource(pending, 0x1000UL);
     target.addResource(enabled, 0x2000UL);

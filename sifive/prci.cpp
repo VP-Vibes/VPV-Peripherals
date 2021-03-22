@@ -35,7 +35,8 @@
 
 #include "scc/utilities.h"
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 using namespace sc_core;
 
 prci::prci(sc_core::sc_module_name nm)
@@ -140,4 +141,5 @@ void prci::update_hfclk() {
     hfclk_o.write(hfclk);
 }
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */

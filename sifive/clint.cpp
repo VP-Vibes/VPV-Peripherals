@@ -36,7 +36,8 @@
 #include "scc/report.h"
 #include "scc/utilities.h"
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 using namespace sc_core;
 
 const int lfclk_mutiplier = 1 << 12;
@@ -121,4 +122,5 @@ void clint::update_mtime() {
         last_updt = sc_time_stamp();
 }
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */

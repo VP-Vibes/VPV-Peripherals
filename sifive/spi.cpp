@@ -32,7 +32,7 @@
 
 #include "spi.h"
 #include "gen/spi_regs.h"
-#include "tlm_extensions.h"
+#include <generic/tlm_extensions.h>
 
 #include <cci_configuration>
 #include <scc/signal_initiator_mixin.h>
@@ -42,11 +42,12 @@
 #include <scc/utilities.h>
 #include <util/ities.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 namespace spi_impl {
 using namespace sc_core;
 
-class beh : public sysc::spi, public scc::tlm_target<> {
+class beh : public spi, public scc::tlm_target<> {
 public:
     SC_HAS_PROCESS(beh); // NOLINT
 
@@ -73,7 +74,7 @@ protected:
 };
 
 beh::beh(sc_core::sc_module_name nm)
-: sysc::spi(nm)
+: spi(nm)
 , tlm_target<>(clk)
 , NAMED(_sck_o)
 , NAMED(_mosi_o)
@@ -264,9 +265,10 @@ void beh::update_irq() {
 }
 } /* namespace spi:impl */
 
-template <> std::unique_ptr<spi> spi::create<sysc::spi_impl::beh>(sc_core::sc_module_name nm) {
-    auto *res = new sysc::spi_impl::beh(nm);
+template <> std::unique_ptr<spi> spi::create<spi_impl::beh>(sc_core::sc_module_name nm) {
+    auto *res = new spi_impl::beh(nm);
     return std::unique_ptr<spi>(res);
 }
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */

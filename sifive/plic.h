@@ -36,7 +36,8 @@
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 class plic_regs;
 
@@ -67,6 +68,7 @@ protected:
     std::function<bool(scc::sc_register<uint32_t>, uint32_t)> m_claim_complete_write_cb;
 };
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */
 
 #endif /* _PLIC_H_ */

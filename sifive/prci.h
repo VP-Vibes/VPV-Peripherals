@@ -35,7 +35,8 @@
 
 #include "scc/tlm_target.h"
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 class prci_regs;
 
@@ -59,6 +60,7 @@ protected:
     sc_core::sc_event hfrosc_en_evt, hfxosc_en_evt;
 };
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */
 
 #endif /* _GPIO_H_ */

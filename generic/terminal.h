@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2017, 2018 MINRES Technologies GmbH
+ * Copyright (C) 2018 MINRES Technologies GmbH
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,47 +30,42 @@
  *
  *******************************************************************************/
 
-#ifndef _CLINT_H_
-#define _CLINT_H_
+#ifndef _SYSC_TOP_TERMINAL_H_
+#define _SYSC_TOP_TERMINAL_H_
 
-#include "scc/tlm_target.h"
-
-namespace iss {
-namespace arch {
-template <typename BASE> class riscv_hart_msu_vp;
-}
-}
+#include "cci_configuration"
+#include "scc/signal_initiator_mixin.h"
+#include "scc/signal_target_mixin.h"
+#include "tlm/tlm_signal.h"
+#include <memory>
+#include <sysc/kernel/sc_module.h>
 
 namespace vpvper {
-namespace sifive {
+namespace generic {
+class WsHandler;
 
-class clint_regs;
-namespace SiFive {
-class core_complex;
-}
-
-class clint : public sc_core::sc_module, public scc::tlm_target<> {
+class terminal : public sc_core::sc_module {
 public:
-    SC_HAS_PROCESS(clint);// NOLINT
-    sc_core::sc_in<sc_core::sc_time> tlclk_i;
-    sc_core::sc_in<sc_core::sc_time> lfclk_i;
-    sc_core::sc_in<bool> rst_i;
-    sc_core::sc_out<bool> mtime_int_o;
-    sc_core::sc_out<bool> msip_int_o;
-    clint(sc_core::sc_module_name nm);
-    virtual ~clint() override; // NOLINT // need to keep it in source file because of fwd declaration of clint_regs
+    scc::tlm_signal_logic_out tx_o;
+    scc::tlm_signal_logic_in rx_i;
+
+    terminal();
+
+    terminal(const sc_core::sc_module_name &nm);
+
+    virtual ~terminal();
+
+    cci::cci_param<bool> write_to_ws;
 
 protected:
-    void clock_cb();
-    void reset_cb();
-    void update_mtime();
-    sc_core::sc_time clk, last_updt;
-    unsigned cnt_fraction;
-    std::unique_ptr<clint_regs> regs;
-    sc_core::sc_event mtime_evt;
+    void before_end_of_elaboration();
+    void receive(tlm::tlm_signal_gp<sc_dt::sc_logic> &gp, sc_core::sc_time &delay);
+
+    std::vector<uint8_t> queue;
+    std::shared_ptr<WsHandler> handler;
+    sc_core::sc_time last_tx_start = sc_core::SC_ZERO_TIME;
 };
+}
+}
 
-} /* namespace sifive */
-} /* namespace vpvper */
-
-#endif /* _CLINT_H_ */
+#endif /* _SYSC_TOP_TERMINAL_H_ */

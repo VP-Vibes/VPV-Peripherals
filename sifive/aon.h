@@ -35,7 +35,8 @@
 
 #include "scc/tlm_target.h"
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 class aon_regs;
 
@@ -58,6 +59,7 @@ protected:
     std::unique_ptr<aon_regs> regs;
 };
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */
 
 #endif /* _GPIO_H_ */

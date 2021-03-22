@@ -39,7 +39,9 @@
 #include "scc/tlm_target.h"
 #include <tlm/tlm_signal.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
+
 class tlm_signal_uart_extension;
 class uart_regs;
 class WsHandler;
@@ -70,6 +72,7 @@ protected:
     sc_core::sc_fifo<uint8_t> rx_fifo, tx_fifo;
 };
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */
 
 #endif /* _UART_H_ */

@@ -35,7 +35,8 @@
 
 #include "scc/utilities.h"
 
-using namespace sysc;
+namespace vpvper {
+namespace sifive {
 using namespace sc_core;
 
 pwm::pwm(sc_core::sc_module_name nm)
@@ -229,3 +230,5 @@ void pwm::write_cmpgpio(size_t index, bool val) {
         cmpgpio_o[index]->nb_transport_fw(gp, phase, delay);
     }
 }
+} /* namespace sifive */
+} /* namespace vpvper */

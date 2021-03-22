@@ -40,10 +40,13 @@
 #include <memory>
 #include <tlm/tlm_signal.h>
 
-namespace sysc {
+namespace vpvper {
+namespace generic {
+class WsHandler;
+}
+namespace sifive {
 
 class gpio_regs;
-class WsHandler;
 
 class gpio : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -76,12 +79,13 @@ protected:
     sc_core::sc_time clk;
     std::array<bool, 32> last_iof0, last_iof1;
     std::unique_ptr<gpio_regs> regs;
-    std::shared_ptr<sysc::WsHandler> handler;
+    std::shared_ptr<vpvper::generic::WsHandler> handler;
 
 private:
     tlm::tlm_phase write_output(tlm::tlm_signal_gp<sc_dt::sc_logic> &gp, size_t i, sc_dt::sc_logic val);
 };
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */
 
 #endif /* _GPIO_H_ */

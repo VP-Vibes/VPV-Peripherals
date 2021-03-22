@@ -42,7 +42,8 @@
 #include <memory>
 #include <thread>
 
-namespace sysc {
+namespace vpvper {
+namespace generic {
 
 class WsHandler : public seasocks::WebSocket::Handler {
 public:
@@ -109,6 +110,7 @@ private:
     std::vector<std::string> endpoints;
 };
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper*/
 
 #endif /* _SYSC_SC_COMM_SINGLETON_H_ */

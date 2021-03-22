@@ -39,7 +39,8 @@
 #include "scc/tlm_target.h"
 #include <tlm/tlm_signal.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 class pwm_regs;
 
@@ -74,6 +75,7 @@ protected:
     std::array<bool, 4> pwmcmp_ip;
 };
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */
 
 #endif /* _GPIO_H_ */

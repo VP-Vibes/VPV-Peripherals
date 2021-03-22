@@ -36,7 +36,8 @@
 #include <scc/report.h>
 #include <scc/utilities.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 plic::plic(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
@@ -167,4 +168,5 @@ void plic::reset_pending_int(uint32_t irq) {
     handle_pending_int();
 }
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */

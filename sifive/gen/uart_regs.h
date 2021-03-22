@@ -38,7 +38,8 @@
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 class uart_regs : public sc_core::sc_module, public scc::resetable {
 public:
@@ -91,12 +92,13 @@ public:
 
     template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
 };
-}
+} /* namespace sifive */
+} /* namespace vpvper */
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::uart_regs::uart_regs(sc_core::sc_module_name nm)
+inline vpvper::sifive::uart_regs::uart_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(txdata, r_txdata, 0, *this)
 , NAMED(rxdata, r_rxdata, 0, *this)
@@ -106,7 +108,7 @@ inline sysc::uart_regs::uart_regs(sc_core::sc_module_name nm)
 , NAMED(ip, r_ip, 0, *this)
 , NAMED(div, r_div, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void sysc::uart_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::uart_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
     target.addResource(txdata, 0x0UL);
     target.addResource(rxdata, 0x4UL);
     target.addResource(txctrl, 0x8UL);

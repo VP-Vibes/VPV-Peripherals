@@ -32,12 +32,13 @@
 
 #include "gpio.h"
 #include "gen/gpio_regs.h"
-#include "scc/report.h"
-#include "scc/utilities.h"
-#include "sc_comm_singleton.h"
+#include <scc/report.h>
+#include <scc/utilities.h>
+#include <generic/sc_comm_singleton.h>
 #include <limits>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 using namespace sc_core;
 using namespace sc_dt;
 
@@ -111,9 +112,10 @@ gpio::~gpio() = default;
 
 void gpio::before_end_of_elaboration() {
     if (write_to_ws.get_value()) {
-        SCCTRACE() << "Adding WS handler for " << (std::string{"/ws/"} + name());
-        handler = std::make_shared<WsHandler>();
-        sc_comm_singleton::inst().registerWebSocketHandler((std::string{"/ws/"} + name()).c_str(), handler);
+        auto end_point = std::string{"/ws/"} + name();
+        SCCTRACE() << "Adding WS handler for " << end_point;
+        handler = std::make_shared<vpvper::generic::WsHandler>();
+        vpvper::generic::sc_comm_singleton::inst().registerWebSocketHandler(end_point.c_str(), handler);
     }
 }
 
@@ -221,4 +223,5 @@ void gpio::iof_input(unsigned int tag, unsigned iof_idx, tlm::tlm_signal_gp<> &g
     }
 }
 
-} /* namespace sysc */
+} /* namespace sifive */
+} /* namespace vpvper */

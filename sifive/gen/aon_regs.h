@@ -38,7 +38,8 @@
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 
-namespace sysc {
+namespace vpvper {
+namespace sifive {
 
 class aon_regs : public sc_core::sc_module, public scc::resetable {
 public:
@@ -118,12 +119,14 @@ public:
 
     template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
 };
-}
+} /* namespace sifive */
+} /* namespace vpvper */
+
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::aon_regs::aon_regs(sc_core::sc_module_name nm)
+inline vpvper::sifive::aon_regs::aon_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(wdogcfg, r_wdogcfg, 0, *this)
 , NAMED(wdogcount, r_wdogcount, 0, *this)
@@ -145,7 +148,7 @@ inline sysc::aon_regs::aon_regs(sc_core::sc_module_name nm)
 , NAMED(pmusleep, r_pmusleep, 0, *this)
 , NAMED(pmukey, r_pmukey, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void sysc::aon_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::aon_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
     target.addResource(wdogcfg, 0x0UL);
     target.addResource(wdogcount, 0x8UL);
     target.addResource(wdogs, 0x10UL);
