@@ -1,3 +1,8 @@
+#
+# Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 cmake_minimum_required(VERSION 3.12)
 
 project(vpvper VERSION 1.0.0)
