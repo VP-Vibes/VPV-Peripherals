@@ -8,7 +8,7 @@
 #define _SPI_H_
 
 #include <sysc/utils/sc_vector.h>
-#include <tlm/tlm_signal.h>
+#include <tlm/scc/tlm_signal.h>
 
 namespace vpvper {
 namespace sifive {
@@ -23,8 +23,8 @@ public:
     template <typename TYPE>
     static std::unique_ptr<spi> create(sc_core::sc_module_name nm);
 
-    template <typename T> using tlm_in = tlm::tlm_signal_opt_target_socket<T>;
-    template <typename T> using tlm_out = tlm::tlm_signal_opt_initiator_socket<T>;
+    template <typename T> using tlm_in = tlm::scc::tlm_signal_opt_target_socket<T>;
+    template <typename T> using tlm_out = tlm::scc::tlm_signal_opt_initiator_socket<T>;
 
     tlm::tlm_target_socket<> socket;
     sc_core::sc_in<sc_core::sc_time> clk_i;

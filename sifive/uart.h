@@ -7,11 +7,11 @@
 #ifndef _UART_H_
 #define _UART_H_
 
-#include "cci_configuration"
-#include "scc/signal_initiator_mixin.h"
-#include "scc/signal_target_mixin.h"
-#include "scc/tlm_target.h"
-#include <tlm/tlm_signal.h>
+#include <cci_configuration>
+#include <tlm/scc/signal_initiator_mixin.h>
+#include <tlm/scc/signal_target_mixin.h>
+#include <scc/tlm_target.h>
+#include <tlm/scc/tlm_signal.h>
 
 namespace vpvper {
 namespace sifive {
@@ -25,8 +25,8 @@ public:
     SC_HAS_PROCESS(uart);// NOLINT
     sc_core::sc_in<sc_core::sc_time> clk_i;
     sc_core::sc_in<bool> rst_i;
-    scc::tlm_signal_bool_out tx_o;
-    scc::tlm_signal_bool_in rx_i;
+    tlm::scc::tlm_signal_bool_out tx_o;
+    tlm::scc::tlm_signal_bool_in rx_i;
 
     sc_core::sc_out<bool> irq_o;
 
@@ -39,7 +39,7 @@ protected:
     void clock_cb();
     void reset_cb();
     void transmit_data();
-    void receive_data(tlm::tlm_signal_gp<> &gp, sc_core::sc_time &delay);
+    void receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay);
     void update_irq();
     sc_core::sc_time clk{sc_core::SC_ZERO_TIME}, rx_last_start{sc_core::SC_ZERO_TIME};
     std::unique_ptr<uart_regs> regs;

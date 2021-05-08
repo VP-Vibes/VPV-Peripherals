@@ -37,7 +37,7 @@ uart::uart(sc_core::sc_module_name nm)
     dont_initialize();
     SC_THREAD(transmit_data);
     rx_i.register_nb_transport(
-        [this](tlm::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase, sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
+        [this](tlm::scc::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase, sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
             this->receive_data(gp, delay);
             return tlm::TLM_COMPLETED;
         });
@@ -98,7 +98,7 @@ void uart::transmit_data() {
     sc_core::sc_time start_time;
 
     auto set_bit = [&](bool val) {
-        auto *gp = tlm::tlm_signal_gp<>::create();
+        auto *gp = tlm::scc::tlm_signal_gp<>::create();
         auto *ext = new sysc::tlm_signal_uart_extension();
         ext->tx.data_bits = 8;
         ext->tx.parity = false;
@@ -136,7 +136,7 @@ void uart::transmit_data() {
     }
 }
 
-void uart::receive_data(tlm::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {
+void uart::receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {
     sysc::tlm_signal_uart_extension *ext{nullptr};
     gp.get_extension(ext);
     if (ext && ext->start_time != rx_last_start) {

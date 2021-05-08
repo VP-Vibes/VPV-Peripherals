@@ -9,8 +9,8 @@
 #include <generic/tlm_extensions.h>
 
 #include <cci_configuration>
-#include <scc/signal_initiator_mixin.h>
-#include <scc/signal_target_mixin.h>
+#include <tlm/scc/signal_initiator_mixin.h>
+#include <tlm/scc/signal_target_mixin.h>
 #include <scc/tlm_target.h>
 
 #include <scc/utilities.h>
@@ -31,15 +31,15 @@ public:
     ~beh() override;
 
 protected:
-    scc::tlm_signal_bool_opt_out _sck_o;
-    scc::tlm_signal_bool_opt_out _mosi_o;
-    scc::tlm_signal_bool_opt_in _miso_i;
-    sc_core::sc_vector<scc::tlm_signal_bool_opt_out> _scs_o;
+    tlm::scc::tlm_signal_bool_opt_out _sck_o;
+    tlm::scc::tlm_signal_bool_opt_out _mosi_o;
+    tlm::scc::tlm_signal_bool_opt_in _miso_i;
+    sc_core::sc_vector<tlm::scc::tlm_signal_bool_opt_out> _scs_o;
 
     void clock_cb();
     void reset_cb();
     void transmit_data();
-    void receive_data(tlm::tlm_signal_gp<> &gp, sc_core::sc_time &delay);
+    void receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay);
     void update_irq();
     sc_core::sc_event update_irq_evt;
     sc_core::sc_time clk;
@@ -72,7 +72,7 @@ beh::beh(sc_core::sc_module_name nm)
     dont_initialize();
     SC_THREAD(transmit_data);
     _miso_i.register_nb_transport(
-        [this](tlm::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase, sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
+        [this](tlm::scc::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase, sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
             this->receive_data(gp, delay);
             return tlm::TLM_COMPLETED;
         });
@@ -104,7 +104,7 @@ beh::beh(sc_core::sc_module_name nm)
             if (regs->r_csmode.mode == 2 && regs->r_csmode.mode != bit_sub<0, 2>(data) && regs->r_csid < 4) {
                 tlm::tlm_phase phase(tlm::BEGIN_REQ);
                 sc_core::sc_time delay(SC_ZERO_TIME);
-                tlm::tlm_signal_gp<> gp;
+                tlm::scc::tlm_signal_gp<> gp;
                 gp.set_command(tlm::TLM_WRITE_COMMAND);
                 gp.set_value(true);
                 _scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
@@ -116,7 +116,7 @@ beh::beh(sc_core::sc_module_name nm)
         if (regs->r_csmode.mode == 2 && regs->csid != data && regs->r_csid < 4) {
             tlm::tlm_phase phase(tlm::BEGIN_REQ);
             sc_core::sc_time delay(SC_ZERO_TIME);
-            tlm::tlm_signal_gp<> gp;
+            tlm::scc::tlm_signal_gp<> gp;
             gp.set_command(tlm::TLM_WRITE_COMMAND);
             gp.set_value(true);
             _scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
@@ -129,7 +129,7 @@ beh::beh(sc_core::sc_module_name nm)
         if (regs->r_csmode.mode == 2 && diff != 0 && (regs->r_csid < 4) && (diff & (1 << regs->r_csid)) != 0) {
             tlm::tlm_phase phase(tlm::BEGIN_REQ);
             sc_core::sc_time delay(SC_ZERO_TIME);
-            tlm::tlm_signal_gp<> gp;
+            tlm::scc::tlm_signal_gp<> gp;
             gp.set_command(tlm::TLM_WRITE_COMMAND);
             gp.set_value(true);
             _scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
@@ -171,10 +171,10 @@ void beh::transmit_data() {
     sc_core::sc_time bit_duration(SC_ZERO_TIME);
     sc_core::sc_time start_time;
 
-    auto set_bit = [&](bool val, scc::tlm_signal_bool_opt_out &socket,
+    auto set_bit = [&](bool val, tlm::scc::tlm_signal_bool_opt_out &socket,
                        bool data_valid = false) -> std::pair<bool, uint32_t> {
         if (socket.get_interface() == nullptr) return std::pair<bool, uint32_t>{false, 0};
-        auto *gp = tlm::tlm_signal_gp<>::create();
+        auto *gp = tlm::scc::tlm_signal_gp<>::create();
         auto *ext = new sysc::tlm_signal_spi_extension();
         ext->tx.data_bits = 8;
         ext->start_time = start_time;
@@ -229,7 +229,7 @@ void beh::transmit_data() {
     }
 }
 
-void beh::receive_data(tlm::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {}
+void beh::receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {}
 
 void beh::update_irq() {
     regs->r_ip.rxwm = regs->r_rxmark.rxmark < rx_fifo.num_available();

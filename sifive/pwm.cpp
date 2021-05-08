@@ -198,7 +198,7 @@ void pwm::update_counter() {
 void pwm::write_cmpgpio(size_t index, bool val) {
     if (cmpgpio_o[index].get_interface()) {
         tlm::tlm_phase phase(tlm::BEGIN_REQ);
-        tlm::tlm_signal_gp<> gp;
+        tlm::scc::tlm_signal_gp<> gp;
         sc_core::sc_time delay(SC_ZERO_TIME);
         gp.set_value(val);
         cmpgpio_o[index]->nb_transport_fw(gp, phase, delay);

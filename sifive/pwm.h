@@ -8,10 +8,10 @@
 #define _PWM_H_
 
 #include "cci_configuration"
-#include "scc/signal_initiator_mixin.h"
-#include "scc/signal_target_mixin.h"
+#include "tlm/scc/signal_initiator_mixin.h"
+#include "tlm/scc/signal_target_mixin.h"
 #include "scc/tlm_target.h"
-#include <tlm/tlm_signal.h>
+#include <tlm/scc/tlm_signal.h>
 
 namespace vpvper {
 namespace sifive {
@@ -24,7 +24,7 @@ public:
     sc_core::sc_in<sc_core::sc_time> clk_i;
     sc_core::sc_in<bool> rst_i;
 
-    sc_core::sc_vector<scc::tlm_signal_bool_opt_out> cmpgpio_o;
+    sc_core::sc_vector<tlm::scc::tlm_signal_bool_opt_out> cmpgpio_o;
     sc_core::sc_vector<sc_core::sc_out<bool>> cmpip_o;
 
     pwm(sc_core::sc_module_name nm);

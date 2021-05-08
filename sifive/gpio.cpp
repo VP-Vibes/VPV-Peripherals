@@ -35,7 +35,7 @@ gpio::gpio(sc_core::sc_module_name nm)
     SC_METHOD(reset_cb);
     sensitive << rst_i;
     dont_initialize();
-    auto pins_i_cb = [this](unsigned int tag, tlm::tlm_signal_gp<sc_logic> &gp, tlm::tlm_phase &phase,
+    auto pins_i_cb = [this](unsigned int tag, tlm::scc::tlm_signal_gp<sc_logic> &gp, tlm::tlm_phase &phase,
                             sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
         this->pin_input(tag, gp, delay);
         return tlm::TLM_COMPLETED;
@@ -45,7 +45,7 @@ gpio::gpio(sc_core::sc_module_name nm)
         s.register_nb_transport(pins_i_cb, i);
         ++i;
     }
-    auto iof0_i_cb = [this](unsigned int tag, tlm::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase,
+    auto iof0_i_cb = [this](unsigned int tag, tlm::scc::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase,
                             sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
         last_iof0[tag] = gp.get_value();
         this->iof_input(tag, 0, gp, delay);
@@ -56,7 +56,7 @@ gpio::gpio(sc_core::sc_module_name nm)
         s.register_nb_transport(iof0_i_cb, i);
         ++i;
     }
-    auto iof1_i_cb = [this](unsigned int tag, tlm::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase,
+    auto iof1_i_cb = [this](unsigned int tag, tlm::scc::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase,
                             sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
         last_iof1[tag] = gp.get_value();
         this->iof_input(tag, 1, gp, delay);
@@ -104,7 +104,7 @@ void gpio::reset_cb() {
 
 void gpio::clock_cb() { this->clk = clk_i.read(); }
 
-tlm::tlm_phase gpio::write_output(tlm::tlm_signal_gp<sc_dt::sc_logic> &gp, size_t i, sc_dt::sc_logic val) {
+tlm::tlm_phase gpio::write_output(tlm::scc::tlm_signal_gp<sc_dt::sc_logic> &gp, size_t i, sc_dt::sc_logic val) {
     sc_core::sc_time delay{SC_ZERO_TIME};
     tlm::tlm_phase phase{tlm::BEGIN_REQ};
     gp.set_command(tlm::TLM_WRITE_COMMAND);
@@ -116,7 +116,7 @@ tlm::tlm_phase gpio::write_output(tlm::tlm_signal_gp<sc_dt::sc_logic> &gp, size_
 
 void gpio::update_pins(uint32_t changed_bits) {
     sc_core::sc_inout_rv<32>::data_type out_val;
-    tlm::tlm_signal_gp<sc_dt::sc_logic> gp;
+    tlm::scc::tlm_signal_gp<sc_dt::sc_logic> gp;
     sc_logic val;
     for (size_t i = 0, mask = 1; i < 32; ++i, mask <<= 1) {
         if (changed_bits & mask) {
@@ -137,7 +137,7 @@ void gpio::update_pins(uint32_t changed_bits) {
     }
 }
 
-void gpio::pin_input(unsigned int tag, tlm::tlm_signal_gp<sc_logic> &gp, sc_core::sc_time &delay) {
+void gpio::pin_input(unsigned int tag, tlm::scc::tlm_signal_gp<sc_logic> &gp, sc_core::sc_time &delay) {
     if (delay > SC_ZERO_TIME) {
         wait(delay);
         delay = SC_ZERO_TIME;
@@ -155,11 +155,11 @@ void gpio::pin_input(unsigned int tag, tlm::tlm_signal_gp<sc_logic> &gp, sc_core
     }
 }
 
-void gpio::forward_pin_input(unsigned int tag, tlm::tlm_signal_gp<sc_logic> &gp) {
+void gpio::forward_pin_input(unsigned int tag, tlm::scc::tlm_signal_gp<sc_logic> &gp) {
     const auto mask = 1U << tag;
     if (regs->iof_en & mask) {
         auto &socket = regs->iof_sel & mask ? iof1_o[tag] : iof0_o[tag];
-        tlm::tlm_signal_gp<> new_gp;
+        tlm::scc::tlm_signal_gp<> new_gp;
         for (size_t i = 0; i < socket.size(); ++i) {
             sc_core::sc_time delay{SC_ZERO_TIME};
             tlm::tlm_phase phase{tlm::BEGIN_REQ};
@@ -172,7 +172,7 @@ void gpio::forward_pin_input(unsigned int tag, tlm::tlm_signal_gp<sc_logic> &gp)
     }
 }
 
-void gpio::iof_input(unsigned int tag, unsigned iof_idx, tlm::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {
+void gpio::iof_input(unsigned int tag, unsigned iof_idx, tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {
     if (delay > SC_ZERO_TIME) {
         wait(delay);
         delay = SC_ZERO_TIME;
@@ -185,7 +185,7 @@ void gpio::iof_input(unsigned int tag, unsigned iof_idx, tlm::tlm_signal_gp<> &g
             for (size_t i = 0; i < socket.size(); ++i) {
                 sc_core::sc_time delay{SC_ZERO_TIME};
                 tlm::tlm_phase phase{tlm::BEGIN_REQ};
-                tlm::tlm_signal_gp<sc_logic> new_gp;
+                tlm::scc::tlm_signal_gp<sc_logic> new_gp;
                 new_gp.set_command(tlm::TLM_WRITE_COMMAND);
                 auto val = gp.get_value();
                 new_gp.set_value(val ? sc_dt::Log_1 : sc_dt::Log_0);
