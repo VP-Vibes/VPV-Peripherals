@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(vpvper VERSION 1.0.0)
 
+if(TARGET scc)
 ###############################################################################
 # Generic
 ###############################################################################
@@ -61,3 +62,4 @@ set_target_properties(${PROJECT_NAME}_sifive PROPERTIES
   FRAMEWORK FALSE
   PUBLIC_HEADER "${SiFiveHeaders}" # specify the public headers
 )
+endif()
