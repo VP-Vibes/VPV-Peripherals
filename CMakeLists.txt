@@ -15,13 +15,24 @@ if(TARGET CONAN_PKG::seasocks)
  		generic/sc_comm_singleton.cpp
  	 	generic/terminal.cpp
  	)
+ 	set(SEASOCKS_LIB CONAN_PKG::seasocks)
+else()
+	find_package(Seasocks QUIET)
+	if(TARGET Seasocks::seasocks)
+	 	set(WEBSOCK_GEN_SRC
+	 		generic/sc_comm_singleton.cpp
+	 	 	generic/terminal.cpp
+	 	)
+	 	set(SEASOCKS_LIB Seasocks::seasocks)
+	endif()	
 endif()
 add_library(${PROJECT_NAME}_generic
+ 	generic/uart_terminal.cpp
 	${WEBSOCK_GEN_SRC}
 )
 target_include_directories(${PROJECT_NAME}_generic PUBLIC ${CMAKE_CURRENT_LIST_DIR})
-if(TARGET CONAN_PKG::seasocks)
-	target_link_libraries(${PROJECT_NAME}_generic PUBLIC CONAN_PKG::seasocks)
+if(SEASOCKS_LIB)
+	target_link_libraries(${PROJECT_NAME}_generic PUBLIC ${SEASOCKS_LIB})
 endif()
 target_link_libraries(${PROJECT_NAME}_generic PUBLIC scc)
 
@@ -35,9 +46,9 @@ set_target_properties(${PROJECT_NAME}_generic PROPERTIES
 # SiFive
 ###############################################################################
 if(TARGET CONAN_PKG::seasocks)
- 	set(WEBSOCK_SRC
- 	 	sifive/gpio.cpp
- 	)
+ 	set(WEBSOCK_SRC sifive/gpio.cpp)
+elseif(TARGET Seasocks::seasocks)
+ 	set(WEBSOCK_SRC sifive/gpio.cpp)
 endif()
 add_library(${PROJECT_NAME}_sifive
 	sifive/aon.cpp
@@ -50,7 +61,7 @@ add_library(${PROJECT_NAME}_sifive
 	${WEBSOCK_SRC}
 )
 target_include_directories(${PROJECT_NAME}_sifive PUBLIC ${CMAKE_CURRENT_LIST_DIR})
-if(TARGET CONAN_PKG::seasocks)
+if(SEASOCKS_LIB)
 	target_link_libraries(${PROJECT_NAME}_sifive PUBLIC ${PROJECT_NAME}_generic)
 endif()
 target_link_libraries(${PROJECT_NAME}_sifive PUBLIC scc)
