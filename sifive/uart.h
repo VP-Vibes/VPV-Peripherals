@@ -22,7 +22,6 @@ class WsHandler;
 
 class uart : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-    SC_HAS_PROCESS(uart);// NOLINT
     sc_core::sc_in<sc_core::sc_time> clk_i;
     sc_core::sc_in<bool> rst_i;
     tlm::scc::tlm_signal_bool_out tx_o;
@@ -32,7 +31,7 @@ public:
 
     cci::cci_param<bool> bit_true_transfer;
 
-    uart(sc_core::sc_module_name nm);
+    uart(sc_core::sc_module_name const& nm);
     virtual ~uart() override;
 
 protected:

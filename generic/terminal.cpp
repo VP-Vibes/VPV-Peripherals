@@ -48,7 +48,7 @@ void terminal::receive(tlm::scc::tlm_signal_gp<sc_dt::sc_logic> &gp, sc_core::sc
         auto txdata = static_cast<uint8_t>(ext->tx.data);
         last_tx_start = ext->start_time;
         if (txdata != '\r') queue.push_back(txdata);
-        if (queue.size() >> 0 && (txdata == '\n' || txdata == 0)) {
+        if (queue.size() && (txdata == '\n' || txdata == 0)) {
             std::string msg(queue.begin(), queue.end() - 1);
             sc_core::sc_time now = sc_core::sc_time_stamp();
             if (handler)
