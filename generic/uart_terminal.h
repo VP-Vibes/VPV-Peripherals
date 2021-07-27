@@ -31,7 +31,6 @@ public:
         clk=period;
     }
 protected:
-    void end_of_elaboration() override;
     void reset_cb();
     void transmit_data();
     void update_irq();
