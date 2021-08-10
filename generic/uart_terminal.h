@@ -19,9 +19,9 @@ class uart_terminal : public sc_core::sc_module, public scc::tlm_target<> {
 public:
 
     sc_core::sc_in<bool> rst_i{"rst_i"};
-
+#ifdef BITTRUE
     sc_core::sc_out<bool> tx_o{"tx_o"};
-
+#endif
     sc_core::sc_out<bool> irq_o{"irq_o"};
 
     uart_terminal(sc_core::sc_module_name nm);

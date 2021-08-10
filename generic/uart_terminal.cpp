@@ -81,7 +81,9 @@ void uart_terminal::transmit_data() {
     uint8_t txdata;
     sc_core::sc_time bit_duration(SC_ZERO_TIME);
     while (true) {
+#ifdef BITTRUE
         tx_o.write(true);
+#endif
         wait(tx_fifo.data_written_event());
         while (tx_fifo.nb_read(txdata)) {
             regs->r_txdata.full = tx_fifo.num_free() == 0;
