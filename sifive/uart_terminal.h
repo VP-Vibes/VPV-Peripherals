@@ -11,7 +11,7 @@
 #include <scc/clock_if_mixins.h>
 
 namespace vpvper {
-namespace generic {
+namespace sifive {
 
 class uart_regs;
 

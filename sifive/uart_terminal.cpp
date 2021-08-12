@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <generic/uart_terminal.h>
-#include "uart_regs.h"
+#include "uart_terminal.h"
+#include "gen/uart_regs.h"
 
 #include <scc/report.h>
 #include <scc/utilities.h>
@@ -13,7 +13,7 @@
 using namespace std;
 
 namespace vpvper {
-namespace generic {
+namespace sifive {
 
 using namespace sc_core;
 

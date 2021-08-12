@@ -14,3 +14,4 @@
 #include "sifive/pwm.h"
 #include "sifive/spi.h"
 #include "sifive/uart.h"
+#include "sifive/uart_terminal.h"
