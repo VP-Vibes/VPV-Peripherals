@@ -5,7 +5,7 @@
 #
 cmake_minimum_required(VERSION 3.12)
 
-project(vpvper VERSION 1.0.0)
+project(vpvper VERSION 1.1.0)
 
 ###############################################################################
 # Generic
@@ -67,9 +67,23 @@ if(SEASOCKS_LIB)
 endif()
 target_link_libraries(${PROJECT_NAME}_sifive PUBLIC scc)
 
-FILE(GLOB SiFiveHeaders ${CMAKE_CURRENT_SOURCE_DIR}/incl/sysc/*.h ${CMAKE_CURRENT_SOURCE_DIR}/incl/sysc/*/*.h)
+FILE(GLOB SiFiveHeaders ${CMAKE_CURRENT_SOURCE_DIR}/sifive/*.h ${CMAKE_CURRENT_SOURCE_DIR}/sifive/*/*.h)
 set_target_properties(${PROJECT_NAME}_sifive PROPERTIES
   VERSION ${PROJECT_VERSION}
   FRAMEWORK FALSE
   PUBLIC_HEADER "${SiFiveHeaders}" # specify the public headers
+)
+
+add_library(${PROJECT_NAME}_minres
+	minres/gpio.cpp
+	minres/uart_terminal.cpp
+)
+target_include_directories(${PROJECT_NAME}_minres PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_link_libraries(${PROJECT_NAME}_minres PUBLIC scc)
+
+FILE(GLOB MinresHeaders ${CMAKE_CURRENT_SOURCE_DIR}/minres/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minres/*/*.h)
+set_target_properties(${PROJECT_NAME}_minres PROPERTIES
+  VERSION ${PROJECT_VERSION}
+  FRAMEWORK FALSE
+  PUBLIC_HEADER "${MinresHeaders}" # specify the public headers
 )
