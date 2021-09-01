@@ -76,8 +76,9 @@ set_target_properties(${PROJECT_NAME}_sifive PROPERTIES
 
 add_library(${PROJECT_NAME}_minres
 	minres/gpio.cpp
-	minres/uart_terminal.cpp
+	minres/presc.cpp
 	minres/tim.cpp
+	minres/uart_terminal.cpp
 )
 target_include_directories(${PROJECT_NAME}_minres PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(${PROJECT_NAME}_minres PUBLIC scc)

@@ -15,10 +15,8 @@
 namespace vpvper {
 namespace minres {
 
-template<unsigned COUNTER_WIDTH=32>
 class presc_regs : public sc_core::sc_module, public scc::resetable {
 public:
-    static_assert(COUNTER_WIDTH<32);
     // storage declarations
     uint32_t r_limit;
 
