@@ -7,7 +7,9 @@
 #include "terminal.h"
 
 #include <scc/report.h>
+#if defined(HAS_WEB_SOCKETS)
 #include "sc_comm_singleton.h"
+#endif
 #include "tlm_extensions.h"
 #include <string>
 
@@ -33,12 +35,14 @@ terminal::terminal(const sc_core::sc_module_name &nm)
 terminal::~terminal() = default;
 
 void terminal::before_end_of_elaboration() {
+#if defined(HAS_WEB_SOCKETS)
     if (write_to_ws.get_value()) {
         auto end_point = std::string{"/ws/"} + name();
         SCCTRACE() << "Adding WS handler for " << end_point;
         handler = std::make_shared<WsHandler>();
         sc_comm_singleton::inst().registerWebSocketHandler(end_point.c_str(), handler);
     }
+#endif
 }
 
 void terminal::receive(tlm::scc::tlm_signal_gp<sc_dt::sc_logic> &gp, sc_core::sc_time &delay) {
@@ -51,6 +55,7 @@ void terminal::receive(tlm::scc::tlm_signal_gp<sc_dt::sc_logic> &gp, sc_core::sc
         if (queue.size() && (txdata == '\n' || txdata == 0)) {
             std::string msg(queue.begin(), queue.end() - 1);
             sc_core::sc_time now = sc_core::sc_time_stamp();
+#if defined(HAS_WEB_SOCKETS)
             if (handler)
                 sc_comm_singleton::inst().execute([this, msg, now]() {
                     std::stringstream os;
@@ -58,6 +63,7 @@ void terminal::receive(tlm::scc::tlm_signal_gp<sc_dt::sc_logic> &gp, sc_core::sc
                     this->handler->send(os.str());
                 });
             else
+#endif
                 SCCINFO(this->name()) << " receive: '" << msg << "'";
             queue.clear();
         }

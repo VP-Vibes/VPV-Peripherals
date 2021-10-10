@@ -8,7 +8,9 @@
 #include "gen/gpio_regs.h"
 #include <scc/report.h>
 #include <scc/utilities.h>
+#if defined(HAS_WEB_SOCKETS)
 #include <generic/sc_comm_singleton.h>
+#endif
 #include <limits>
 
 namespace vpvper {
@@ -85,12 +87,14 @@ gpio::gpio(sc_core::sc_module_name nm)
 gpio::~gpio() = default;
 
 void gpio::before_end_of_elaboration() {
+#if defined(HAS_WEB_SOCKETS)
     if (write_to_ws.get_value()) {
         auto end_point = std::string{"/ws/"} + name();
         SCCTRACE() << "Adding WS handler for " << end_point;
         handler = std::make_shared<vpvper::generic::WsHandler>();
         vpvper::generic::sc_comm_singleton::inst().registerWebSocketHandler(end_point.c_str(), handler);
     }
+#endif
 }
 
 void gpio::reset_cb() {

@@ -12,45 +12,37 @@ if(TARGET scc)
 # Generic
 ###############################################################################
 if(TARGET CONAN_PKG::seasocks)
- 	set(GENERIC_SRC
+ 	set(WEBSOCKET_SRC
  		generic/sc_comm_singleton.cpp
- 	 	generic/terminal.cpp
  	)
  	set(SEASOCKS_LIB CONAN_PKG::seasocks)
 else()
 	find_package(Seasocks QUIET)
 	if(TARGET Seasocks::seasocks)
-	 	set(GENERIC_SRC
+	 	set(WEBSOCKET_SRC
 	 		generic/sc_comm_singleton.cpp
-	 	 	generic/terminal.cpp
 	 	)
 	 	set(SEASOCKS_LIB Seasocks::seasocks)
 	endif()	
 endif()
-if(GENERIC_SRC)
-	add_library(${PROJECT_NAME}_generic ${GENERIC_SRC})
-	target_include_directories(${PROJECT_NAME}_generic PUBLIC ${CMAKE_CURRENT_LIST_DIR})
-	if(SEASOCKS_LIB)
-		target_link_libraries(${PROJECT_NAME}_generic PUBLIC ${SEASOCKS_LIB})
-	endif()
-	target_link_libraries(${PROJECT_NAME}_generic PUBLIC scc)
+
+add_library(${PROJECT_NAME}_generic generic/terminal.cpp ${WEBSOCKET_SRC})
+target_include_directories(${PROJECT_NAME}_generic PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+if(SEASOCKS_LIB)
+	target_compile_definitions(${PROJECT_NAME}_generic PUBLIC HAS_WEB_SOCKETS)
+	target_link_libraries(${PROJECT_NAME}_generic PUBLIC ${SEASOCKS_LIB})
 endif()
-
-
+target_link_libraries(${PROJECT_NAME}_generic PUBLIC scc)
 FILE(GLOB GenericHeaders ${CMAKE_CURRENT_SOURCE_DIR}/generic/*.h)
 set_target_properties(${PROJECT_NAME}_generic PROPERTIES
   VERSION ${PROJECT_VERSION}
   FRAMEWORK FALSE
   PUBLIC_HEADER "${GenericHeaders}" # specify the public headers
 )
+
 ###############################################################################
 # SiFive
 ###############################################################################
-if(TARGET CONAN_PKG::seasocks)
- 	set(WEBSOCK_SRC sifive/gpio.cpp)
-elseif(TARGET Seasocks::seasocks)
- 	set(WEBSOCK_SRC sifive/gpio.cpp)
-endif()
 add_library(${PROJECT_NAME}_sifive
 	sifive/aon.cpp
 	sifive/clint.cpp
@@ -60,10 +52,11 @@ add_library(${PROJECT_NAME}_sifive
 	sifive/spi.cpp
 	sifive/uart.cpp
  	sifive/uart_terminal.cpp
-	${WEBSOCK_SRC}
+	sifive/gpio.cpp
 )
 target_include_directories(${PROJECT_NAME}_sifive PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 if(SEASOCKS_LIB)
+	target_compile_definitions(${PROJECT_NAME}_sifive PUBLIC HAS_WEB_SOCKETS)
 	target_link_libraries(${PROJECT_NAME}_sifive PUBLIC ${PROJECT_NAME}_generic)
 endif()
 target_link_libraries(${PROJECT_NAME}_sifive PUBLIC scc)
