@@ -17,7 +17,9 @@ namespace vpvper {
 namespace sifive {
 using namespace sc_core;
 
-uart::uart(sc_core::sc_module_name nm)
+SC_HAS_PROCESS(uart);// NOLINT
+
+uart::uart(sc_core::sc_module_name const& nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk)
 , NAMED(clk_i)
