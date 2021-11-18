@@ -83,4 +83,25 @@ set_target_properties(${PROJECT_NAME}_minres PROPERTIES
   FRAMEWORK FALSE
   PUBLIC_HEADER "${MinresHeaders}" # specify the public headers
 )
+
+###############################################################################
+# Pulp
+###############################################################################
+add_library(${PROJECT_NAME}_pulp
+  pulp/experimental/external_uart_device.cpp
+)
+target_include_directories(${PROJECT_NAME}_pulp PUBLIC  ${CMAKE_CURRENT_LIST_DIR})
+target_link_libraries(${PROJECT_NAME}_pulp PUBLIC scc)
+
+if(PULP_EXPERIMENTAL)
+  target_link_libraries(${PROJECT_NAME}_pulp Boost::filesystem Boost::iostreams)
+endif()
+
+FILE(GLOB PulpHeaders ${CMAKE_CURRENT_SOURCE_DIR}/pulp/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minres/*/*.h)
+set_target_properties(${PROJECT_NAME}_pulp PROPERTIES
+  VERSION ${PROJECT_VERSION}
+  FRAMEWORK FALSE
+  PUBLIC_HEADER "${PulpHeaders}" # specify the public headers
+)
+
 endif()
