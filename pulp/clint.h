@@ -203,10 +203,12 @@ void Clint<owner_t>::rtc_process(void) {
   while (true) {
     sct_wait_entry_ = sc_core::sc_time_stamp();
     wait(_sc_time_wait, rtc_event_);
+    
+    uint64_t _ctr = uint64_t(mtimelo_) | (uint64_t(mtimehi_) << 32);
+    uint64_t _cmp = uint64_t(mtimecmplo_) | (uint64_t(mtimecmphi_) << 32);
+    
     if(rtc_event_q_.empty()){ // timer event ->
       // clean timer event -> make out whether compare or overflow
-      uint64_t _ctr = uint64_t(mtimelo_) | (uint64_t(mtimehi_) << 32);
-      uint64_t _cmp = uint64_t(mtimecmplo_) | (uint64_t(mtimecmphi_) << 32);
       if(_ctr < _cmp){
         // compare
         mtimelo_ = uint64_t(mtimecmplo_);
@@ -222,8 +224,6 @@ void Clint<owner_t>::rtc_process(void) {
       }
     } else{
       uint64_t _mtime = 0;
-      uint64_t _ctr = uint64_t(mtimelo_) | (uint64_t(mtimehi_) << 32);
-      uint64_t _cmp = uint64_t(mtimecmplo_) | (uint64_t(mtimecmphi_) << 32);
       sc_core::sc_time _passed_time = (sc_core::sc_time_stamp() - sct_wait_entry_);
 
       while(! (rtc_event_q_.empty()) ){
