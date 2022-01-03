@@ -383,6 +383,10 @@ inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core:
       SC_REPORT_INFO(ID_PLIC, MSG.c_str());
     });
   }
+  
+  SC_METHOD(scan_int_lines);
+  for(auto& irq: irq_srcs_i_)
+    bfs_t::sensitive << irq;
 }
 
 template<typename owner_t, size_t N_TARGET, size_t N_SOURCE, uint32_t LE_SRC_MASK, size_t N_LINEREGS>
