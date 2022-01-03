@@ -357,9 +357,9 @@ inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core:
   // -------------------------------------------------------------------------------
   for(size_t i = 0; i < N_TARGET; ++i) {
     pths_[i]->setWriteCallback([this, i](auto&&, uint32_t& valueToWrite) {
-      static const char* MSG = (std::string("Plic:ctx") + std::to_string(i) + std::string(" priority threshold config")).c_str();
+      static std::string MSG = (std::string("Plic:ctx") + std::to_string(i) + std::string(" priority threshold config"));
       *(pths_[i]) = valueToWrite;
-      SC_REPORT_INFO(ID_PLIC, MSG);
+      SC_REPORT_INFO(ID_PLIC, MSG.c_str());
     });
     pths_[i]->setReadCallback([this, i](auto&&) {
       return (pths_[i]->get());
@@ -368,19 +368,19 @@ inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core:
   // -------------------------------------------------------------------------------
   for(size_t i = 0; i < N_TARGET; ++i) {
     ccs_[i]->setWriteCallback([this, i](auto&&, uint32_t& valueToWrite) {
-      static const char* MSG = (std::string("Plic:ctx") + std::to_string(i) + std::string(" complete")).c_str();
+      static std::string MSG = (std::string("Plic:ctx") + std::to_string(i) + std::string(" complete"));
       *(ccs_[i]) = valueToWrite; //should only write one?
       gw_->complete(valueToWrite); //all flags, as irq handler can clear waiting source interrupts even though they were never messaged
-      SC_REPORT_INFO(ID_PLIC, MSG);
+      SC_REPORT_INFO(ID_PLIC, MSG.c_str());
     });
     ccs_[i]->setReadCallback([this, i](auto&&) {
-      static const char* MSG = (std::string("Plic:ctx") + std::to_string(i) + std::string(" claim")).c_str();
+      static std::string MSG = (std::string("Plic:ctx") + std::to_string(i) + std::string(" claim"));
       uint32_t x = targets_[i]->get_activeId();
       if(x){
         gw_->claim(0x1 << x);
       }
       return(x);
-      SC_REPORT_INFO(ID_PLIC, MSG);
+      SC_REPORT_INFO(ID_PLIC, MSG.c_str());
     });
   }
 }
