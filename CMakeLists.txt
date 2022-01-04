@@ -87,14 +87,17 @@ set_target_properties(${PROJECT_NAME}_minres PROPERTIES
 ###############################################################################
 # Pulp
 ###############################################################################
-add_library(${PROJECT_NAME}_pulp
-  pulp/experimental/external_uart_device.cpp
-)
-target_include_directories(${PROJECT_NAME}_pulp PUBLIC  ${CMAKE_CURRENT_LIST_DIR})
-target_link_libraries(${PROJECT_NAME}_pulp PUBLIC scc)
-
 if(PULP_EXPERIMENTAL)
-  target_link_libraries(${PROJECT_NAME}_pulp Boost::filesystem Boost::iostreams)
+  add_library(${PROJECT_NAME}_pulp
+    pulp/experimental/external_uart_device.cpp
+  )
+  target_include_directories(${PROJECT_NAME}_pulp PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+  target_link_libraries(${PROJECT_NAME}_pulp PUBLIC scc)
+  target_link_libraries(${PROJECT_NAME}_pulp PRIVATE Boost::filesystem Boost::iostreams)
+else()  
+  add_library(${PROJECT_NAME}_pulp INTERFACE)
+  target_include_directories(${PROJECT_NAME}_pulp INTERFACE ${CMAKE_CURRENT_LIST_DIR})
+  target_link_libraries(${PROJECT_NAME}_pulp INTERFACE scc)
 endif()
 
 FILE(GLOB PulpHeaders ${CMAKE_CURRENT_SOURCE_DIR}/pulp/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minres/*/*.h)

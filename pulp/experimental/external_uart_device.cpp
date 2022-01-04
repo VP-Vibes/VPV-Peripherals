@@ -15,6 +15,7 @@
 #include <poll.h>
 
 #include <sstream>
+#include <iostream>
 
 namespace vpvper {
 namespace pulp {
@@ -109,7 +110,7 @@ ExternalUARTDeviceFileStream::ExternalUARTDeviceFileStream(
       x << "failed to open input named pipeline \"" << in_fpath_ << "\"";
       SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
     }
-    fd_in = open (in_fpath_.c_str(), O_RDONLY | O_NONBLOCK);
+    fd_in = open (in_fpath_.c_str(), O_RDWR);
     if(fd_in < 0) {
       std::stringstream x;
       x << "failed to open input named pipeline \"" << out_fpath_ << "\": E" << errno;
@@ -122,7 +123,7 @@ ExternalUARTDeviceFileStream::ExternalUARTDeviceFileStream(
       x << "failed to open output file \"" << out_fpath_ << "\": E" << errno;
       SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
     }
-    fd_in = open (in_fpath_.c_str(), O_RDONLY | O_NONBLOCK);
+    fd_in = open (in_fpath_.c_str(), O_RDWR);
     if(fd_in < 0) {
       std::stringstream x;
       x << "failed to open input file \"" << in_fpath_ << "\": E" << errno;
@@ -136,18 +137,30 @@ ExternalUARTDeviceFileStream::ExternalUARTDeviceFileStream(
     sink(fd_out, io::file_descriptor_flags::close_handle)
   );
   // connect a stream handle to the "input file"
-  h_stream_in_ = std::make_shared< io::stream<src> > (
+  h_stream_in_ = std::make_shared< io::stream_buffer<src> > (
     src(fd_in, io::file_descriptor_flags::close_handle)
   );
+  
 }
 
 int ExternalUARTDeviceFileStream::read(unsigned char* ptr) {
   static unsigned char last = ' ';
+  static unsigned char event = 0;
+  sc_core::sc_time delay{sc_core::SC_ZERO_TIME};
+  static tlm::tlm_generic_payload gp{};
+  gp.set_data_ptr(&event);
+  gp.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+  gp.set_data_length(1);
+  
   if(!inbuf_.empty()){
     *ptr = inbuf_[0];
     inbuf_.erase(inbuf_.begin());
     last = *ptr;
-  }else{
+    if(inbuf_.empty()) {
+      event = 0;
+      sock_i_->b_transport(gp, delay);
+    }
+  } else {
     last = *ptr;
   }
   return 0;
@@ -162,19 +175,37 @@ int ExternalUARTDeviceFileStream::write(unsigned char* ptr) {
 }
 
 void ExternalUARTDeviceFileStream::sense_input(void) {
-  struct pollfd fds{ .fd = (*h_stream_in_)->handle(), .events = POLLIN };
-  while(1) {
-    sc_core::wait(scan_period_);
+  namespace io = boost::iostreams;
+  
+  std::istream in (h_stream_in_.get());
+  unsigned char event = 1;
+  tlm::tlm_generic_payload gp{};
+  gp.set_data_ptr(&event);
+  gp.set_data_length(1);
+  gp.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+  sc_core::sc_time delay{sc_core::SC_ZERO_TIME};
+
+  auto can_read = [this](void){
+    struct pollfd fds{ .fd = (*h_stream_in_)->handle(), .events = POLLIN };
     int res = poll(&fds, 1, 0);
-    if(res < 0||fds.revents&(POLLERR|POLLNVAL)) {
+    if(res < 0 || fds.revents & (POLLERR|POLLNVAL)) {
       std::stringstream x;
       x << "failed to poll named pipe \"" << in_fpath_ << "\"";
       SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
-    } else {
-      char p;
-      h_stream_in_->get(p);
-      inbuf_.push_back(p);
     }
+    return (fds.revents & POLLIN);
+  };
+  
+  while(1) {
+    sc_core::wait(scan_period_);
+    if(can_read()) {
+      std::string line;
+      std::getline(in, line);
+      if(line != "") {
+        vec_in_stream_ << line << std::flush;
+        sock_i_->b_transport(gp, delay);
+      }
+    } 
   }
 }
 

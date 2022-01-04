@@ -14,6 +14,7 @@
 #include <memory>
 
 #include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
 
 namespace vpvper {
@@ -53,16 +54,21 @@ protected:
 ///\class ExternalUARTDeviceFileStream
 ///\brief (named) pipe based output and input. The input pipe is periodically read and buffered
 class ExternalUARTDeviceFileStream final : public ExternalUARTDevice {
+  typedef boost::iostreams::back_insert_device< std::vector<char> > vec_sink_t;
+
   const std::string out_fpath_;
     ///< path to the output file
   const std::string in_fpath_;
     ///< path to the input file 
   const bool is_named_pipe_;
     ///< will use named pipelines instead of normal files
+  vec_sink_t vec_in_sink_{ExternalUARTDevice::inbuf_};
+  boost::iostreams::stream< vec_sink_t > vec_in_stream_ {vec_in_sink_};
+  
 protected:
   std::shared_ptr<boost::iostreams::stream<boost::iostreams::file_descriptor_sink> > h_stream_out_{nullptr};
     ///< stream handle for output
-  std::shared_ptr<boost::iostreams::stream<boost::iostreams::file_descriptor_source> > h_stream_in_{nullptr};
+  std::shared_ptr<boost::iostreams::stream_buffer<boost::iostreams::file_descriptor_source> > h_stream_in_{nullptr};
     ///< stream handle for input
 public:
   ExternalUARTDeviceFileStream(sc_core::sc_module_name, sc_core::sc_time scan_period, const std::string& out_fpath, const std::string& in_fpath, bool is_named_pipe = false);
