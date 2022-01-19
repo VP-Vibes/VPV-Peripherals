@@ -89,7 +89,7 @@ void clint::update_mtime() {
                     SCCTRACE() << "Timer fires at " << sc_time_stamp() + next_trigger;
                     mtime_evt.notify(next_trigger);
                     mtime_int_o.write(false);
-                } else{
+                }else{
                     mtime_int_o.write(true);
                 }
             }
