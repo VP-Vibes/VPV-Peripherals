@@ -124,7 +124,7 @@ void gpio::update_pins(uint32_t changed_bits) {
     sc_logic val;
     for (size_t i = 0, mask = 1; i < 32; ++i, mask <<= 1) {
         if (changed_bits & mask) {
-            if ((regs->r_iof_en & mask != 0) && (iof0_i[i].size() == 0 || iof1_i[i].size() == 0)) {
+            if (((regs->r_iof_en & mask) != 0) && (iof0_i[i].size() == 0 || iof1_i[i].size() == 0)) {
                 if ((regs->r_iof_sel & mask) == 0 && iof0_i[i].size() > 0) {
                     val = last_iof0[i] ? sc_dt::Log_1 : sc_dt::Log_0;
                 } else if ((regs->r_iof_sel & mask) == 1 && iof1_i[i].size() > 0)
@@ -149,13 +149,15 @@ void gpio::pin_input(unsigned int tag, tlm::scc::tlm_signal_gp<sc_logic> &gp, sc
     auto mask = 1u << tag;
     switch (gp.get_value().value()) {
     case sc_dt::Log_1:
-        if (regs->r_output_en & mask == 0) regs->r_value |= mask;
+        if ((regs->r_output_en & mask) == 0) regs->r_value |= mask;
         forward_pin_input(tag, gp);
         break;
     case sc_dt::Log_0:
-        if (regs->r_output_en & mask == 0) regs->r_value &= ~mask;
+        if ((regs->r_output_en & mask) == 0) regs->r_value &= ~mask;
         forward_pin_input(tag, gp);
         break;
+    default:
+    	break;
     }
 }
 

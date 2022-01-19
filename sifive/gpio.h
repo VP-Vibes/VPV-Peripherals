@@ -46,7 +46,7 @@ protected:
     void clock_cb();
     void reset_cb();
     void update_pins(uint32_t changed_bits);
-    void before_end_of_elaboration();
+    void before_end_of_elaboration() override;
     void pin_input(unsigned int tag, tlm::scc::tlm_signal_gp<sc_dt::sc_logic> &gp, sc_core::sc_time &delay);
     void forward_pin_input(unsigned int tag, tlm::scc::tlm_signal_gp<sc_dt::sc_logic> &gp);
     void iof_input(unsigned int tag, unsigned iof_idx, tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay);

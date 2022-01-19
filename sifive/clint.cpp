@@ -82,15 +82,17 @@ void clint::update_mtime() {
         if (elapsed_clks) {                      // update mtime reg if we have more than 0 elapsed clk periods
             regs->r_mtime += elapsed_clks;
             mtime_evt.cancel();
-            if (regs->r_mtimecmp > 0)
+            if (regs->r_mtimecmp > 0){
                 if (regs->r_mtimecmp > regs->r_mtime && clk > sc_core::SC_ZERO_TIME) {
                     sc_core::sc_time next_trigger =
                         (clk * lfclk_mutiplier) * (regs->r_mtimecmp - regs->mtime) - cnt_fraction * clk;
                     SCCTRACE() << "Timer fires at " << sc_time_stamp() + next_trigger;
                     mtime_evt.notify(next_trigger);
                     mtime_int_o.write(false);
-                } else
+                } else{
                     mtime_int_o.write(true);
+                }
+            }
         }
     } else
         last_updt = sc_time_stamp();

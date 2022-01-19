@@ -212,7 +212,7 @@ void beh::transmit_data() {
             set_bit(regs->r_sckmode.pol, _sck_o, true);
             wait(bit_duration / 2);
             if (bit_true_transfer.get_value()) {
-                for (size_t i = 0, mask = 0x40; i < 7; ++i, mask >= 1) {
+                for (size_t i = 0, mask = 0x40; i < 7; ++i, mask >>= 1) {
                     set_bit(txdata & mask, _mosi_o); // 8 data bits, MSB first
                     set_bit(1 - regs->r_sckmode.pol, _sck_o);
                     wait(bit_duration / 2);
