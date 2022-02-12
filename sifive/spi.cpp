@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -175,7 +175,7 @@ void beh::transmit_data() {
                        bool data_valid = false) -> std::pair<bool, uint32_t> {
         if (socket.get_interface() == nullptr) return std::pair<bool, uint32_t>{false, 0};
         auto *gp = tlm::scc::tlm_signal_gp<>::create();
-        auto *ext = new sysc::tlm_signal_spi_extension();
+        auto *ext = new vpvper::generic::tlm_signal_spi_extension();
         ext->tx.data_bits = 8;
         ext->start_time = start_time;
         ext->tx.m2s_data = txdata;

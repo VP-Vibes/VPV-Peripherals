@@ -1,0 +1,70 @@
+//=============================================================================
+// Pulpissimo FLL Registers
+//=============================================================================
+regfile fll {
+    reg {
+        name = "STATUS";
+        desc = "FLL status register.";
+        regwidth=32;
+        field {
+          name = "MF";  
+        } MF[15:0]= 0;
+    } STATUS @0x0;
+    reg {
+        name = "CFG1";
+        desc = "FLL configuration 1 register.";
+        regwidth=32;
+        field {
+          name = "CKM";  
+        } CKM[31:31] = 0;
+        field {
+          name = "CKG";  
+        } CKG[30:30] = 0;
+        field {
+          name = "CKDIV";  
+        } CKDIV[29:26] = 0;
+        field {
+          name = "ICS";  
+        } ICS[25:16] = 0;
+        field {
+          name = "MFN";  
+        } MFN[15:0] = 0;
+    } CFG1 @0x4;
+    reg {
+        name = "CFG2";
+        desc = "FLL configuration 2 register.";
+        regwidth=32;
+        field {
+          name = "DITH";  
+        } DITH[31:31] = 0;
+        field {
+          name = "CKM";  
+        } CKM[30:30] = 0;
+        field {
+          name = "CKSEL";  
+        } CKSEL[29:29] = 0;
+        field {
+          name = "LT";  
+        } LT[27:16] = 0;
+        field {
+          name = "SCKL";  
+        } SCKL[15:10] = 0;
+        field {
+          name = "UCKL";  
+        } UCKL[9:4] = 0;
+        field {
+          name = "LG";  
+        } LG[3:0] = 0;
+    } CFG2 @0x8;
+    reg {
+        name = "INTEG";
+        desc = "FLL integrator configuration.";
+        regwidth=32;
+        field {
+          name = "INTEG";  
+        } INTEG[25:16] = 0;
+        field {
+          name = "FRAC";  
+        } FRAC[15:6] = 0;
+    } INTEG @0xc;
+};

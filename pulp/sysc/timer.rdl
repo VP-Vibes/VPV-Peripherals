@@ -1,0 +1,55 @@
+//=============================================================================
+// Pulpissimo APB Timer Registers
+//=============================================================================
+regfile timer {
+    reg {
+        name = "CFG_LO";
+        desc = "Timer Low Configuration register";
+        regwidth=32;
+    } CFG_LO @0x0;
+    reg {
+        name = "CFG_HI";
+        desc = "Timer High Configuration register";
+        regwidth=32;
+    } CFG_HI @0x4;
+    reg {
+        name = "CNT_LO";
+        desc = "Timer Low counter value register";
+        regwidth=32;
+    } CNT_LO @0x8;
+    reg {
+        name = "CNT_HI";
+        desc = "Timer High counter value register";
+        regwidth=32;
+    } CNT_HI @0xC;
+    reg {
+        name = "CMP_LO";
+        desc = "Timer Low comparator value register";
+        regwidth=32;
+    } CMP_LO @0x10;
+    reg {
+        name = "CMP_HI";
+        desc = "Timer High comparator value register";
+        regwidth=32;
+    } CMP_HI @0x14;
+    reg {
+        name = "START_LO";
+        desc = "Start Timer Low counting register";
+        regwidth=32;
+    } START_LO @0x18;
+    reg {
+        name = "START_HI";
+        desc = "Start Timer High counting register";
+        regwidth=32;
+    } START_HI @0x1C;
+    reg {
+        name = "RESET_LO";
+        desc = "Reset Timer Low counter register";
+        regwidth=32;
+    } RESET_LO @0x20;
+    reg {
+        name = "RESET_HI";
+        desc = "Reset Timer High counter register";
+        regwidth=32;
+    } RESET_HI @0x24;    
+};

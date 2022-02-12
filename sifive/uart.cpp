@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -7,6 +7,7 @@
 #include "uart.h"
 #include "gen/uart_regs.h"
 #include <generic/tlm_extensions.h>
+
 
 #include <scc/report.h>
 #include <scc/utilities.h>
@@ -101,7 +102,7 @@ void uart::transmit_data() {
 
     auto set_bit = [&](bool val) {
         auto *gp = tlm::scc::tlm_signal_gp<>::create();
-        auto *ext = new sysc::tlm_signal_uart_extension();
+        auto *ext = new vpvper::generic::tlm_signal_uart_extension();
         ext->tx.data_bits = 8;
         ext->tx.parity = false;
         ext->start_time = start_time;
@@ -139,7 +140,7 @@ void uart::transmit_data() {
 }
 
 void uart::receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {
-    sysc::tlm_signal_uart_extension *ext{nullptr};
+    vpvper::generic::tlm_signal_uart_extension *ext{nullptr};
     gp.get_extension(ext);
     if (ext && ext->start_time != rx_last_start) {
         auto data = static_cast<uint8_t>(ext->tx.data);

@@ -1,0 +1,25 @@
+//=============================================================================
+// Pulpissimo Event/Interrupt Registers
+//=============================================================================
+regfile interrupt {
+    reg {
+        name = "MASK";
+        desc = "";
+        regwidth=32;
+    } MASK @0x0;
+    reg {
+        name = "INT";
+        desc = "";
+        regwidth=32;
+    } INT @0x0C;
+    reg {
+        name = "ACK";
+        desc = "";
+        regwidth=32;
+    } ACK @0x18;
+    reg {
+        name = "FIFO_DATA";
+        desc = "";
+        regwidth=32;
+    } FIFO_DATA @0x24;
+};

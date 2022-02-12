@@ -1,0 +1,95 @@
+//=============================================================================
+// Pulpissimo APC GPIO Registers
+//=============================================================================
+regfile gpio {
+    reg {
+        name = "PADDIR_00_31";
+        desc = "GPIO pad direction configuration register.";
+        regwidth=32;
+    } PADDIR_00_31 @0x0;
+    reg {
+        name = "GPIOEN_00_31";
+        desc = "GPIO enable register.";
+        regwidth=32;
+    } GPIOEN_00_31 @0x4;
+    reg {
+        name = "PADIN_00_31";
+        desc = "GPIO pad input value register.";
+        regwidth=32;
+    } PADIN_00_31 @0x8;
+    reg {
+        name = "PADOUT_00_31";
+        desc = "GPIO pad output value register.";
+        regwidth=32;
+    } PADOUT_00_31 @0xC;
+    reg {
+        name = "PADOUTSET_00_31";
+        desc = "GPIO pad output set register.";
+        regwidth=32;
+    } PADOUTSET_00_31 @0x10;
+    reg {
+        name = "PADOUTCLR_00_31";
+        desc = "GPIO pad output clear register.";
+        regwidth=32;
+    } PADOUTCLR_00_31 @0x14;
+    reg {
+        name = "INTEN_00_31";
+        desc = "GPIO pad interrupt enable configuration register.";
+        regwidth=32;
+    } INTEN_00_31 @0x18;
+    reg {
+        name = "INTTYPE_00_15";
+        desc = "GPIO pad interrupt type gpio 0 to 15 register.";
+        regwidth=32;
+    } INTTYPE_00_15 @0x1C;
+    reg {
+        name = "INTTYPE_16_31";
+        desc = "GPIO pad interrupt type gpio 16 to 31 register.";
+        regwidth=32;
+    } INTTYPE_16_31 @0x20;
+    reg {
+        name = "INTSTATUS_00_31";
+        desc = "GPIO pad interrupt status register.";
+        regwidth=32;
+    } INTSTATUS_00_31 @0x24;
+    reg {
+        name = "PADCFG_00_07";
+        desc = "GPIO pad pin 0 to 7 configuration register.";
+        regwidth=32;
+    } PADCFG_00_07 @0x28;
+    reg {
+        name = "PADCFG_08_15";
+        desc = "GPIO pad pin 8 to 15 configuration register.";
+        regwidth=32;
+    } PADCFG_08_15 @0x2C;
+    reg {
+        name = "PADCFG_16_23";
+        desc = "GPIO pad pin 16 to 23 configuration register.";
+        regwidth=32;
+    } PADCFG_16_23 @0x30;
+    reg {
+        name = "PADCFG_24_31";
+        desc = "GPIO pad pin 24 to 31 configuration register.";
+        regwidth=32;
+    } PADCFG_24_31 @0x34;
+    reg {
+        name = "PADDIR_32_63";
+        desc = "GPIO pad direction configuration register.";
+        regwidth=32;
+    } PADDIR_32_63 @0x38;
+    reg {
+        name = "GPIOEN_32_63";
+        desc = "GPIO enable register.";
+        regwidth=32;
+    } GPIOEN_32_63 @0x3C;
+    reg {
+        name = "PADIN_32_63";
+        desc = "GPIO pad input value register.";
+        regwidth=32;
+    } PADIN_32_63 @0x40;
+    reg {
+        name = "PADOUT_32_63";
+        desc = "GPIO pad output value register.";
+        regwidth=32;
+    } PADOUT_32_63 @0x44;
+};

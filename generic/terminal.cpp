@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -46,7 +46,7 @@ void terminal::before_end_of_elaboration() {
 }
 
 void terminal::receive(tlm::scc::tlm_signal_gp<sc_dt::sc_logic> &gp, sc_core::sc_time &delay) {
-    sysc::tlm_signal_uart_extension *ext;
+    tlm_signal_uart_extension *ext;
     gp.get_extension(ext);
     if (ext && ext->start_time != last_tx_start) {
         auto txdata = static_cast<uint8_t>(ext->tx.data);
