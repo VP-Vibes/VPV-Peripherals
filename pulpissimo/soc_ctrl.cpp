@@ -28,7 +28,7 @@ soc_ctrl::soc_ctrl(sc_core::sc_module_name nm)
         gen::soc_ctrl_regs::INFO_t st = reg.get();
         st.NumOfCores = 1;
         st.NumOfCluster=1;
-        reg = st;
+        regs->INFO = st;
         return false;
     });
 }

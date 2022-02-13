@@ -27,7 +27,7 @@ fll::fll(sc_core::sc_module_name nm)
     regs->STATUS.set_read_cb([this](scc::sc_register<gen::fll_regs::STATUS_t> const & reg, uint32_t& v, sc_core::sc_time t)-> bool {
         gen::fll_regs::STATUS_t st = reg.get();
         st.MF = regs->r_CFG1.MFN;
-        reg = st;
+        regs->r_STATUS = st;
         return false;
     });
 }
