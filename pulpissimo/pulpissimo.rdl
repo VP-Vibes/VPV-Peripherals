@@ -4,6 +4,7 @@
 `include "interrupt.rdl"
 `include "adv_timer.rdl"
 `include "fll.rdl"
+`include "soc_ctrl.rdl"
 
 addrmap  {
     name = "pulpissimo";
@@ -11,6 +12,7 @@ addrmap  {
     fll       fll       @0x1A100000;
     gpio      gpio      @0x1A101000;
     udma      udma      @0x1A102000;
+    soc_ctrl  soc_ctrl  @0x1A104000;
     adv_timer adv_timer @0x1A105000;    
     interrupt interrupt @0x1A109000;
     timer     timer     @0x1A10B000;    

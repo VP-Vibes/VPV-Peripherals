@@ -12,3 +12,4 @@
 #include "pulpissimo/interrupt.h"
 #include "pulpissimo/timer.h"
 #include "pulpissimo/udma.h"
+#include "pulpissimo/soc_ctrl.h"

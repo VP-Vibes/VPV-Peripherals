@@ -1,0 +1,54 @@
+//=============================================================================
+// Pulpissimo FLL Registers
+//=============================================================================
+regfile soc_ctrl {
+    reg {
+        name = "INFO";
+        desc = "This register holds the number of clusters and the number of cores in the each cluster. It is a read-only registe.";
+        regwidth=32;
+        field {
+          name = "NumOfCores";  
+        } NumOfCores[31:16]= 0;
+        field {
+          name = "NumOfCluster";  
+        } NumOfCluster[15:0]= 0;
+    } INFO @0x0;
+    reg {
+        name = "BOOT_ADR";
+        desc = "This register holds the boot address.";
+        regwidth=32;
+    } BOOT_ADR = 0x1A100000 @0x4;
+    reg {
+        name = "FETCH_ENABLE";
+        regwidth=32;
+        field {
+          name = "E";  
+        } E[0:0]= 1;
+    } FETCH_ENABLE @0x8;
+    reg {
+        name = "PAD_MUX";
+        regwidth=32;
+    } PAD_MUX[15:0] @0x20;
+    reg {
+        name = "JTAG_REG";
+        regwidth=32;
+        field {
+          name = "JTAGRegIn ";  
+        } JTAGRegIn[15:8]= 0;
+        field {
+          name = "JTAGRegOut";  
+        } JTAGRegOut[7:0]= 0;
+    } JTAG_REG @0x74;
+    reg {
+        name = "CORE_STATUS";
+        regwidth=32;
+    } CORE_STATUS = 0x1 @0xc0;
+    reg {
+        name = "FLL_CLOCK_SELECT";
+        regwidth=32;
+        field {
+          name = "S";  
+        } S[0:0]= 1;
+    } FLL_CLOCK_SELECT @0xc8;
+    
+};

@@ -4,18 +4,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "fll.h"
-#include "gen/fll.h"
+#include "soc_ctrl.h"
+#include "gen/soc_ctrl.h"
 
-#include "scc/utilities.h"
+#include <scc/utilities.h>
 
 namespace pulpissimo {
-SC_HAS_PROCESS(fll);// NOLINT
+SC_HAS_PROCESS(soc_ctrl);// NOLINT
 
-fll::fll(sc_core::sc_module_name nm)
+soc_ctrl::soc_ctrl(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , scc::tlm_target<>(clk)
-, NAMEDD(regs, gen::fll_regs) {
+, NAMEDD(regs, gen::soc_ctrl_regs) {
     regs->registerResources(*this);
     SC_METHOD(clock_cb);
     sensitive << clk_i;
@@ -23,20 +23,21 @@ fll::fll(sc_core::sc_module_name nm)
     sensitive << rst_i;
 
     auto ro_wr_cb = [this](scc::sc_register<uint32_t>&, uint32_t const & v, sc_core::sc_time t)-> bool {return true;};
-    regs->STATUS.set_write_cb(ro_wr_cb);
-    regs->STATUS.set_read_cb([this](scc::sc_register<gen::fll_regs::STATUS_t> const & reg, uint32_t& v, sc_core::sc_time t)-> bool {
-        gen::fll_regs::STATUS_t st = reg.get();
-        st.MF = regs->r_CFG1.MFN;
+    regs->INFO.set_write_cb(ro_wr_cb);
+    regs->INFO.set_read_cb([this](scc::sc_register<gen::soc_ctrl_regs::INFO_t> const & reg, uint32_t& v, sc_core::sc_time t)-> bool {
+        gen::soc_ctrl_regs::INFO_t st = reg.get();
+        st.NumOfCores = 1;
+        st.NumOfCluster=1;
         reg = st;
         return false;
     });
 }
 
-fll::~fll() {} // NOLINT
+soc_ctrl::~soc_ctrl() {} // NOLINT
 
-void fll::clock_cb() { this->clk = clk_i.read(); }
+void soc_ctrl::clock_cb() { this->clk = clk_i.read(); }
 
-void fll::reset_cb() {
+void soc_ctrl::reset_cb() {
     if (rst_i.read()) {
         regs->reset_start();
     } else {
