@@ -28,23 +28,23 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:28:03 CET 2022
-//             *      i2c_channel.h Author: <RDL Generator>
+// Created on: Sun Feb 13 08:59:06 CET 2022
+//             *      spi_channel.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SYSC_GEN_I2C_CHANNEL_H_
-#define _SYSC_GEN_I2C_CHANNEL_H_
+#ifndef _PULPISSIMO_GEN_SPI_CHANNEL_H_
+#define _PULPISSIMO_GEN_SPI_CHANNEL_H_
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 
-class i2c_channel_regs :
+class spi_channel_regs :
         public sc_core::sc_module,
         public scc::resetable
 {
@@ -52,96 +52,82 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
-    uint32_t r_RX_SADDR;
-    uint32_t r_RX_SIZE;
-    BEGIN_BF_DECL(RX_CFG_t, uint32_t);
+    uint32_t r_SPIM_RX_SADDR;
+    uint32_t r_SPIM_RX_SIZE;
+    BEGIN_BF_DECL(SPIM_RX_CFG_t, uint32_t);
         BF_FIELD(CLR, 6, 1);
         BF_FIELD(PENDING, 5, 1);
         BF_FIELD(EN, 4, 1);
         BF_FIELD(DATASIZE, 1, 2);
         BF_FIELD(CONTINOUS, 0, 1);
-    END_BF_DECL() r_RX_CFG;
-    uint32_t r_TX_SADDR;
-    uint32_t r_TX_SIZE;
-    BEGIN_BF_DECL(TX_CFG_t, uint32_t);
+    END_BF_DECL() r_SPIM_RX_CFG;
+    uint32_t r_SPIM_TX_SADDR;
+    uint32_t r_SPIM_TX_SIZE;
+    BEGIN_BF_DECL(SPIM_TX_CFG_t, uint32_t);
         BF_FIELD(CLR, 6, 1);
         BF_FIELD(PENDING, 5, 1);
         BF_FIELD(EN, 4, 1);
         BF_FIELD(DATASIZE, 1, 2);
         BF_FIELD(CONTINOUS, 0, 1);
-    END_BF_DECL() r_TX_CFG;
-    uint32_t r_CMD_SADDR;
-    uint32_t r_CMD_SIZE;
-    BEGIN_BF_DECL(CMD_CFG_t, uint32_t);
+    END_BF_DECL() r_SPIM_TX_CFG;
+    uint32_t r_SPIM_CMD_SADDR;
+    uint32_t r_SPIM_CMD_SIZE;
+    BEGIN_BF_DECL(SPIM_CMD_CFG_t, uint32_t);
         BF_FIELD(CLR, 6, 1);
         BF_FIELD(PENDING, 5, 1);
         BF_FIELD(EN, 4, 1);
         BF_FIELD(DATASIZE, 1, 2);
         BF_FIELD(CONTINOUS, 0, 1);
-    END_BF_DECL() r_CMD_CFG;
-    BEGIN_BF_DECL(STATUS_t, uint32_t);
-        BF_FIELD(ACK, 2, 1);
-        BF_FIELD(ARB_LOST, 1, 1);
-        BF_FIELD(BUSY, 0, 1);
-    END_BF_DECL() r_STATUS;
-    BEGIN_BF_DECL(SETUP_t, uint32_t);
-        BF_FIELD(DO_RST, 0, 1);
-    END_BF_DECL() r_SETUP;
+    END_BF_DECL() r_SPIM_CMD_CFG;
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
-    scc::sc_register<uint32_t> RX_SADDR;
-    scc::sc_register<uint32_t> RX_SIZE;
-    scc::sc_register<RX_CFG_t> RX_CFG;
-    scc::sc_register<uint32_t> TX_SADDR;
-    scc::sc_register<uint32_t> TX_SIZE;
-    scc::sc_register<TX_CFG_t> TX_CFG;
-    scc::sc_register<uint32_t> CMD_SADDR;
-    scc::sc_register<uint32_t> CMD_SIZE;
-    scc::sc_register<CMD_CFG_t> CMD_CFG;
-    scc::sc_register<STATUS_t> STATUS;
-    scc::sc_register<SETUP_t> SETUP;
+    scc::sc_register<uint32_t> SPIM_RX_SADDR;
+    scc::sc_register<uint32_t> SPIM_RX_SIZE;
+    scc::sc_register<SPIM_RX_CFG_t> SPIM_RX_CFG;
+    scc::sc_register<uint32_t> SPIM_TX_SADDR;
+    scc::sc_register<uint32_t> SPIM_TX_SIZE;
+    scc::sc_register<SPIM_TX_CFG_t> SPIM_TX_CFG;
+    scc::sc_register<uint32_t> SPIM_CMD_SADDR;
+    scc::sc_register<uint32_t> SPIM_CMD_SIZE;
+    scc::sc_register<SPIM_CMD_CFG_t> SPIM_CMD_CFG;
     
-    i2c_channel_regs(sc_core::sc_module_name nm);
+    spi_channel_regs(sc_core::sc_module_name nm);
 
     template<unsigned BUSWIDTH=32>
     void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
 };
 } // namespace gen
-} // namespace sysc
+} // namespace pulpissimo
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::gen::i2c_channel_regs::i2c_channel_regs(sc_core::sc_module_name nm)
+inline pulpissimo::gen::spi_channel_regs::spi_channel_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
-, NAMED(RX_SADDR, r_RX_SADDR, 0, *this)
-, NAMED(RX_SIZE, r_RX_SIZE, 0, *this)
-, NAMED(RX_CFG, r_RX_CFG, 0, *this)
-, NAMED(TX_SADDR, r_TX_SADDR, 0, *this)
-, NAMED(TX_SIZE, r_TX_SIZE, 0, *this)
-, NAMED(TX_CFG, r_TX_CFG, 0, *this)
-, NAMED(CMD_SADDR, r_CMD_SADDR, 0, *this)
-, NAMED(CMD_SIZE, r_CMD_SIZE, 0, *this)
-, NAMED(CMD_CFG, r_CMD_CFG, 0, *this)
-, NAMED(STATUS, r_STATUS, 0, *this)
-, NAMED(SETUP, r_SETUP, 0, *this)
+, NAMED(SPIM_RX_SADDR, r_SPIM_RX_SADDR, 0, *this)
+, NAMED(SPIM_RX_SIZE, r_SPIM_RX_SIZE, 0, *this)
+, NAMED(SPIM_RX_CFG, r_SPIM_RX_CFG, 0, *this)
+, NAMED(SPIM_TX_SADDR, r_SPIM_TX_SADDR, 0, *this)
+, NAMED(SPIM_TX_SIZE, r_SPIM_TX_SIZE, 0, *this)
+, NAMED(SPIM_TX_CFG, r_SPIM_TX_CFG, 0, *this)
+, NAMED(SPIM_CMD_SADDR, r_SPIM_CMD_SADDR, 0, *this)
+, NAMED(SPIM_CMD_SIZE, r_SPIM_CMD_SIZE, 0, *this)
+, NAMED(SPIM_CMD_CFG, r_SPIM_CMD_CFG, 0, *this)
 {
 }
 
 template<unsigned BUSWIDTH>
-inline void sysc::gen::i2c_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(RX_SADDR, 0x180UL);
-    target.addResource(RX_SIZE, 0x184UL);
-    target.addResource(RX_CFG, 0x188UL);
-    target.addResource(TX_SADDR, 0x190UL);
-    target.addResource(TX_SIZE, 0x194UL);
-    target.addResource(TX_CFG, 0x198UL);
-    target.addResource(CMD_SADDR, 0x1a0UL);
-    target.addResource(CMD_SIZE, 0x1a4UL);
-    target.addResource(CMD_CFG, 0x1a8UL);
-    target.addResource(STATUS, 0x1b0UL);
-    target.addResource(SETUP, 0x1b4UL);
+inline void pulpissimo::gen::spi_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+    target.addResource(SPIM_RX_SADDR, 0x100UL);
+    target.addResource(SPIM_RX_SIZE, 0x104UL);
+    target.addResource(SPIM_RX_CFG, 0x108UL);
+    target.addResource(SPIM_TX_SADDR, 0x110UL);
+    target.addResource(SPIM_TX_SIZE, 0x114UL);
+    target.addResource(SPIM_TX_CFG, 0x118UL);
+    target.addResource(SPIM_CMD_SADDR, 0x120UL);
+    target.addResource(SPIM_CMD_SIZE, 0x124UL);
+    target.addResource(SPIM_CMD_CFG, 0x128UL);
 }
 
-#endif // _SYSC_GEN_I2C_CHANNEL_H_
+#endif // _PULPISSIMO_GEN_SPI_CHANNEL_H_

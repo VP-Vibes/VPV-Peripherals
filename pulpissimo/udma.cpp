@@ -4,20 +4,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "timer.h"
-#include "gen/timer.h"
+#include "udma.h"
+#include "gen/udma.h"
 
 #include "scc/utilities.h"
 
-namespace sysc {
-SC_HAS_PROCESS(timer);// NOLINT
+namespace pulpissimo {
+SC_HAS_PROCESS(udma);// NOLINT
 
-timer::timer(sc_core::sc_module_name nm)
+udma::udma(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , scc::tlm_target<>(clk)
 , NAMED(clk_i)
 , NAMED(rst_i)
-, NAMEDD(regs, gen::timer_regs) {
+, NAMEDD(regs, gen::udma_regs) {
     regs->registerResources(*this);
     SC_METHOD(clock_cb);
     sensitive << clk_i;
@@ -25,11 +25,11 @@ timer::timer(sc_core::sc_module_name nm)
     sensitive << rst_i;
 }
 
-timer::~timer() {} // NOLINT
+udma::~udma() {} // NOLINT
 
-void timer::clock_cb() { this->clk = clk_i.read(); }
+void udma::clock_cb() { this->clk = clk_i.read(); }
 
-void timer::reset_cb() {
+void udma::reset_cb() {
     if (rst_i.read()) {
         regs->reset_start();
     } else {
@@ -37,4 +37,4 @@ void timer::reset_cb() {
     }
 }
 
-} /* namespace sysc */
+} /* namespace pulpissimo */

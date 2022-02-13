@@ -28,20 +28,20 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:28:03 CET 2022
+// Created on: Sun Feb 13 08:59:06 CET 2022
 //             *      uart_channel.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SYSC_GEN_UART_CHANNEL_H_
-#define _SYSC_GEN_UART_CHANNEL_H_
+#ifndef _PULPISSIMO_GEN_UART_CHANNEL_H_
+#define _PULPISSIMO_GEN_UART_CHANNEL_H_
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 
 class uart_channel_regs :
@@ -126,12 +126,12 @@ public:
     void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
 };
 } // namespace gen
-} // namespace sysc
+} // namespace pulpissimo
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::gen::uart_channel_regs::uart_channel_regs(sc_core::sc_module_name nm)
+inline pulpissimo::gen::uart_channel_regs::uart_channel_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(RX_SADDR, r_RX_SADDR, 0, *this)
 , NAMED(RX_SIZE, r_RX_SIZE, 0, *this)
@@ -149,7 +149,7 @@ inline sysc::gen::uart_channel_regs::uart_channel_regs(sc_core::sc_module_name n
 }
 
 template<unsigned BUSWIDTH>
-inline void sysc::gen::uart_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+inline void pulpissimo::gen::uart_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(RX_SADDR, 0x0UL);
     target.addResource(RX_SIZE, 0x4UL);
     target.addResource(RX_CFG, 0x8UL);
@@ -164,4 +164,4 @@ inline void sysc::gen::uart_channel_regs::registerResources(scc::tlm_target<BUSW
     target.addResource(DATA, 0x34UL);
 }
 
-#endif // _SYSC_GEN_UART_CHANNEL_H_
+#endif // _PULPISSIMO_GEN_UART_CHANNEL_H_

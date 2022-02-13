@@ -4,20 +4,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "adv_timer.h"
-#include "gen/adv_timer.h"
+#include "timer.h"
+#include "gen/timer.h"
 
 #include "scc/utilities.h"
 
-namespace sysc {
-SC_HAS_PROCESS(adv_timer);// NOLINT
+namespace pulpissimo {
+SC_HAS_PROCESS(timer);// NOLINT
 
-adv_timer::adv_timer(sc_core::sc_module_name nm)
+timer::timer(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , scc::tlm_target<>(clk)
 , NAMED(clk_i)
 , NAMED(rst_i)
-, NAMEDD(regs, gen::adv_timer_regs) {
+, NAMEDD(regs, gen::timer_regs) {
     regs->registerResources(*this);
     SC_METHOD(clock_cb);
     sensitive << clk_i;
@@ -25,11 +25,11 @@ adv_timer::adv_timer(sc_core::sc_module_name nm)
     sensitive << rst_i;
 }
 
-adv_timer::~adv_timer() {} // NOLINT
+timer::~timer() {} // NOLINT
 
-void adv_timer::clock_cb() { this->clk = clk_i.read(); }
+void timer::clock_cb() { this->clk = clk_i.read(); }
 
-void adv_timer::reset_cb() {
+void timer::reset_cb() {
     if (rst_i.read()) {
         regs->reset_start();
     } else {
@@ -37,4 +37,4 @@ void adv_timer::reset_cb() {
     }
 }
 
-} /* namespace sysc */
+} /* namespace pulpissimo */

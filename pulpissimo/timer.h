@@ -1,8 +1,8 @@
-#ifndef _SYSC_TIMER_H_
-#define _SYSC_TIMER_H_
+#ifndef _PULPISSIMO_TIMER_H_
+#define _PULPISSIMO_TIMER_H_
 #include "scc/tlm_target.h"
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 class timer_regs;
 }
@@ -21,6 +21,6 @@ protected:
     std::unique_ptr<gen::timer_regs> regs;
 };
 
-} /* namespace sysc */
+} /* namespace pulpissimo */
 
-#endif /* _SYSC_TIMER_H_ */
+#endif /* _PULPISSIMO_TIMER_H_ */

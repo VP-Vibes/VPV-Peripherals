@@ -28,13 +28,13 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:28:03 CET 2022
+// Created on: Sun Feb 13 08:59:06 CET 2022
 //             *      udma.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SYSC_GEN_UDMA_H_
-#define _SYSC_GEN_UDMA_H_
+#ifndef _PULPISSIMO_GEN_UDMA_H_
+#define _PULPISSIMO_GEN_UDMA_H_
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
@@ -48,7 +48,7 @@
 #include "cam_channel.h"
 #include "filter.h"
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 
 class udma_regs :
@@ -103,12 +103,12 @@ public:
     void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
 };
 } // namespace gen
-} // namespace sysc
+} // namespace pulpissimo
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::gen::udma_regs::udma_regs(sc_core::sc_module_name nm)
+inline pulpissimo::gen::udma_regs::udma_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(CTRL_CFG_CG, r_CTRL_CFG_CG, 0, *this)
 , NAMED(CTRL_CFG_EVENT, r_CTRL_CFG_EVENT, 0, *this)
@@ -124,7 +124,7 @@ inline sysc::gen::udma_regs::udma_regs(sc_core::sc_module_name nm)
 }
 
 template<unsigned BUSWIDTH>
-inline void sysc::gen::udma_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+inline void pulpissimo::gen::udma_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(CTRL_CFG_CG, 0UL);
     target.addResource(CTRL_CFG_EVENT, 0x4UL);
     target.addResource(CTRL_CFG_RST, 0x8UL);
@@ -137,4 +137,4 @@ inline void sysc::gen::udma_regs::registerResources(scc::tlm_target<BUSWIDTH>& t
     i_filt.registerResources(target, 0x400UL+offset);
 }
 
-#endif // _SYSC_GEN_UDMA_H_
+#endif // _PULPISSIMO_GEN_UDMA_H_

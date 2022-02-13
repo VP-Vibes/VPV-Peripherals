@@ -28,23 +28,23 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:28:03 CET 2022
-//             *      timer.h Author: <RDL Generator>
+// Created on: Sun Feb 13 08:59:06 CET 2022
+//             *      fll.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SYSC_GEN_TIMER_H_
-#define _SYSC_GEN_TIMER_H_
+#ifndef _PULPISSIMO_GEN_FLL_H_
+#define _PULPISSIMO_GEN_FLL_H_
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 
-class timer_regs :
+class fll_regs :
         public sc_core::sc_module,
         public scc::resetable
 {
@@ -52,78 +52,63 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
-    BEGIN_BF_DECL(CFG_LO_t, uint32_t);
-    END_BF_DECL() r_CFG_LO;
-    BEGIN_BF_DECL(CFG_HI_t, uint32_t);
-    END_BF_DECL() r_CFG_HI;
-    BEGIN_BF_DECL(CNT_LO_t, uint32_t);
-    END_BF_DECL() r_CNT_LO;
-    BEGIN_BF_DECL(CNT_HI_t, uint32_t);
-    END_BF_DECL() r_CNT_HI;
-    BEGIN_BF_DECL(CMP_LO_t, uint32_t);
-    END_BF_DECL() r_CMP_LO;
-    BEGIN_BF_DECL(CMP_HI_t, uint32_t);
-    END_BF_DECL() r_CMP_HI;
-    BEGIN_BF_DECL(START_LO_t, uint32_t);
-    END_BF_DECL() r_START_LO;
-    BEGIN_BF_DECL(START_HI_t, uint32_t);
-    END_BF_DECL() r_START_HI;
-    BEGIN_BF_DECL(RESET_LO_t, uint32_t);
-    END_BF_DECL() r_RESET_LO;
-    BEGIN_BF_DECL(RESET_HI_t, uint32_t);
-    END_BF_DECL() r_RESET_HI;
+    BEGIN_BF_DECL(STATUS_t, uint32_t);
+        BF_FIELD(MF, 0, 16);
+    END_BF_DECL() r_STATUS;
+    BEGIN_BF_DECL(CFG1_t, uint32_t);
+        BF_FIELD(CKM, 31, 1);
+        BF_FIELD(CKG, 30, 1);
+        BF_FIELD(CKDIV, 26, 4);
+        BF_FIELD(ICS, 16, 10);
+        BF_FIELD(MFN, 0, 16);
+    END_BF_DECL() r_CFG1;
+    BEGIN_BF_DECL(CFG2_t, uint32_t);
+        BF_FIELD(DITH, 31, 1);
+        BF_FIELD(CKM, 30, 1);
+        BF_FIELD(CKSEL, 29, 1);
+        BF_FIELD(LT, 16, 12);
+        BF_FIELD(SCKL, 10, 6);
+        BF_FIELD(UCKL, 4, 6);
+        BF_FIELD(LG, 0, 4);
+    END_BF_DECL() r_CFG2;
+    BEGIN_BF_DECL(INTEG_t, uint32_t);
+        BF_FIELD(INTEG, 16, 10);
+        BF_FIELD(FRAC, 6, 10);
+    END_BF_DECL() r_INTEG;
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
-    scc::sc_register<CFG_LO_t> CFG_LO;
-    scc::sc_register<CFG_HI_t> CFG_HI;
-    scc::sc_register<CNT_LO_t> CNT_LO;
-    scc::sc_register<CNT_HI_t> CNT_HI;
-    scc::sc_register<CMP_LO_t> CMP_LO;
-    scc::sc_register<CMP_HI_t> CMP_HI;
-    scc::sc_register<START_LO_t> START_LO;
-    scc::sc_register<START_HI_t> START_HI;
-    scc::sc_register<RESET_LO_t> RESET_LO;
-    scc::sc_register<RESET_HI_t> RESET_HI;
+    scc::sc_register<STATUS_t> STATUS;
+    scc::sc_register<CFG1_t> CFG1;
+    scc::sc_register<CFG2_t> CFG2;
+    scc::sc_register<INTEG_t> INTEG;
     
-    timer_regs(sc_core::sc_module_name nm);
+    fll_regs(sc_core::sc_module_name nm);
 
     template<unsigned BUSWIDTH=32>
     void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
 };
 } // namespace gen
-} // namespace sysc
+} // namespace pulpissimo
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::gen::timer_regs::timer_regs(sc_core::sc_module_name nm)
+inline pulpissimo::gen::fll_regs::fll_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
-, NAMED(CFG_LO, r_CFG_LO, 0, *this)
-, NAMED(CFG_HI, r_CFG_HI, 0, *this)
-, NAMED(CNT_LO, r_CNT_LO, 0, *this)
-, NAMED(CNT_HI, r_CNT_HI, 0, *this)
-, NAMED(CMP_LO, r_CMP_LO, 0, *this)
-, NAMED(CMP_HI, r_CMP_HI, 0, *this)
-, NAMED(START_LO, r_START_LO, 0, *this)
-, NAMED(START_HI, r_START_HI, 0, *this)
-, NAMED(RESET_LO, r_RESET_LO, 0, *this)
-, NAMED(RESET_HI, r_RESET_HI, 0, *this)
+, NAMED(STATUS, r_STATUS, 0, *this)
+, NAMED(CFG1, r_CFG1, 0, *this)
+, NAMED(CFG2, r_CFG2, 0, *this)
+, NAMED(INTEG, r_INTEG, 0, *this)
 {
 }
 
 template<unsigned BUSWIDTH>
-inline void sysc::gen::timer_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(CFG_LO, 0x0UL);
-    target.addResource(CFG_HI, 0x4UL);
-    target.addResource(CNT_LO, 0x8UL);
-    target.addResource(CNT_HI, 0xcUL);
-    target.addResource(CMP_LO, 0x10UL);
-    target.addResource(CMP_HI, 0x14UL);
-    target.addResource(START_LO, 0x18UL);
-    target.addResource(START_HI, 0x1cUL);
-    target.addResource(RESET_LO, 0x20UL);
-    target.addResource(RESET_HI, 0x24UL);
+inline void pulpissimo::gen::fll_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+    target.addResource(STATUS, 0x0UL);
+    target.addResource(CFG1, 0x4UL);
+    target.addResource(CFG2, 0x8UL);
+    target.addResource(INTEG, 0xcUL);
 }
 
-#endif // _SYSC_GEN_TIMER_H_
+#endif // _PULPISSIMO_GEN_FLL_H_

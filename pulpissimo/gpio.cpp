@@ -9,7 +9,7 @@
 
 #include "scc/utilities.h"
 
-namespace sysc {
+namespace pulpissimo {
 SC_HAS_PROCESS(gpio);// NOLINT
 
 gpio::gpio(sc_core::sc_module_name nm)
@@ -37,4 +37,4 @@ void gpio::reset_cb() {
     }
 }
 
-} /* namespace sysc */
+} /* namespace pulpissimo */

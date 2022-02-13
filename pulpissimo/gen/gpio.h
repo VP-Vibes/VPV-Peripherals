@@ -28,20 +28,20 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:28:03 CET 2022
+// Created on: Sun Feb 13 08:59:06 CET 2022
 //             *      gpio.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SYSC_GEN_GPIO_H_
-#define _SYSC_GEN_GPIO_H_
+#ifndef _PULPISSIMO_GEN_GPIO_H_
+#define _PULPISSIMO_GEN_GPIO_H_
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 
 class gpio_regs :
@@ -116,12 +116,12 @@ public:
     void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
 };
 } // namespace gen
-} // namespace sysc
+} // namespace pulpissimo
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::gen::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
+inline pulpissimo::gen::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(PADDIR_00_31, r_PADDIR_00_31, 0, *this)
 , NAMED(GPIOEN_00_31, r_GPIOEN_00_31, 0, *this)
@@ -145,7 +145,7 @@ inline sysc::gen::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
 }
 
 template<unsigned BUSWIDTH>
-inline void sysc::gen::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+inline void pulpissimo::gen::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(PADDIR_00_31, 0x0UL);
     target.addResource(GPIOEN_00_31, 0x4UL);
     target.addResource(PADIN_00_31, 0x8UL);
@@ -166,4 +166,4 @@ inline void sysc::gen::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& t
     target.addResource(PADOUT_32_63, 0x44UL);
 }
 
-#endif // _SYSC_GEN_GPIO_H_
+#endif // _PULPISSIMO_GEN_GPIO_H_

@@ -35,20 +35,3 @@ set_target_properties(${PROJECT_NAME}_pulp PROPERTIES
   FRAMEWORK FALSE
   PUBLIC_HEADER "${PulpHeaders}" # specify the public headers
 )
-
-add_library(${PROJECT_NAME}_scc_pulp
-  sysc/adv_timer.cpp
-  sysc/fll.cpp
-  sysc/gpio.cpp
-  sysc/interrupt.cpp
-  sysc/timer.cpp
-  sysc/udma.cpp
-)
-target_include_directories(${PROJECT_NAME}_scc_pulp PUBLIC ${vpvper_SOURCE_DIR})
-target_link_libraries(${PROJECT_NAME}_scc_pulp PUBLIC scc)
-FILE(GLOB SccPulpHeaders ${CMAKE_CURRENT_SOURCE_DIR}/pulp/scc/*.h ${CMAKE_CURRENT_SOURCE_DIR}/pulp/scc/gen/*.h)
-set_target_properties(${PROJECT_NAME}_pulp PROPERTIES
-  VERSION ${PROJECT_VERSION}
-  FRAMEWORK FALSE
-  PUBLIC_HEADER "${PulpHeaders}" # specify the public headers
-)

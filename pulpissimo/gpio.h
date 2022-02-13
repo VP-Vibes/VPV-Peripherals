@@ -1,8 +1,8 @@
-#ifndef _SYSC_GPIO_H_
-#define _SYSC_GPIO_H_
+#ifndef _PULPISSIMO_GPIO_H_
+#define _PULPISSIMO_GPIO_H_
 #include "scc/tlm_target.h"
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 class gpio_regs;
 }
@@ -21,6 +21,6 @@ protected:
     std::unique_ptr<gen::gpio_regs> regs;
 };
 
-} /* namespace sysc */
+} /* namespace pulpissimo */
 
-#endif /* _SYSC_GPIO_H_ */
+#endif /* _PULPISSIMO_GPIO_H_ */

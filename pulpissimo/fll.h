@@ -1,8 +1,8 @@
-#ifndef _SYSC_FLL_H_
-#define _SYSC_FLL_H_
+#ifndef _PULPISSIMO_FLL_H_
+#define _PULPISSIMO_FLL_H_
 #include "scc/tlm_target.h"
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 class fll_regs;
 }
@@ -21,6 +21,6 @@ protected:
     std::unique_ptr<gen::fll_regs> regs;
 };
 
-} /* namespace sysc */
+} /* namespace pulpissimo */
 
-#endif /* _SYSC_FLL_H_ */
+#endif /* _PULPISSIMO_FLL_H_ */

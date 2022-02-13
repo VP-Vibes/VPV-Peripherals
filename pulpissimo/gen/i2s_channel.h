@@ -28,20 +28,20 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:28:03 CET 2022
+// Created on: Sun Feb 13 08:59:06 CET 2022
 //             *      i2s_channel.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SYSC_GEN_I2S_CHANNEL_H_
-#define _SYSC_GEN_I2S_CHANNEL_H_
+#ifndef _PULPISSIMO_GEN_I2S_CHANNEL_H_
+#define _PULPISSIMO_GEN_I2S_CHANNEL_H_
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 
 class i2s_channel_regs :
@@ -120,12 +120,12 @@ public:
     void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
 };
 } // namespace gen
-} // namespace sysc
+} // namespace pulpissimo
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline sysc::gen::i2s_channel_regs::i2s_channel_regs(sc_core::sc_module_name nm)
+inline pulpissimo::gen::i2s_channel_regs::i2s_channel_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(I2S_RX_SADDR, r_I2S_RX_SADDR, 0, *this)
 , NAMED(I2S_RX_SIZE, r_I2S_RX_SIZE, 0, *this)
@@ -141,7 +141,7 @@ inline sysc::gen::i2s_channel_regs::i2s_channel_regs(sc_core::sc_module_name nm)
 }
 
 template<unsigned BUSWIDTH>
-inline void sysc::gen::i2s_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+inline void pulpissimo::gen::i2s_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(I2S_RX_SADDR, 0x0UL);
     target.addResource(I2S_RX_SIZE, 0x4UL);
     target.addResource(I2S_RX_CFG, 0x8UL);
@@ -154,4 +154,4 @@ inline void sysc::gen::i2s_channel_regs::registerResources(scc::tlm_target<BUSWI
     target.addResource(I2S_PDM_SETUP, 0x2cUL);
 }
 
-#endif // _SYSC_GEN_I2S_CHANNEL_H_
+#endif // _PULPISSIMO_GEN_I2S_CHANNEL_H_

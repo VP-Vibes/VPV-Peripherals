@@ -1,8 +1,8 @@
-#ifndef _SYSC_INTERRUPT_H_
-#define _SYSC_INTERRUPT_H_
+#ifndef _PULPISSIMO_INTERRUPT_H_
+#define _PULPISSIMO_INTERRUPT_H_
 #include "scc/tlm_target.h"
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 class interrupt_regs;
 }
@@ -21,6 +21,6 @@ protected:
     std::unique_ptr<gen::interrupt_regs> regs;
 };
 
-} /* namespace sysc */
+} /* namespace pulpissimo */
 
-#endif /* _SYSC_INTERRUPT_H_ */
+#endif /* _PULPISSIMO_INTERRUPT_H_ */

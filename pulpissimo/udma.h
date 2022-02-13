@@ -1,8 +1,8 @@
-#ifndef _SYSC_UDMA_H_
-#define _SYSC_UDMA_H_
+#ifndef _PULPISSIMO_UDMA_H_
+#define _PULPISSIMO_UDMA_H_
 #include "scc/tlm_target.h"
 
-namespace sysc {
+namespace pulpissimo {
 namespace gen {
 class udma_regs;
 }
@@ -21,6 +21,6 @@ protected:
     std::unique_ptr<gen::udma_regs> regs;
 };
 
-} /* namespace sysc */
+} /* namespace pulpissimo */
 
-#endif /* _SYSC_UDMA_H_ */
+#endif /* _PULPISSIMO_UDMA_H_ */
