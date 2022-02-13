@@ -28,7 +28,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:59:06 CET 2022
+// Created on: Sun Feb 13 11:14:08 CET 2022
 //             *      filter.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,64 +52,46 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
-    BEGIN_BF_DECL(REG_TX_CH0_ADD_t, uint32_t);
-    END_BF_DECL() r_REG_TX_CH0_ADD;
+    uint32_t r_REG_TX_CH0_ADD;
     BEGIN_BF_DECL(REG_TX_CH0_CFG_t, uint32_t);
         BF_FIELD(MODE, 8, 2);
         BF_FIELD(SIZE, 0, 2);
     END_BF_DECL() r_REG_TX_CH0_CFG;
-    BEGIN_BF_DECL(REG_TX_CH0_LEN0_t, uint32_t);
-    END_BF_DECL() r_REG_TX_CH0_LEN0;
-    BEGIN_BF_DECL(REG_TX_CH0_LEN1_t, uint32_t);
-    END_BF_DECL() r_REG_TX_CH0_LEN1;
-    BEGIN_BF_DECL(REG_TX_CH0_LEN2_t, uint32_t);
-    END_BF_DECL() r_REG_TX_CH0_LEN2;
-    BEGIN_BF_DECL(REG_TX_CH1_ADD_t, uint32_t);
-    END_BF_DECL() r_REG_TX_CH1_ADD;
+    uint32_t r_REG_TX_CH0_LEN0;
+    uint32_t r_REG_TX_CH0_LEN1;
+    uint32_t r_REG_TX_CH0_LEN2;
+    uint32_t r_REG_TX_CH1_ADD;
     BEGIN_BF_DECL(REG_TX_CH1_CFG_t, uint32_t);
         BF_FIELD(MODE, 8, 2);
         BF_FIELD(SIZE, 0, 2);
     END_BF_DECL() r_REG_TX_CH1_CFG;
-    BEGIN_BF_DECL(REG_TX_CH1_LEN0_t, uint32_t);
-    END_BF_DECL() r_REG_TX_CH1_LEN0;
-    BEGIN_BF_DECL(REG_TX_CH1_LEN1_t, uint32_t);
-    END_BF_DECL() r_REG_TX_CH1_LEN1;
-    BEGIN_BF_DECL(REG_TX_CH1_LEN2_t, uint32_t);
-    END_BF_DECL() r_REG_TX_CH1_LEN2;
-    BEGIN_BF_DECL(REG_RX_CH_ADD_t, uint32_t);
-    END_BF_DECL() r_REG_RX_CH_ADD;
+    uint32_t r_REG_TX_CH1_LEN0;
+    uint32_t r_REG_TX_CH1_LEN1;
+    uint32_t r_REG_TX_CH1_LEN2;
+    uint32_t r_REG_RX_CH_ADD;
     BEGIN_BF_DECL(REG_RX_CH_CFG_t, uint32_t);
         BF_FIELD(MODE, 8, 2);
         BF_FIELD(SIZE, 0, 2);
     END_BF_DECL() r_REG_RX_CH_CFG;
-    BEGIN_BF_DECL(REG_RX_CH_LEN0_t, uint32_t);
-    END_BF_DECL() r_REG_RX_CH_LEN0;
-    BEGIN_BF_DECL(REG_RX_CH_LEN1_t, uint32_t);
-    END_BF_DECL() r_REG_RX_CH_LEN1;
-    BEGIN_BF_DECL(REG_RX_CH_LEN2_t, uint32_t);
-    END_BF_DECL() r_REG_RX_CH_LEN2;
+    uint32_t r_REG_RX_CH_LEN0;
+    uint32_t r_REG_RX_CH_LEN1;
+    uint32_t r_REG_RX_CH_LEN2;
     BEGIN_BF_DECL(REG_AU_CFG_t, uint32_t);
         BF_FIELD(SHIFT, 16, 5);
         BF_FIELD(MODE, 8, 4);
         BF_FIELD(BYPASS, 1, 1);
         BF_FIELD(SIGNED, 0, 1);
     END_BF_DECL() r_REG_AU_CFG;
-    BEGIN_BF_DECL(REG_AU_REG0_t, uint32_t);
-    END_BF_DECL() r_REG_AU_REG0;
-    BEGIN_BF_DECL(REG_AU_REG1_t, uint32_t);
-    END_BF_DECL() r_REG_AU_REG1;
-    BEGIN_BF_DECL(REG_BINCU_TH_t, uint32_t);
-    END_BF_DECL() r_REG_BINCU_TH;
+    uint32_t r_REG_AU_REG0;
+    uint32_t r_REG_AU_REG1;
+    uint32_t r_REG_BINCU_TH;
     BEGIN_BF_DECL(REG_BINCU_CNT_t, uint32_t);
         BF_FIELD(EN, 31, 1);
         BF_FIELD(COUNT, 0, 20);
     END_BF_DECL() r_REG_BINCU_CNT;
-    BEGIN_BF_DECL(REG_BINCU_SETUP_t, uint32_t);
-    END_BF_DECL() r_REG_BINCU_SETUP;
-    BEGIN_BF_DECL(REG_BINCU_VAL_t, uint32_t);
-    END_BF_DECL() r_REG_BINCU_VAL;
-    BEGIN_BF_DECL(REG_FILT_t, uint32_t);
-    END_BF_DECL() r_REG_FILT;
+    uint32_t r_REG_BINCU_SETUP;
+    uint32_t r_REG_BINCU_VAL;
+    uint32_t r_REG_FILT;
     BEGIN_BF_DECL(REG_FILT_CMD_t, uint32_t);
         BF_FIELD(START, 0, 1);
     END_BF_DECL() r_REG_FILT_CMD;
@@ -119,29 +101,29 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
-    scc::sc_register<REG_TX_CH0_ADD_t> REG_TX_CH0_ADD;
+    scc::sc_register<uint32_t> REG_TX_CH0_ADD;
     scc::sc_register<REG_TX_CH0_CFG_t> REG_TX_CH0_CFG;
-    scc::sc_register<REG_TX_CH0_LEN0_t> REG_TX_CH0_LEN0;
-    scc::sc_register<REG_TX_CH0_LEN1_t> REG_TX_CH0_LEN1;
-    scc::sc_register<REG_TX_CH0_LEN2_t> REG_TX_CH0_LEN2;
-    scc::sc_register<REG_TX_CH1_ADD_t> REG_TX_CH1_ADD;
+    scc::sc_register<uint32_t> REG_TX_CH0_LEN0;
+    scc::sc_register<uint32_t> REG_TX_CH0_LEN1;
+    scc::sc_register<uint32_t> REG_TX_CH0_LEN2;
+    scc::sc_register<uint32_t> REG_TX_CH1_ADD;
     scc::sc_register<REG_TX_CH1_CFG_t> REG_TX_CH1_CFG;
-    scc::sc_register<REG_TX_CH1_LEN0_t> REG_TX_CH1_LEN0;
-    scc::sc_register<REG_TX_CH1_LEN1_t> REG_TX_CH1_LEN1;
-    scc::sc_register<REG_TX_CH1_LEN2_t> REG_TX_CH1_LEN2;
-    scc::sc_register<REG_RX_CH_ADD_t> REG_RX_CH_ADD;
+    scc::sc_register<uint32_t> REG_TX_CH1_LEN0;
+    scc::sc_register<uint32_t> REG_TX_CH1_LEN1;
+    scc::sc_register<uint32_t> REG_TX_CH1_LEN2;
+    scc::sc_register<uint32_t> REG_RX_CH_ADD;
     scc::sc_register<REG_RX_CH_CFG_t> REG_RX_CH_CFG;
-    scc::sc_register<REG_RX_CH_LEN0_t> REG_RX_CH_LEN0;
-    scc::sc_register<REG_RX_CH_LEN1_t> REG_RX_CH_LEN1;
-    scc::sc_register<REG_RX_CH_LEN2_t> REG_RX_CH_LEN2;
+    scc::sc_register<uint32_t> REG_RX_CH_LEN0;
+    scc::sc_register<uint32_t> REG_RX_CH_LEN1;
+    scc::sc_register<uint32_t> REG_RX_CH_LEN2;
     scc::sc_register<REG_AU_CFG_t> REG_AU_CFG;
-    scc::sc_register<REG_AU_REG0_t> REG_AU_REG0;
-    scc::sc_register<REG_AU_REG1_t> REG_AU_REG1;
-    scc::sc_register<REG_BINCU_TH_t> REG_BINCU_TH;
+    scc::sc_register<uint32_t> REG_AU_REG0;
+    scc::sc_register<uint32_t> REG_AU_REG1;
+    scc::sc_register<uint32_t> REG_BINCU_TH;
     scc::sc_register<REG_BINCU_CNT_t> REG_BINCU_CNT;
-    scc::sc_register<REG_BINCU_SETUP_t> REG_BINCU_SETUP;
-    scc::sc_register<REG_BINCU_VAL_t> REG_BINCU_VAL;
-    scc::sc_register<REG_FILT_t> REG_FILT;
+    scc::sc_register<uint32_t> REG_BINCU_SETUP;
+    scc::sc_register<uint32_t> REG_BINCU_VAL;
+    scc::sc_register<uint32_t> REG_FILT;
     scc::sc_register<REG_FILT_CMD_t> REG_FILT_CMD;
     scc::sc_register<REG_STATUS_t> REG_STATUS;
     

@@ -28,7 +28,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:59:06 CET 2022
+// Created on: Sun Feb 13 11:14:08 CET 2022
 //             *      gpio.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,63 +52,65 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
-    BEGIN_BF_DECL(PADDIR_00_31_t, uint32_t);
-    END_BF_DECL() r_PADDIR_00_31;
-    BEGIN_BF_DECL(GPIOEN_00_31_t, uint32_t);
-    END_BF_DECL() r_GPIOEN_00_31;
-    BEGIN_BF_DECL(PADIN_00_31_t, uint32_t);
-    END_BF_DECL() r_PADIN_00_31;
-    BEGIN_BF_DECL(PADOUT_00_31_t, uint32_t);
-    END_BF_DECL() r_PADOUT_00_31;
-    BEGIN_BF_DECL(PADOUTSET_00_31_t, uint32_t);
-    END_BF_DECL() r_PADOUTSET_00_31;
-    BEGIN_BF_DECL(PADOUTCLR_00_31_t, uint32_t);
-    END_BF_DECL() r_PADOUTCLR_00_31;
-    BEGIN_BF_DECL(INTEN_00_31_t, uint32_t);
-    END_BF_DECL() r_INTEN_00_31;
-    BEGIN_BF_DECL(INTTYPE_00_15_t, uint32_t);
-    END_BF_DECL() r_INTTYPE_00_15;
-    BEGIN_BF_DECL(INTTYPE_16_31_t, uint32_t);
-    END_BF_DECL() r_INTTYPE_16_31;
-    BEGIN_BF_DECL(INTSTATUS_00_31_t, uint32_t);
-    END_BF_DECL() r_INTSTATUS_00_31;
-    BEGIN_BF_DECL(PADCFG_00_07_t, uint32_t);
-    END_BF_DECL() r_PADCFG_00_07;
-    BEGIN_BF_DECL(PADCFG_08_15_t, uint32_t);
-    END_BF_DECL() r_PADCFG_08_15;
-    BEGIN_BF_DECL(PADCFG_16_23_t, uint32_t);
-    END_BF_DECL() r_PADCFG_16_23;
-    BEGIN_BF_DECL(PADCFG_24_31_t, uint32_t);
-    END_BF_DECL() r_PADCFG_24_31;
-    BEGIN_BF_DECL(PADDIR_32_63_t, uint32_t);
-    END_BF_DECL() r_PADDIR_32_63;
-    BEGIN_BF_DECL(GPIOEN_32_63_t, uint32_t);
-    END_BF_DECL() r_GPIOEN_32_63;
-    BEGIN_BF_DECL(PADIN_32_63_t, uint32_t);
-    END_BF_DECL() r_PADIN_32_63;
-    BEGIN_BF_DECL(PADOUT_32_63_t, uint32_t);
-    END_BF_DECL() r_PADOUT_32_63;
+    uint32_t r_PADDIR_00_31;
+    uint32_t r_GPIOEN_00_31;
+    uint32_t r_PADIN_00_31;
+    uint32_t r_PADOUT_00_31;
+    uint32_t r_PADOUTSET_00_31;
+    uint32_t r_PADOUTCLR_00_31;
+    uint32_t r_INTEN_00_31;
+    uint32_t r_INTTYPE_00_15;
+    uint32_t r_INTTYPE_16_31;
+    uint32_t r_INTSTATUS_00_31;
+    uint32_t r_PADCFG_00_07;
+    uint32_t r_PADCFG_08_15;
+    uint32_t r_PADCFG_16_23;
+    uint32_t r_PADCFG_24_31;
+    uint32_t r_PADDIR_32_63;
+    uint32_t r_GPIOEN_32_63;
+    uint32_t r_PADIN_32_63;
+    uint32_t r_PADOUT_32_63;
+    uint32_t r_PADOUTSET_32_63;
+    uint32_t r_PADOUTCLR_32_63;
+    uint32_t r_INTEN_32_63;
+    uint32_t r_INTTYPE_32_47;
+    uint32_t r_INTTYPE_48_63;
+    uint32_t r_INTSTATUS_32_63;
+    uint32_t r_PADCFG_32_39;
+    uint32_t r_PADCFG_40_47;
+    uint32_t r_PADCFG_48_55;
+    uint32_t r_PADCFG_56_63;
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
-    scc::sc_register<PADDIR_00_31_t> PADDIR_00_31;
-    scc::sc_register<GPIOEN_00_31_t> GPIOEN_00_31;
-    scc::sc_register<PADIN_00_31_t> PADIN_00_31;
-    scc::sc_register<PADOUT_00_31_t> PADOUT_00_31;
-    scc::sc_register<PADOUTSET_00_31_t> PADOUTSET_00_31;
-    scc::sc_register<PADOUTCLR_00_31_t> PADOUTCLR_00_31;
-    scc::sc_register<INTEN_00_31_t> INTEN_00_31;
-    scc::sc_register<INTTYPE_00_15_t> INTTYPE_00_15;
-    scc::sc_register<INTTYPE_16_31_t> INTTYPE_16_31;
-    scc::sc_register<INTSTATUS_00_31_t> INTSTATUS_00_31;
-    scc::sc_register<PADCFG_00_07_t> PADCFG_00_07;
-    scc::sc_register<PADCFG_08_15_t> PADCFG_08_15;
-    scc::sc_register<PADCFG_16_23_t> PADCFG_16_23;
-    scc::sc_register<PADCFG_24_31_t> PADCFG_24_31;
-    scc::sc_register<PADDIR_32_63_t> PADDIR_32_63;
-    scc::sc_register<GPIOEN_32_63_t> GPIOEN_32_63;
-    scc::sc_register<PADIN_32_63_t> PADIN_32_63;
-    scc::sc_register<PADOUT_32_63_t> PADOUT_32_63;
+    scc::sc_register<uint32_t> PADDIR_00_31;
+    scc::sc_register<uint32_t> GPIOEN_00_31;
+    scc::sc_register<uint32_t> PADIN_00_31;
+    scc::sc_register<uint32_t> PADOUT_00_31;
+    scc::sc_register<uint32_t> PADOUTSET_00_31;
+    scc::sc_register<uint32_t> PADOUTCLR_00_31;
+    scc::sc_register<uint32_t> INTEN_00_31;
+    scc::sc_register<uint32_t> INTTYPE_00_15;
+    scc::sc_register<uint32_t> INTTYPE_16_31;
+    scc::sc_register<uint32_t> INTSTATUS_00_31;
+    scc::sc_register<uint32_t> PADCFG_00_07;
+    scc::sc_register<uint32_t> PADCFG_08_15;
+    scc::sc_register<uint32_t> PADCFG_16_23;
+    scc::sc_register<uint32_t> PADCFG_24_31;
+    scc::sc_register<uint32_t> PADDIR_32_63;
+    scc::sc_register<uint32_t> GPIOEN_32_63;
+    scc::sc_register<uint32_t> PADIN_32_63;
+    scc::sc_register<uint32_t> PADOUT_32_63;
+    scc::sc_register<uint32_t> PADOUTSET_32_63;
+    scc::sc_register<uint32_t> PADOUTCLR_32_63;
+    scc::sc_register<uint32_t> INTEN_32_63;
+    scc::sc_register<uint32_t> INTTYPE_32_47;
+    scc::sc_register<uint32_t> INTTYPE_48_63;
+    scc::sc_register<uint32_t> INTSTATUS_32_63;
+    scc::sc_register<uint32_t> PADCFG_32_39;
+    scc::sc_register<uint32_t> PADCFG_40_47;
+    scc::sc_register<uint32_t> PADCFG_48_55;
+    scc::sc_register<uint32_t> PADCFG_56_63;
     
     gpio_regs(sc_core::sc_module_name nm);
 
@@ -141,6 +143,16 @@ inline pulpissimo::gen::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
 , NAMED(GPIOEN_32_63, r_GPIOEN_32_63, 0, *this)
 , NAMED(PADIN_32_63, r_PADIN_32_63, 0, *this)
 , NAMED(PADOUT_32_63, r_PADOUT_32_63, 0, *this)
+, NAMED(PADOUTSET_32_63, r_PADOUTSET_32_63, 0, *this)
+, NAMED(PADOUTCLR_32_63, r_PADOUTCLR_32_63, 0, *this)
+, NAMED(INTEN_32_63, r_INTEN_32_63, 0, *this)
+, NAMED(INTTYPE_32_47, r_INTTYPE_32_47, 0, *this)
+, NAMED(INTTYPE_48_63, r_INTTYPE_48_63, 0, *this)
+, NAMED(INTSTATUS_32_63, r_INTSTATUS_32_63, 0, *this)
+, NAMED(PADCFG_32_39, r_PADCFG_32_39, 0, *this)
+, NAMED(PADCFG_40_47, r_PADCFG_40_47, 0, *this)
+, NAMED(PADCFG_48_55, r_PADCFG_48_55, 0, *this)
+, NAMED(PADCFG_56_63, r_PADCFG_56_63, 0, *this)
 {
 }
 
@@ -164,6 +176,16 @@ inline void pulpissimo::gen::gpio_regs::registerResources(scc::tlm_target<BUSWID
     target.addResource(GPIOEN_32_63, 0x3cUL);
     target.addResource(PADIN_32_63, 0x40UL);
     target.addResource(PADOUT_32_63, 0x44UL);
+    target.addResource(PADOUTSET_32_63, 0x48UL);
+    target.addResource(PADOUTCLR_32_63, 0x4cUL);
+    target.addResource(INTEN_32_63, 0x50UL);
+    target.addResource(INTTYPE_32_47, 0x54UL);
+    target.addResource(INTTYPE_48_63, 0x58UL);
+    target.addResource(INTSTATUS_32_63, 0x5cUL);
+    target.addResource(PADCFG_32_39, 0x60UL);
+    target.addResource(PADCFG_40_47, 0x64UL);
+    target.addResource(PADCFG_48_55, 0x68UL);
+    target.addResource(PADCFG_56_63, 0x6cUL);
 }
 
 #endif // _PULPISSIMO_GEN_GPIO_H_

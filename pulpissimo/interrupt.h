@@ -9,8 +9,8 @@ class interrupt_regs;
 
 class interrupt : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-    sc_core::sc_in<sc_core::sc_time> clk_i;
-    sc_core::sc_in<bool> rst_i;
+    sc_core::sc_in<sc_core::sc_time> clk_i{"clk_i"};
+    sc_core::sc_in<bool> rst_i{"rst_i"};
     interrupt(sc_core::sc_module_name nm);
     virtual ~interrupt() override;
 

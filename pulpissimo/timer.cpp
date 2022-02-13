@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2022 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2022 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,8 +15,6 @@ SC_HAS_PROCESS(timer);// NOLINT
 timer::timer(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , scc::tlm_target<>(clk)
-, NAMED(clk_i)
-, NAMED(rst_i)
 , NAMEDD(regs, gen::timer_regs) {
     regs->registerResources(*this);
     SC_METHOD(clock_cb);

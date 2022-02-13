@@ -28,7 +28,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:59:06 CET 2022
+// Created on: Sun Feb 13 11:14:08 CET 2022
 //             *      interrupt.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,21 +52,17 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
-    BEGIN_BF_DECL(MASK_t, uint32_t);
-    END_BF_DECL() r_MASK;
-    BEGIN_BF_DECL(INT_t, uint32_t);
-    END_BF_DECL() r_INT;
-    BEGIN_BF_DECL(ACK_t, uint32_t);
-    END_BF_DECL() r_ACK;
-    BEGIN_BF_DECL(FIFO_DATA_t, uint32_t);
-    END_BF_DECL() r_FIFO_DATA;
+    uint32_t r_MASK;
+    uint32_t r_INT;
+    uint32_t r_ACK;
+    uint32_t r_FIFO_DATA;
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
-    scc::sc_register<MASK_t> MASK;
-    scc::sc_register<INT_t> INT;
-    scc::sc_register<ACK_t> ACK;
-    scc::sc_register<FIFO_DATA_t> FIFO_DATA;
+    scc::sc_register<uint32_t> MASK;
+    scc::sc_register<uint32_t> INT;
+    scc::sc_register<uint32_t> ACK;
+    scc::sc_register<uint32_t> FIFO_DATA;
     
     interrupt_regs(sc_core::sc_module_name nm);
 

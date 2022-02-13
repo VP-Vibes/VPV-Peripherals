@@ -28,7 +28,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Created on: Sun Feb 13 08:59:06 CET 2022
+// Created on: Sun Feb 13 11:14:08 CET 2022
 //             *      timer.h Author: <RDL Generator>
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,39 +52,29 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
-    BEGIN_BF_DECL(CFG_LO_t, uint32_t);
-    END_BF_DECL() r_CFG_LO;
-    BEGIN_BF_DECL(CFG_HI_t, uint32_t);
-    END_BF_DECL() r_CFG_HI;
-    BEGIN_BF_DECL(CNT_LO_t, uint32_t);
-    END_BF_DECL() r_CNT_LO;
-    BEGIN_BF_DECL(CNT_HI_t, uint32_t);
-    END_BF_DECL() r_CNT_HI;
-    BEGIN_BF_DECL(CMP_LO_t, uint32_t);
-    END_BF_DECL() r_CMP_LO;
-    BEGIN_BF_DECL(CMP_HI_t, uint32_t);
-    END_BF_DECL() r_CMP_HI;
-    BEGIN_BF_DECL(START_LO_t, uint32_t);
-    END_BF_DECL() r_START_LO;
-    BEGIN_BF_DECL(START_HI_t, uint32_t);
-    END_BF_DECL() r_START_HI;
-    BEGIN_BF_DECL(RESET_LO_t, uint32_t);
-    END_BF_DECL() r_RESET_LO;
-    BEGIN_BF_DECL(RESET_HI_t, uint32_t);
-    END_BF_DECL() r_RESET_HI;
+    uint32_t r_CFG_LO;
+    uint32_t r_CFG_HI;
+    uint32_t r_CNT_LO;
+    uint32_t r_CNT_HI;
+    uint32_t r_CMP_LO;
+    uint32_t r_CMP_HI;
+    uint32_t r_START_LO;
+    uint32_t r_START_HI;
+    uint32_t r_RESET_LO;
+    uint32_t r_RESET_HI;
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
-    scc::sc_register<CFG_LO_t> CFG_LO;
-    scc::sc_register<CFG_HI_t> CFG_HI;
-    scc::sc_register<CNT_LO_t> CNT_LO;
-    scc::sc_register<CNT_HI_t> CNT_HI;
-    scc::sc_register<CMP_LO_t> CMP_LO;
-    scc::sc_register<CMP_HI_t> CMP_HI;
-    scc::sc_register<START_LO_t> START_LO;
-    scc::sc_register<START_HI_t> START_HI;
-    scc::sc_register<RESET_LO_t> RESET_LO;
-    scc::sc_register<RESET_HI_t> RESET_HI;
+    scc::sc_register<uint32_t> CFG_LO;
+    scc::sc_register<uint32_t> CFG_HI;
+    scc::sc_register<uint32_t> CNT_LO;
+    scc::sc_register<uint32_t> CNT_HI;
+    scc::sc_register<uint32_t> CMP_LO;
+    scc::sc_register<uint32_t> CMP_HI;
+    scc::sc_register<uint32_t> START_LO;
+    scc::sc_register<uint32_t> START_HI;
+    scc::sc_register<uint32_t> RESET_LO;
+    scc::sc_register<uint32_t> RESET_HI;
     
     timer_regs(sc_core::sc_module_name nm);
 

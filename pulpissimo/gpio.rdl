@@ -92,4 +92,54 @@ regfile gpio {
         desc = "GPIO pad output value register.";
         regwidth=32;
     } PADOUT_32_63 @0x44;
+    reg {
+        name = "PADOUTSET_32_63";
+        desc = "GPIO pad output set register.";
+        regwidth=32;
+    } PADOUTSET_32_63 @0x48;
+    reg {
+        name = "PADOUTCLR_32_63";
+        desc = "GPIO pad output clear register.";
+        regwidth=32;
+    } PADOUTCLR_32_63 @0x4c;
+    reg {
+        name = "INTEN_32_63";
+        desc = "GPIO pad interrupt enable configuration register.";
+        regwidth=32;
+    } INTEN_32_63 @0x50;
+    reg {
+        name = "INTTYPE_32_47";
+        desc = "GPIO pad interrupt type gpio 32 to 47 register.";
+        regwidth=32;
+    } INTTYPE_32_47 @0x54;
+    reg {
+        name = "INTTYPE_48_63";
+        desc = "GPIO pad interrupt type gpio 48 to 63 register.";
+        regwidth=32;
+    } INTTYPE_48_63 @0x58;
+    reg {
+        name = "INTSTATUS_32_63";
+        desc = "GPIO pad interrupt status register.";
+        regwidth=32;
+    } INTSTATUS_32_63 @0x5c;
+    reg {
+        name = "PADCFG_32_39";
+        desc = "GPIO pad pin 32 to 39 configuration register.";
+        regwidth=32;
+    } PADCFG_32_39 @0x60;
+    reg {
+        name = "PADCFG_40_47";
+        desc = "GPIO pad pin 40 to 47 configuration register.";
+        regwidth=32;
+    } PADCFG_40_47 @0x64;
+    reg {
+        name = "PADCFG_48_55";
+        desc = "GPIO pad pin 48 to 55 configuration register.";
+        regwidth=32;
+    } PADCFG_48_55 @0x68;
+    reg {
+        name = "PADCFG_56_63";
+        desc = "GPIO pad pin 56 to 63 configuration register.";
+        regwidth=32;
+    } PADCFG_56_63 @0x6c;
 };
