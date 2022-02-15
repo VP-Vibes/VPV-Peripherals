@@ -13,3 +13,4 @@
 #include "pulpissimo/timer.h"
 #include "pulpissimo/udma.h"
 #include "pulpissimo/soc_ctrl.h"
+#include "pulpissimo/soc_event.h"

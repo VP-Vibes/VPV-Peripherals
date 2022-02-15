@@ -46,6 +46,7 @@ regfile adv_timer {
         name = "T0_COUNTER";
         desc = "ADV_TIMER0 counter register.";
         regwidth=32;
+        sw=r;
     } T0_COUNTER @0x2C;
     reg {
         name = "T1_CMD";
@@ -86,6 +87,7 @@ regfile adv_timer {
         name = "T1_COUNTER";
         desc = "ADV_TIMER1 counter register.";
         regwidth=32;
+        sw=r;
     } T1_COUNTER @0x6C;
     reg {
         name = "T2_CMD";
@@ -126,6 +128,7 @@ regfile adv_timer {
         name = "T2_COUNTER";
         desc = "ADV_TIMER2 counter register.";
         regwidth=32;
+        sw=r;
     } T2_COUNTER @0xAC;
     reg {
         name = "T3_CMD";
@@ -166,6 +169,7 @@ regfile adv_timer {
         name = "T3_COUNTER";
         desc = "ADV_TIMER3 counter register.";
         regwidth=32;
+        sw=r;
     } T3_COUNTER @0xEC;
     reg {
         name = "EVENT_CFG";

@@ -31,6 +31,8 @@ gpio::gpio(sc_core::sc_module_name nm)
 
     auto ro_wr_cb = [this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time t)-> bool {return true;};
 
+    regs->PADIN_00_31.set_write_cb(ro_wr_cb);
+    regs->PADIN_32_63.set_write_cb(ro_wr_cb);
     regs->PADOUT_00_31.set_write_cb([this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time t)-> bool {
         for(auto i=0u, m=1u; i<32; ++i, m<<=1)
             out[i].write(v&m);

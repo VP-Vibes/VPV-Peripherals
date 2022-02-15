@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 //=============================================================================
-// Pulpissimo FLL Registers
+// Pulpissimo SoC Control Registers
 //=============================================================================
 regfile soc_ctrl {
     reg {
@@ -17,6 +17,7 @@ regfile soc_ctrl {
         field {
           name = "NumOfCluster";  
         } NumOfCluster[15:0]= 0;
+        sw=r;
     } INFO @0x0;
     reg {
         name = "BOOT_ADR";
@@ -29,6 +30,7 @@ regfile soc_ctrl {
         field {
           name = "E";  
         } E[0:0]= 1;
+        sw=r;
     } FETCH_ENABLE @0x8;
     reg {
         name = "PAD_MUX";
@@ -47,6 +49,7 @@ regfile soc_ctrl {
     reg {
         name = "CORE_STATUS";
         regwidth=32;
+        sw=r;
     } CORE_STATUS = 0x1 @0xc0;
     reg {
         name = "FLL_CLOCK_SELECT";
@@ -54,6 +57,7 @@ regfile soc_ctrl {
         field {
           name = "S";  
         } S[0:0]= 1;
+        sw=r;
     } FLL_CLOCK_SELECT @0xc8;
     
 };

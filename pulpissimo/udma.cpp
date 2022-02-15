@@ -21,6 +21,9 @@ udma::udma(sc_core::sc_module_name nm)
     sensitive << clk_i;
     SC_METHOD(reset_cb);
     sensitive << rst_i;
+    regs->i_uart.STATUS.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t)-> bool {return true;});
+    regs->i_uart.VALID.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t)-> bool {return true;});
+    regs->i_uart.DATA.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t)-> bool {return true;});
 }
 
 udma::~udma() {} // NOLINT

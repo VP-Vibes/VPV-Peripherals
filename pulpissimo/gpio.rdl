@@ -21,6 +21,7 @@ regfile gpio {
         name = "PADIN_00_31";
         desc = "GPIO pad input value register.";
         regwidth=32;
+        sw=r;
     } PADIN_00_31 @0x8;
     reg {
         name = "PADOUT_00_31";
@@ -56,6 +57,7 @@ regfile gpio {
         name = "INTSTATUS_00_31";
         desc = "GPIO pad interrupt status register.";
         regwidth=32;
+        sw=r;
     } INTSTATUS_00_31 @0x24;
     reg {
         name = "PADCFG_00_07";
@@ -91,6 +93,7 @@ regfile gpio {
         name = "PADIN_32_63";
         desc = "GPIO pad input value register.";
         regwidth=32;
+        sw=r;
     } PADIN_32_63 @0x40;
     reg {
         name = "PADOUT_32_63";
@@ -126,6 +129,7 @@ regfile gpio {
         name = "INTSTATUS_32_63";
         desc = "GPIO pad interrupt status register.";
         regwidth=32;
+        sw=r;
     } INTSTATUS_32_63 @0x5c;
     reg {
         name = "PADCFG_32_39";

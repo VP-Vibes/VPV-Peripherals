@@ -161,6 +161,7 @@ regfile udma {
     		field {
     			name="TX_BUSY";
     		} TX_BUSY[0:0] = 0'h0;
+        	sw=r;
     	} STATUS @0x20;
     	reg {
     		name = "SETUP";
@@ -220,6 +221,7 @@ regfile udma {
     		field {
     			name="READY";
     		} READY[0:0] = 0'h0;
+	        sw=r;
     	} VALID @0x30;
     	reg {
     		name = "DATA";
@@ -228,6 +230,7 @@ regfile udma {
     		field {
     			name="DATA";
     		} READY[7:0] = 0'h0;
+        	sw=r;
     	} DATA @0x34;
 	} uart @0x80;
     //=============================================================================

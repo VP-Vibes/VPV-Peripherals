@@ -46,5 +46,6 @@ regfile interrupt {
         name = "FIFO_DATA";
         desc = "";
         regwidth=32;
+        sw=r;
     } FIFO_DATA @0x24;
 };

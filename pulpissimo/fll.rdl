@@ -14,6 +14,7 @@ regfile fll {
         field {
           name = "MF";  
         } MF[15:0]= 0;
+        sw=r;
     } STATUS @0x0;
     reg {
         name = "CFG1";
