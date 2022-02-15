@@ -18,10 +18,30 @@ regfile interrupt {
         regwidth=32;
     } INT @0x0C;
     reg {
+        name = "INT_SET";
+        desc = "";
+        regwidth=32;
+    } INT_SET @0x010;
+    reg {
+        name = "INT_CLR";
+        desc = "";
+        regwidth=32;
+    } INT_CLR @0x014;
+    reg {
         name = "ACK";
         desc = "";
         regwidth=32;
     } ACK @0x18;
+    reg {
+        name = "ACK_SET";
+        desc = "";
+        regwidth=32;
+    } ACK_SET @0x1C;
+    reg {
+        name = "ACK_CLR";
+        desc = "";
+        regwidth=32;
+    } ACK_CLR @0x20;
     reg {
         name = "FIFO_DATA";
         desc = "";
