@@ -16,6 +16,7 @@ add_library(${PROJECT_NAME}_pulpissimo
   timer.cpp
   udma.cpp
   soc_ctrl.cpp
+  soc_event.cpp
 )
 target_include_directories(${PROJECT_NAME}_pulpissimo PUBLIC ${vpvper_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME}_pulpissimo PUBLIC scc)
