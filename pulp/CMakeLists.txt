@@ -16,18 +16,10 @@ if(PULP_EXPERIMENTAL)
   target_include_directories(${PROJECT_NAME}_pulpino PUBLIC ${CMAKE_CURRENT_LIST_DIR})
   target_link_libraries(${PROJECT_NAME}_pulpino PUBLIC scc)
   target_link_libraries(${PROJECT_NAME}_pulpino PRIVATE Boost::filesystem Boost::iostreams)
-  set_target_properties(${PROJECT_NAME}_pulpino PROPERTIES
-  	VERSION ${PROJECT_VERSION}
-  	FRAMEWORK FALSE
-  	PUBLIC_HEADER "${PulpHeaders}" # specify the public headers
-  )
 else()
   add_library(${PROJECT_NAME}_pulpino INTERFACE)
   target_include_directories(${PROJECT_NAME}_pulpino INTERFACE ${vpvper_SOURCE_DIR})
   target_link_libraries(${PROJECT_NAME}_pulpino INTERFACE scc)
-  set_target_properties(${PROJECT_NAME}_pulpino PROPERTIES
-    PUBLIC_HEADER "${PulpinoHeaders}" # specify the public headers
-  )
 endif()
 
 set_target_properties(${PROJECT_NAME}_pulpino PROPERTIES
