@@ -20,9 +20,9 @@ add_library(${PROJECT_NAME}_pulpissimo
 )
 target_include_directories(${PROJECT_NAME}_pulpissimo PUBLIC ${vpvper_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME}_pulpissimo PUBLIC scc)
-FILE(GLOB SccPulpHeaders ${CMAKE_CURRENT_SOURCE_DIR}/pulp/scc/*.h ${CMAKE_CURRENT_SOURCE_DIR}/pulp/scc/gen/*.h)
-set_target_properties(${PROJECT_NAME}_pulp PROPERTIES
+FILE(GLOB SccPulpHeaders ${CMAKE_CURRENT_SOURCE_DIR}/pulp/scc/*.h ${CMAKE_CURRENT_SOURCE_DIR}/pulp/scc/gen/*.h) #FIXME: this glob does not do anything?
+set_target_properties(${PROJECT_NAME}_pulpissimo PROPERTIES
   VERSION ${PROJECT_VERSION}
   FRAMEWORK FALSE
-  PUBLIC_HEADER "${PulpHeaders}" # specify the public headers
+  PUBLIC_HEADER "${SccPulpHeaders}" # specify the public headers
 )

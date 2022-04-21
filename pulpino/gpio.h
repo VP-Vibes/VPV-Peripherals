@@ -3,15 +3,15 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
- 
-#ifndef __VPVPER_PULP_GPIO_H__
-#define __VPVPER_PULP_GPIO_H__
+
+#ifndef __VPVPER_PULPINO_GPIO_H__
+#define __VPVPER_PULPINO_GPIO_H__
 
 #include "scc/tlm_target_bfs.h"
 #include "scc/tlm_target_bfs_register_base.h"
 
 namespace vpvper {
-namespace pulp {
+namespace pulpino {
 
 /////////////////////////////////////////////////////////////////////////////
 /// \class GPIORegs
@@ -85,7 +85,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
   /// \brief Constructor
   GPIO(
-    sc_core::sc_module_name name, 
+    sc_core::sc_module_name name,
     scc::tlm_target_bfs_params&& params,
     owner_t* owner = nullptr);
 
@@ -192,7 +192,7 @@ void GPIO<owner_t>::intstatus_cb(void) {
   (*bfs_t::irq_out_)[0] = *intstatus;
 }
 
-} // namespace pulp
+} // namespace pulpino
 } // namespace vpvper
 
-#endif // __VPVPER_PULP_GPIO_H__
+#endif // __VPVPER_PULPINO_GPIO_H__

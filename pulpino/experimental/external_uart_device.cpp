@@ -18,12 +18,12 @@
 #include <iostream>
 
 namespace vpvper {
-namespace pulp {
+namespace pulpino {
 
 ////////////////////////////////////////////////////////////////////////////////
 /// base (=stdio)
 ExternalUARTDevice::ExternalUARTDevice(sc_core::sc_module_name name, sc_core::sc_time scan_period)
-  : sc_core::sc_module{name} 
+  : sc_core::sc_module{name}
   , scan_period_(scan_period)
 {
   sock_t_.register_b_transport(this, &ExternalUARTDevice::b_transport);
@@ -61,9 +61,9 @@ int ExternalUARTDevice::write(unsigned char* ptr) {
 ////////////////////////////////////////////////////////////////////////////////
 /// named pipe based
 ExternalUARTDeviceFileStream::ExternalUARTDeviceFileStream(
-  sc_core::sc_module_name name, 
-  sc_core::sc_time scan_period, 
-  const std::string& out_fpath, 
+  sc_core::sc_module_name name,
+  sc_core::sc_time scan_period,
+  const std::string& out_fpath,
   const std::string& in_fpath,
   bool is_named_pipe)
   : ExternalUARTDevice(name, scan_period)
@@ -75,7 +75,7 @@ ExternalUARTDeviceFileStream::ExternalUARTDeviceFileStream(
   using src = boost::iostreams::file_descriptor_source;
   using sink = boost::iostreams::file_descriptor_sink;
   int fd_in, fd_out;
-  
+
   if (is_named_pipe_) {
     struct stat attribut;
     // open output named pipe, if pipe is already created this is not an error - use it
@@ -140,7 +140,7 @@ ExternalUARTDeviceFileStream::ExternalUARTDeviceFileStream(
   h_stream_in_ = std::make_shared< io::stream_buffer<src> > (
     src(fd_in, io::file_descriptor_flags::close_handle)
   );
-  
+
 }
 
 int ExternalUARTDeviceFileStream::read(unsigned char* ptr) {
@@ -151,7 +151,7 @@ int ExternalUARTDeviceFileStream::read(unsigned char* ptr) {
   gp.set_data_ptr(&event);
   gp.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
   gp.set_data_length(1);
-  
+
   if(!inbuf_.empty()){
     *ptr = inbuf_[0];
     inbuf_.erase(inbuf_.begin());
@@ -176,7 +176,7 @@ int ExternalUARTDeviceFileStream::write(unsigned char* ptr) {
 
 void ExternalUARTDeviceFileStream::sense_input(void) {
   namespace io = boost::iostreams;
-  
+
   std::istream in (h_stream_in_.get());
   unsigned char event = 1;
   tlm::tlm_generic_payload gp{};
@@ -195,7 +195,7 @@ void ExternalUARTDeviceFileStream::sense_input(void) {
     }
     return (fds.revents & POLLIN);
   };
-  
+
   while(1) {
     sc_core::wait(scan_period_);
     if(can_read()) {
@@ -205,7 +205,7 @@ void ExternalUARTDeviceFileStream::sense_input(void) {
         vec_in_stream_ << line << std::flush;
         sock_i_->b_transport(gp, delay);
       }
-    } 
+    }
   }
 }
 

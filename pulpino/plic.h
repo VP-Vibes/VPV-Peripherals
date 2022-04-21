@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef __VPVPER_PULP_PLIC_H__
-#define __VPVPER_PULP_PLIC_H__
+#ifndef __VPVPER_PULPINO_PLIC_H__
+#define __VPVPER_PULPINO_PLIC_H__
 
 #include "scc/tlm_target_bfs.h"
 #include "scc/tlm_target_bfs_register_base.h"
@@ -18,7 +18,7 @@
 #endif
 
 namespace vpvper {
-namespace pulp {
+namespace pulpino {
 
 /////////////////////////////////////////////////////////////////////////////
 /// \class PlicRegs
@@ -128,7 +128,7 @@ public:
     {getRegister("CLAIM-COMPLETE_CTX2"),"CC_CTX2", 0, 32, "plic.ctx2.cc"},
     {getRegister("CLAIM-COMPLETE_CTX3"),"CC_CTX3", 0, 32, "plic.ctx3.cc"},
   }}; ///< Plic register bitfields
-  
+
   /////////////////////////////////////////////////////////////////////////////
   /// \brief Constructor
   PlicRegs(sc_core::sc_module_name name) : scc::tlm_target_bfs_register_base<PlicRegs>{name} {}
@@ -154,38 +154,38 @@ protected:
   public:
     uint32_t set_{0};
       ///< calculated level/edge senstive input sources, a '1' bit signals a new pending interrupt line state
-    uint32_t ia_{0};  
+    uint32_t ia_{0};
       ///< calculated active (already registered by gateway) interrupt input lines
     const uint32_t le_cfg_;
       ///< level (0) / edge (1) sensitive interrupt input mask
     scc::bitfield<uint32_t>& ip_;
       ///< pending interrupt register (from Plic)
-    
-  public:  
-    ////////////////////////////////////////////////////////////////////////////////  
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief source process
     virtual void source(std::array<sc_core::sc_in<bool>, N_SOURCE>& srcs_i);
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief claim process
     void claim(const uint32_t claim_flags);
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief complete process
     void complete(const uint32_t complete_flags);
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief Reset method
     void reset(void){
       set_ = 0;
       ia_ = 0;
     }
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief Constructor
     Plic_gateway(
       scc::bitfield<uint32_t>& ip,
-      const uint32_t le_cfg = 0x00000000) 
+      const uint32_t le_cfg = 0x00000000)
       : le_cfg_(le_cfg)
       , ip_(ip) { }
 
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief Destructor
     virtual ~Plic_gateway(){}
   };
@@ -207,36 +207,36 @@ protected:
       ///< input interrupt priorities
 
   public:
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief Get Id of active interrupt line
     uint32_t get_activeId(void) const {return(id_);}
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief process current state and return whether an interrupt has to be signaled to target
     ///\details can called in a synchronous (clocked) or an event-based scan method
     bool process(void);
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief Reset method
     void reset(void) { }
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief Constructor
     Plic_target(
       scc::bitfield<uint32_t>& ip,
       scc::bitfield<uint32_t>& ie,
       scc::bitfield<uint32_t>& pth,
-      std::array<scc::bitfield<uint32_t>*, N_SOURCE>& prios) 
+      std::array<scc::bitfield<uint32_t>*, N_SOURCE>& prios)
       : ip_(ip)
       , ie_(ie)
       , pth_(pth)
       , prios_(prios) { }
-    ////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////////
     ///\brief Destructor
     virtual ~Plic_target(){}
   };
 
 public:
-  std::unique_ptr<Plic_gateway> gw_;   
+  std::unique_ptr<Plic_gateway> gw_;
     ///< gateway: scans input lines and sets pendings
-  std::array<std::unique_ptr<Plic_target> , N_TARGET> targets_; 
+  std::array<std::unique_ptr<Plic_target> , N_TARGET> targets_;
     ///< target: sorts pendings by prio and routes to context, e.g. hart0:M
   std::array<scc::bitfield<uint32_t>*, N_LINEREGS> ips_{};
     ///< input interrupt pending register fields
@@ -251,15 +251,15 @@ public:
     ///< more than the active interrupt can be completed with one write (for each context one field)
   std::array<sc_core::sc_in<bool>, N_SOURCE> irq_srcs_i_{};
     ///< input interrupt source lines
-public:    
+public:
   ////////////////////////////////////////////////////////////////////////////////
-  ///\brief Constructor 
+  ///\brief Constructor
   Plic(sc_core::sc_module_name name, scc::tlm_target_bfs_params&& params, owner_t* owner = nullptr);
   ////////////////////////////////////////////////////////////////////////////////
   ///\brief Destructor
   virtual ~Plic(void) {}
   ////////////////////////////////////////////////////////////////////////////////
-  ///\brief reset method 
+  ///\brief reset method
   void reset(void) {}
   ////////////////////////////////////////////////////////////////////////////////
   ///\brief Scan interrupt lines and invoke gateway and target processors
@@ -383,7 +383,7 @@ inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core:
       SC_REPORT_INFO(ID_PLIC, MSG.c_str());
     });
   }
-  
+
   SC_METHOD(scan_int_lines);
   for(auto& irq: irq_srcs_i_)
     bfs_t::sensitive << irq;
@@ -391,12 +391,12 @@ inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core:
 
 template<typename owner_t, size_t N_TARGET, size_t N_SOURCE, uint32_t LE_SRC_MASK, size_t N_LINEREGS>
 void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::scan_int_lines(void) {
-  
+
 #ifdef DEBUG_BUILD
   std::cout << "\nirq_in: ";
   for(size_t i = 0; i< N_SOURCE; ++i)
     std::cout << irq_srcs_i_[i].read();
-  
+
   std::cout << "\n(0)" << std::hex << "set:" << gw_->set_ << "|ia:" << gw_->ia_ << "|ip:" << gw_->ip_.get() << std::endl;
 #endif
 
@@ -419,7 +419,7 @@ void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::scan_int_lines(
       (*bfs_t::irq_out_)[i] = 0;
     }
   }
-  
+
   /* make an empty complete: this sets active interrupts, thus blocks unclaimed pending interrupts to be fired again*/
   gw_->complete(0);
 #ifdef DEBUG_BUILD
@@ -484,7 +484,7 @@ inline void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gat
   ia_ = _ia;
 }
 
-} // namespace pulp
+} // namespace pulpino
 } // namespace vpvper
 
-#endif //__VPVPER_PULP_PLIC_H__
+#endif //__VPVPER_PULPINO_PLIC_H__
