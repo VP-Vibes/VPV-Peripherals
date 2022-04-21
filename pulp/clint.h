@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef __VPVPER_PULP_CLINT_H__
-#define __VPVPER_PULP_CLINT_H__
+#ifndef __VPVPER_PULPINO_CLINT_H__
+#define __VPVPER_PULPINO_CLINT_H__
 
 #include "scc/tlm_target_bfs.h"
 #include "scc/tlm_target_bfs_register_base.h"
@@ -13,7 +13,7 @@
 #include <queue>
 
 namespace vpvper {
-namespace pulp {
+namespace pulpino {
 
 /////////////////////////////////////////////////////////////////////////////
 /// \class ClintRegs
@@ -26,7 +26,7 @@ public:
     {"MTIMELO",     0xBFF8}, // Timer (count) register low word  ( 31:0 )
     {"MTIMEHI",     (0xBFF8 +4)} // Timer (count) register high word ( 63:32 )
   }}; ///< Clint registers
-  
+
   std::array<scc::bitfield<uint32_t>, 5> bitfields{{
     {getRegister("MSIP"),"MSIP", 0, 1,"clint.MSIP"},
     {getRegister("MTIMECMPLO"), "MTIMECMPLO", 0, 32, "clint.MTIMECMPLO"},
@@ -34,7 +34,7 @@ public:
     {getRegister("MTIMELO"),    "MTIMELO", 0, 32, "clint.MTIMELO"},
     {getRegister("MTIMEHI"),    "MTIMEHI", 0, 32, "clint.MTIMEHI"}
   }}; ///< Clint register bitfields
-  
+
   /////////////////////////////////////////////////////////////////////////////
   /// \brief Constructor
   ClintRegs(sc_core::sc_module_name name) : tlm_target_bfs_register_base<ClintRegs>{name} {};
@@ -42,7 +42,7 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////
 /// \class Clint
-/// \brief RISC-V Core-local Interrupt Controller (CLINT). 
+/// \brief RISC-V Core-local Interrupt Controller (CLINT).
 /// \details A RISC-V privilege spec. 1.11 compatible CLINT (Adapted from Pulp Ariane CLINT: https://github.com/pulp-platform/ariane/tree/master/src/clint)
 template <typename owner_t>
 class Clint : public scc::tlm_target_bfs<ClintRegs, owner_t> {
@@ -60,16 +60,16 @@ public:
   /////////////////////////////////////////////////////////////////////////////
   /// \brief Constructor
   Clint(
-    sc_core::sc_module_name name, 
-    scc::tlm_target_bfs_params&& params, 
-    owner_t* owner = nullptr, 
+    sc_core::sc_module_name name,
+    scc::tlm_target_bfs_params&& params,
+    owner_t* owner = nullptr,
     uint64_t rtcPeriod_ps = 30517578 /*f~32.768kHz*/);
-  ////////////////////////////////////////////////////////////////////////////////  
+  ////////////////////////////////////////////////////////////////////////////////
   ///\brief Destructor
   virtual ~Clint(void) {}
 protected:
   scc::bitfield<uint32_t>& msip_{bfs_t::regs->getBitfield("MSIP", "MSIP", "clint.MSIP")};
-  scc::bitfield<uint32_t>& mtimecmplo_{bfs_t::regs->getBitfield("MTIMECMPLO", "MTIMECMPLO", "clint.MTIMECMPLO")}; 
+  scc::bitfield<uint32_t>& mtimecmplo_{bfs_t::regs->getBitfield("MTIMECMPLO", "MTIMECMPLO", "clint.MTIMECMPLO")};
   scc::bitfield<uint32_t>& mtimecmphi_{bfs_t::regs->getBitfield("MTIMECMPHI", "MTIMECMPHI", "clint.MTIMECMPHI")};
   scc::bitfield<uint32_t>& mtimelo_{bfs_t::regs->getBitfield("MTIMELO", "MTIMELO", "clint.MTIMELO")};
   scc::bitfield<uint32_t>& mtimehi_{bfs_t::regs->getBitfield("MTIMEHI", "MTIMEHI", "clint.MTIMEHI")};
@@ -94,7 +94,7 @@ private:
 
 template <class owner_t>
 inline Clint<owner_t>::Clint(
-  sc_core::sc_module_name name, 
+  sc_core::sc_module_name name,
   scc::tlm_target_bfs_params&& params,
   owner_t* owner,
   uint64_t rtcPeriod_ps)
@@ -176,13 +176,13 @@ inline Clint<owner_t>::Clint(
   mtimelo_.setReadCallback([this](auto&&) {
     sc_core::sc_time _passed_time = (sc_core::sc_time_stamp() - sct_wait_entry_);
     return(get_act_mtime(_passed_time));
-  }); 
+  });
 
   mtimehi_.setReadCallback([this](auto&&) {
     sc_core::sc_time _passed_time = (sc_core::sc_time_stamp() - sct_wait_entry_);
     return((get_act_mtime(_passed_time)) >> 32);
-  }); 
-  
+  });
+
   SC_THREAD(rtc_process);
 }
 
@@ -203,10 +203,10 @@ void Clint<owner_t>::rtc_process(void) {
   while (true) {
     sct_wait_entry_ = sc_core::sc_time_stamp();
     wait(_sc_time_wait, rtc_event_);
-    
+
     uint64_t _ctr = uint64_t(mtimelo_) | (uint64_t(mtimehi_) << 32);
     uint64_t _cmp = uint64_t(mtimecmplo_) | (uint64_t(mtimecmphi_) << 32);
-    
+
     if(rtc_event_q_.empty()){ // timer event ->
       // clean timer event -> make out whether compare or overflow
       if(_ctr < _cmp){
@@ -257,7 +257,7 @@ uint64_t Clint<owner_t>::get_act_mtime(const sc_core::sc_time& passed_time){
   return(x);
 }
 
-} // namespace pulp
+} // namespace pulpino
 } // namespace vpvper
 
-#endif //__VPVPER_PULP_CLINT_H__
+#endif //__VPVPER_PULPINO_CLINT_H__

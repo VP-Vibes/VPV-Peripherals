@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef __VPVPER_PULP_SPIMASTER_H__
-#define __VPVPER_PULP_SPIMASTER_H__
+#ifndef __VPVPER_PULPINO_SPIMASTER_H__
+#define __VPVPER_PULPINO_SPIMASTER_H__
 
 #include "scc/tlm_target_bfs.h"
 #include "scc/tlm_target_bfs_register_base.h"
@@ -16,7 +16,7 @@
 #include "tlm_utils/passthrough_target_socket.h"
 
 namespace vpvper {
-namespace pulp {
+namespace pulpino {
 
 class SPIMasterPayload;
 
@@ -51,7 +51,7 @@ struct SPIMasterPayload {
 
   Command command_;
   uint32_t data_;
-  uint8_t cs_; 
+  uint8_t cs_;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -133,19 +133,19 @@ class SPIMaster : public scc::tlm_target_bfs<SPIMasterRegs, owner_t> {
     _CS2_ = 0x00000004,
     _CS3_ = 0x00000008
   } bitcodes_t;
-  
+
 public:
   std::unique_ptr<tlm_utils::simple_initiator_socket<SPIMaster, 32, SPIMasterProtocolTypes>> sock_i_{nullptr};
-    ///< initiator socket (to ExternalSPIDevice) for transmit 
+    ///< initiator socket (to ExternalSPIDevice) for transmit
   std::unique_ptr<tlm_utils::passthrough_target_socket<SPIMaster, 32, SPIMasterProtocolTypes>> sock_t_ext_{nullptr};
     ///< target socket (from ExternalSPIDevice) for receive
-    
+
   /////////////////////////////////////////////////////////////////////////////
   /// \brief Constructor
   SPIMaster(
-    sc_core::sc_module_name name, 
+    sc_core::sc_module_name name,
     scc::tlm_target_bfs_params&& params,
-    owner_t* owner = nullptr, 
+    owner_t* owner = nullptr,
     uint64_t cpu_period_ps = 1000000 /*f~1MHz*/);
 
 private:
@@ -170,17 +170,17 @@ private:
     ///< Helper variable for temporary queuing
 
   sc_core::sc_time zero_time{sc_core::SC_ZERO_TIME};
-  
+
   void reset(void);
   void sendInterrupt(void);
   void control_thread(void);
   void sendBit(uint32_t data_, uint8_t bit_offset, sc_core::sc_time& delay);
   void quad_sendBit(uint32_t data_, uint8_t bit_offset, sc_core::sc_time& delay);
   void state_change(void);
-  
+
 protected:
   uint64_t cpu_period_ps_;
-  
+
   scc::bitfield<uint32_t>& tx_status_{bfs_t::regs->getBitfield("STATUS", "TX_STATUS", "spi.UNKNOWN_TXFIFO")};
   scc::bitfield<uint32_t>& rx_status_{bfs_t::regs->getBitfield("STATUS", "RX_STATUS", "spi.UNKNOWN_RXFIFO")};
   scc::bitfield<uint32_t>& cs_{bfs_t::regs->getBitfield("STATUS", "CS", "spi.CS")};
@@ -214,13 +214,13 @@ protected:
 
 template <class owner_t>
 inline SPIMaster<owner_t>::SPIMaster(
-  sc_core::sc_module_name name, 
-  scc::tlm_target_bfs_params&& params, 
-  owner_t* owner, 
+  sc_core::sc_module_name name,
+  scc::tlm_target_bfs_params&& params,
+  owner_t* owner,
   uint64_t cpu_period_ps)
   : bfs_t(name, std::move(params), owner)
   , cpu_period_ps_(cpu_period_ps)
-{ 
+{
   reset();
 
   srst_.setWriteCallback([this](auto&&, uint32_t& valueToWrite) {
@@ -724,7 +724,7 @@ void SPIMaster<owner_t>::sendInterrupt(void) {
 }
 
 
-} // namespace pulp
+} // namespace pulpino
 } // namespace vpvper
 
-#endif // __VPVPER_PULP_SPIMASTER_H__
+#endif // __VPVPER_PULPINO_SPIMASTER_H__

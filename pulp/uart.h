@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef __VPVPER_PULP_UART_H__
-#define __VPVPER_PULP_UART_H__
+#ifndef __VPVPER_PULPINO_UART_H__
+#define __VPVPER_PULPINO_UART_H__
 
 #include "scc/tlm_target_bfs.h"
 #include "scc/tlm_target_bfs_register_base.h"
@@ -13,14 +13,14 @@
 #include <queue>
 
 namespace vpvper {
-namespace pulp {
+namespace pulpino {
 
 /////////////////////////////////////////////////////////////////////////////
 /// \class UARTRegs
 class UARTRegs : public scc::tlm_target_bfs_register_base<UARTRegs> {
 public:
   std::array<scc::bitfield_register<uint32_t>, 8> registers{{
-    {"RBR_THR_DLL", 0x0000}, 
+    {"RBR_THR_DLL", 0x0000},
       ///< Receiver Buffer Register (RBR if DLAB=0 && read), Transmitter Holding Register (THR if DLAB=0 && write), Divisor Latch (LS) (if DLAB=1)
     {"IER_DLM",  0x0004},
       ///< Interrupt Enable Register (IER if DLAB=0), Divisor Latch (MS) (if DLAB=1)
@@ -77,7 +77,7 @@ class UART : public scc::tlm_target_bfs<UARTRegs, owner_t> {
 
 public:
   std::shared_ptr<tlm_utils::simple_initiator_socket<UART>> sock_i_{nullptr};
-    ///< initiator socket (to ExternalUARTDevice) for transmit 
+    ///< initiator socket (to ExternalUARTDevice) for transmit
   std::shared_ptr<tlm_utils::simple_target_socket<UART>> sock_t_ext_{nullptr};
     ///< target socket (from ExternalUARTDevice) for receive
 
@@ -96,20 +96,20 @@ protected:
   scc::bitfield<uint32_t>& rbr_thr_dll_{bfs_t::regs->getBitfield("RBR_THR_DLL", "RBR_THR_DLL", "uart.RBR_THR_DLL")};
   scc::bitfield<uint32_t>& ier_dlm_{bfs_t::regs->getBitfield("IER_DLM", "IER_DLM", "uart.IER_DLM")};
   scc::bitfield<uint32_t>& iir_fcr_{bfs_t::regs->getBitfield("IIR_FCR", "IIR_FCR", "uart.IIR_FCR")};
-  
+
   // normal registers/bitfields
   scc::bitfield<uint32_t>& dlab_{bfs_t::regs->getBitfield("LCR", "LCR.dlab", "uart.LCR.dlab")};
   scc::bitfield<uint32_t>& mcr_{bfs_t::regs->getBitfield("MCR", "MCR", "uart.MCR")};
   scc::bitfield<uint32_t>& lsr_{bfs_t::regs->getBitfield("LSR", "LSR", "uart.LSR")};
   scc::bitfield<uint32_t>& msr_{bfs_t::regs->getBitfield("MSR", "MSR", "uart.MSR")};
   scc::bitfield<uint32_t>& scr_{bfs_t::regs->getBitfield("SCR", "SCR", "uart.SCR")};
-  
+
   // actual register states for multi-use (addressed) registers
   uint8_t rbr_{0}; uint8_t thr_{0}; uint8_t dll_{0};
   uint8_t ier_{0}; uint8_t dlm_{0};
   uint8_t iir_{0}; uint8_t fcr_{0};
-  
-private:  
+
+private:
   sc_core::sc_event interrupt_event_;
   std::queue<interrupt_events_t> interrupt_event_q_;
 
@@ -132,7 +132,7 @@ inline UART<owner_t>::UART(
   : bfs_t(name, std::move(params), owner)
 {
   reset();
-  
+
   sock_i_ = std::make_shared<tlm_utils::simple_initiator_socket<UART>>("initiator_socket");
   sock_t_ext_ = std::make_shared<tlm_utils::simple_target_socket<UART>>("target_socket_external");
   sock_t_ext_->register_b_transport(this, &UART::b_transport_ext);
@@ -147,7 +147,7 @@ inline UART<owner_t>::UART(
       interrupt_event_.notify();
     }
   });
-  
+
   rbr_thr_dll_.setReadCallback([this](auto&&) {
     if(dlab_ == 1) {
       return(dll_);
@@ -159,7 +159,7 @@ inline UART<owner_t>::UART(
       return(ptr);
     }
   });
-  
+
   ier_dlm_.setWriteCallback([this](auto&&, uint32_t& valueToWrite) {
     if(dlab_ == 1) {
       dlm_ = valueToWrite;
@@ -167,7 +167,7 @@ inline UART<owner_t>::UART(
       ier_ = valueToWrite;
     }
   });
-  
+
   ier_dlm_.setReadCallback([this](auto&&) {
     if(dlab_ == 1) {
       return(dlm_);
@@ -175,18 +175,18 @@ inline UART<owner_t>::UART(
       return(ier_);
     }
   });
-  
+
   iir_fcr_.setReadCallback([this](auto&&) {
     uint8_t iir = iir_;
     interrupt_event_q_.push(R_TBR_EMPTY);
     interrupt_event_.notify();
     return(iir);
   });
-  
+
   lsr_.setReadCallback([this](auto&&) {
     return(lsr_.get()|0x60); // vp output has no "limit"
   });
-  
+
   SC_THREAD(send_interrupt_process);
 }
 
@@ -300,7 +300,7 @@ void UART<owner_t>::send_interrupt_process(void) {
   }
 }
 
-} // namespace pulp
+} // namespace pulpino
 } // namespace vpvper
 
-#endif // __VPVPER_PULP_UART_H__
+#endif // __VPVPER_PULPINO_UART_H__
