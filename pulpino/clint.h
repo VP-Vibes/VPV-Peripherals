@@ -198,7 +198,7 @@ void Clint<owner_t>::reset(void) {
 template <class owner_t>
 void Clint<owner_t>::rtc_process(void) {
   static const uint64_t _OVERFLOW_ = 0xFFFFFFFFFFFFFFFF;
-  sc_core::sc_time _sc_time_wait = (uint64_t(mtimecmplo_) | (uint64_t(mtimecmphi_) << 32))*rtcPeriod_ps_;
+  sc_core::sc_time _sc_time_wait = _OVERFLOW_*rtcPeriod_ps_;
 
   while (true) {
     sct_wait_entry_ = sc_core::sc_time_stamp();
