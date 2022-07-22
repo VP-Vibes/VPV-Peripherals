@@ -16,10 +16,6 @@ namespace sifive {
 plic::plic(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk)
-, NAMED(clk_i)
-, NAMED(rst_i)
-, NAMED(global_interrupts_i, 256)
-, NAMED(core_interrupt_o)
 , NAMEDD(regs, plic_regs)
 
 {
@@ -35,9 +31,8 @@ plic::plic(sc_core::sc_module_name nm)
 
     // port callbacks
     SC_METHOD(global_int_port_cb);
-    for (uint8_t i = 0; i < 255; i++) {
-        sensitive << global_interrupts_i[i].pos();
-    }
+    for (auto& irq:global_interrupts_i)
+        sensitive << irq.pos();
     dont_initialize();
 
     // register event callbacks
