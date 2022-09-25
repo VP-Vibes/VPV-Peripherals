@@ -1,0 +1,184 @@
+/*
+ * Copyright (c) 2019 -2022 MINRES Technologies GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+//=============================================================================
+// QSPI APB Timer Registers
+//=============================================================================
+regfile qspi {
+    reg {
+        name = "DATA";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "data";  
+        } data[7:0]= 0;
+        field {
+          name = "write";  
+        } write[8:8]= 0;
+        field {
+          name = "read";  
+        } read[9:9]= 0;
+        field {
+          name = "data_ctrl";  
+        } data_ctrl[11:11]= 0;
+        field {
+          name = "rxvalid";  
+        } rxvalid[31:31]= 0;
+        sw=rw;        
+    } DATA @0x0;
+    reg {
+        name = "STATUS";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "txfree";  
+        } txfree[0:0]= 0;
+        field {
+          name = "rxavail";  
+        } rxavail[16:16]= 0;
+        sw=rw;        
+    } STATUS @0x4;
+    reg {
+        name = "CONFIG";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "cpol";  
+        } cpol[0:0]= 0;
+        field {
+          name = "cpha";  
+        } cpha[1:1]= 0;
+        field {
+          name = "rxavail";  
+        } rxavail[16:16]= 0;
+        field {
+          name = "ifmode";  
+        } ifmode[5:4]= 0;
+        sw=rw;        
+    } CONFIG @0x8;
+    reg {
+        name = "INTR";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "txien";  
+        } txien[0:0]= 0;
+        field {
+          name = "rxien";  
+        } rxien[1:1]= 0;
+        field {
+          name = "txip";  
+        } txip[8:8]= 0;
+        field {
+          name = "rxip";  
+        } rxip[9:9]= 0;
+        sw=rw;        
+    } INTR @0xC;
+    reg {
+        name = "CLOCK_DIV";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "toggle";  
+        } toggle[11:0]= 0;
+        sw=rw;        
+    } CLOCK_DIV @0x20;
+    reg {
+        name = "SS_SETUP";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "toggle";  
+        } toggle[11:0]= 0;
+        sw=rw;        
+    } SS_SETUP @0x24;
+    reg {
+        name = "SS_HOLD";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "toggle";  
+        } toggle[11:0]= 0;
+        sw=rw;        
+    } SS_HOLD @0x28;
+    reg {
+        name = "SS_DISABLE";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "toggle";  
+        } toggle[11:0]= 0;
+        sw=rw;        
+    } SS_DISABLE @0x2C;
+    reg {
+        name = "SS_ACTIVEHIGH";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "toggle";  
+        } toggle[11:0]= 0;
+        sw=rw;        
+    } SS_ACTIVEHIGH @0x30;
+    reg {
+        name = "XIP_ENABLE";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "ena";  
+        } ena[0:0]= 0;
+        sw=rw;        
+    } XIP_ENABLE @0x40;
+    reg {
+        name = "XIP_INST";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "data";  
+        } data[0:0]= 0;
+        field {
+          name = "ena";  
+        } ena[1:1]= 0;
+        field {
+          name =  "dummy data";  
+        }  dummy_data[23:16]= 0;
+        field {
+          name = "dummy count";  
+        } dummy_count[27:24]= 0;
+        sw=rw;        
+    } XIP_INST @0x44;    
+    reg {
+        name = "XIP_MODES";
+        desc = "";
+        regwidth=32;
+        field {
+          name = "instr";  
+        } instr[1:0]= 0;
+        field {
+          name = "addr";  
+        } addr[9:8]= 0;
+        field {
+          name =  "dummy";  
+        }  dummy[17:16]= 0;
+        field {
+          name = "data";  
+        } data[25:24]= 0;
+        sw=rw;        
+    } XIP_MODES @0x48;    
+    reg {
+        name = "XIP_WRITE32";
+        desc = "";
+        regwidth=32;
+    } XIP_WRITE32 @0x50;    
+    reg {
+        name = "XIP_READWRITE32";
+        desc = "";
+        regwidth=32;
+    } XIP_READWRITE32 @0x54;    
+    reg {
+        name = "XIP_READ32";
+        desc = "";
+        regwidth=32;
+    } XIP_READ32 @0x58;    
+};
