@@ -7,7 +7,7 @@
 #pragma once
 
 #include <systemc>
-vpvper
+
 namespace vpvper {
 namespace generic {
 
