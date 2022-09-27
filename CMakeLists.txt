@@ -13,10 +13,12 @@ set(SCC_INSTALL_DIR "" CACHE PATH "installation location of SCC library")
 
 if(CMAKE_PROJECT_NAME STREQUAL "vpvper")
     message(STATUS "Building VPVper in standalone mode")
-	set(CMAKE_CXX_STANDARD 14)
+	set(CMAKE_CXX_STANDARD 11)
 	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 	set(CMAKE_CXX_EXTENSIONS OFF)
 	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+	set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+	set(CMAKE_INSTALL_RPATH "$\{ORIGIN\}")
 	include(CheckCXXCompilerFlag)
     include(GNUInstallDirs)
 

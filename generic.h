@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "generic/sc_comm_singleton.h"
 #include "generic/terminal.h"
 #include "generic/tlm_extensions.h"
 #include "generic/uart_regs.h"
