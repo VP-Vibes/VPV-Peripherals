@@ -26,9 +26,18 @@ if(SEASOCKS_LIB)
 endif()
 target_link_libraries(${PROJECT_NAME}_sifive PUBLIC ${PROJECT_NAME}_generic scc)
 
-FILE(GLOB SiFiveHeaders ${CMAKE_CURRENT_SOURCE_DIR}/sifive/*.h ${CMAKE_CURRENT_SOURCE_DIR}/sifive/*/*.h)
-set_target_properties(${PROJECT_NAME}_sifive PROPERTIES
-  VERSION ${PROJECT_VERSION}
-  FRAMEWORK FALSE
-  PUBLIC_HEADER "${SiFiveHeaders}" # specify the public headers
+install(TARGETS ${PROJECT_NAME}_sifive COMPONENT ${PROJECT_NAME}_sifive
+  EXPORT ${PROJECT_NAME}_genericTargets                         # for downstream dependencies
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/static
+  FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}         # for mac
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} # headers for mac (note the different component -> different package)
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}      # headers
 )
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMPONENT ${PROJECT_NAME}_sifive
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} # target directory
+        FILES_MATCHING # install only matched files
+        PATTERN "*.h" # select header files
+        )

@@ -15,10 +15,18 @@ add_library(${PROJECT_NAME}_minres
 target_include_directories(${PROJECT_NAME}_minres PUBLIC ${vpvper_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME}_minres PUBLIC scc)
 
-FILE(GLOB Headers ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
-set_target_properties(${PROJECT_NAME}_minres PROPERTIES
-  VERSION ${PROJECT_VERSION}
-  FRAMEWORK FALSE
-  PUBLIC_HEADER "${Headers}" # specify the public headers
+install(TARGETS ${PROJECT_NAME}_minres COMPONENT ${PROJECT_NAME}_minres
+  EXPORT ${PROJECT_NAME}_minresTargets                         # for downstream dependencies
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/static
+  FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}         # for mac
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} # headers for mac (note the different component -> different package)
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}      # headers
 )
 
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMPONENT ${PROJECT_NAME}_minres
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} # target directory
+        FILES_MATCHING # install only matched files
+        PATTERN "*.h" # select header files
+        )
