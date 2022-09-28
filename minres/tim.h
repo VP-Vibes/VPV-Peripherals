@@ -9,10 +9,11 @@
 
 #include <scc/tlm_target.h>
 #include <scc/clock_if_mixins.h>
-#include "tim_regs.h"
 
 namespace vpvper {
 namespace minres {
+
+class tim_regs;
 
 class tim : public sc_core::sc_module, public scc::tlm_target<> {
 public:

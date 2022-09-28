@@ -10,6 +10,7 @@ add_library(${PROJECT_NAME}_minres
 	presc.cpp
 	tim.cpp
 	qspi.cpp
+	irq.cpp
 	uart_terminal.cpp
 )
 target_include_directories(${PROJECT_NAME}_minres PUBLIC ${vpvper_SOURCE_DIR})

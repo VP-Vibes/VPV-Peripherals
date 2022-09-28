@@ -17,11 +17,14 @@ public:
     rst_gen(sc_core::sc_module_name const& nm) {
         SC_THREAD(run);
     }
+    sc_core::sc_out<bool> rst{"rst"};
     sc_core::sc_out<bool> rst_n{"rst_n"};
 private:
     void run(){
+        rst.write(true);
         rst_n.write(false);
         wait(100_ns);
+        rst.write(false);
         rst_n.write(true);
     }
 };

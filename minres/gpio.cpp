@@ -5,7 +5,7 @@
  */
 
 #include "gpio.h"
-#include "gpio_regs.h"
+#include "gen/gpio_regs.h"
 #include <scc/report.h>
 #include <scc/utilities.h>
 #include <limits>

@@ -1,4 +1,12 @@
+/*
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include "tim.h"
+#include "gen/tim_regs.h"
+
 namespace vpvper {
 
 namespace minres {

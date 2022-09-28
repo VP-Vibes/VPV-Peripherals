@@ -21,11 +21,11 @@ public:
 
     sc_core::sc_in<bool> rst_i{"rst_i"};
 
-    sc_core::sc_vector<sc_core::sc_out<bool>> pins_o{"pins_o"};
+    sc_core::sc_vector<sc_core::sc_out<bool>> pins_o{"pins_o",32};
 
-    sc_core::sc_vector<sc_core::sc_out<bool>> oe_o{"oe_o"};
+    sc_core::sc_vector<sc_core::sc_out<bool>> oe_o{"oe_o", 32};
 
-    sc_core::sc_vector<sc_core::sc_in<bool>> pins_i{"pins_i"};
+    sc_core::sc_vector<sc_core::sc_in<bool>> pins_i{"pins_i", 32};
 
     gpio(sc_core::sc_module_name nm);
 

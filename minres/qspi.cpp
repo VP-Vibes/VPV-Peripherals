@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <minres/qspi.h>
-#include <minres/qspi_regs.h>
+#include "qspi.h"
+#include "gen/qspi_regs.h"
 #include <scc/report.h>
 #include <scc/utilities.h>
 #include <limits>

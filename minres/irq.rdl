@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) 2019 -2022 MINRES Technologies GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+//=============================================================================
+// QSPI APB Timer Registers
+//=============================================================================
+regfile irq {
+    reg {
+        name = "ip";
+        desc = "";
+        regwidth=32;
+        sw=rw;        
+    } ip @0x0;
+    reg {
+        name = "ie";
+        desc = "";
+        regwidth=32;
+        sw=rw;        
+    } ie @0x4;
+};

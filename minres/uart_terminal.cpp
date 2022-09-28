@@ -5,7 +5,7 @@
  */
 
 #include "uart_terminal.h"
-#include "uart_regs.h"
+#include "gen/uart_regs.h"
 
 #include <scc/report.h>
 #include <scc/utilities.h>
