@@ -16,7 +16,7 @@
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace pulpissimo {
+namespace vpvper::pulpissimo {
 namespace gen {
 
 class i2c_channel_regs :
@@ -88,7 +88,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::i2c_channel_regs::i2c_channel_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::i2c_channel_regs::i2c_channel_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(RX_SADDR, r_RX_SADDR, 0, *this)
 , NAMED(RX_SIZE, r_RX_SIZE, 0, *this)
@@ -105,18 +105,18 @@ inline pulpissimo::gen::i2c_channel_regs::i2c_channel_regs(sc_core::sc_module_na
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::i2c_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(RX_SADDR, 0x180UL);
-    target.addResource(RX_SIZE, 0x184UL);
-    target.addResource(RX_CFG, 0x188UL);
-    target.addResource(TX_SADDR, 0x190UL);
-    target.addResource(TX_SIZE, 0x194UL);
-    target.addResource(TX_CFG, 0x198UL);
-    target.addResource(CMD_SADDR, 0x1a0UL);
-    target.addResource(CMD_SIZE, 0x1a4UL);
-    target.addResource(CMD_CFG, 0x1a8UL);
-    target.addResource(STATUS, 0x1b0UL);
-    target.addResource(SETUP, 0x1b4UL);
+inline void vpvper::pulpissimo::gen::i2c_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+    target.addResource(RX_SADDR, 0x0UL + offset);
+    target.addResource(RX_SIZE, 0x4UL + offset);
+    target.addResource(RX_CFG, 0x8UL + offset);
+    target.addResource(TX_SADDR, 0x10UL + offset);
+    target.addResource(TX_SIZE, 0x14UL + offset);
+    target.addResource(TX_CFG, 0x18UL + offset);
+    target.addResource(CMD_SADDR, 0x20UL + offset);
+    target.addResource(CMD_SIZE, 0x24UL + offset);
+    target.addResource(CMD_CFG, 0x28UL + offset);
+    target.addResource(STATUS, 0x30UL + offset);
+    target.addResource(SETUP, 0x34UL + offset);
 }
 
 #endif // _PULPISSIMO_GEN_I2C_CHANNEL_H_

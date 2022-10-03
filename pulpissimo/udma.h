@@ -8,7 +8,7 @@
 #define _PULPISSIMO_UDMA_H_
 #include "scc/tlm_target.h"
 
-namespace pulpissimo {
+namespace vpvper::pulpissimo {
 namespace gen {
 class udma_regs;
 }

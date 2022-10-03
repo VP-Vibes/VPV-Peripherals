@@ -23,7 +23,7 @@
 #include "cam_channel.h"
 #include "filter.h"
 
-namespace pulpissimo {
+namespace vpvper::pulpissimo {
 namespace gen {
 
 class udma_regs :
@@ -83,7 +83,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::udma_regs::udma_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::udma_regs::udma_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(CTRL_CFG_CG, r_CTRL_CFG_CG, 0, *this)
 , NAMED(CTRL_CFG_EVENT, r_CTRL_CFG_EVENT, 0, *this)
@@ -99,7 +99,7 @@ inline pulpissimo::gen::udma_regs::udma_regs(sc_core::sc_module_name nm)
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::udma_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+inline void vpvper::pulpissimo::gen::udma_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(CTRL_CFG_CG, 0UL);
     target.addResource(CTRL_CFG_EVENT, 0x4UL);
     target.addResource(CTRL_CFG_RST, 0x8UL);

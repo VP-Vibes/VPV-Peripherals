@@ -16,7 +16,7 @@
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace pulpissimo {
+namespace vpvper::pulpissimo {
 namespace gen {
 
 class cam_channel_regs :
@@ -87,7 +87,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::cam_channel_regs::cam_channel_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::cam_channel_regs::cam_channel_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(CAM_RX_SADDR, r_CAM_RX_SADDR, 0, *this)
 , NAMED(CAM_RX_SIZE, r_CAM_RX_SIZE, 0, *this)
@@ -102,16 +102,16 @@ inline pulpissimo::gen::cam_channel_regs::cam_channel_regs(sc_core::sc_module_na
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::cam_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(CAM_RX_SADDR, 0x0UL);
-    target.addResource(CAM_RX_SIZE, 0x4UL);
-    target.addResource(CAM_RX_CFG, 0x8UL);
-    target.addResource(CAM_CFG_GLOB, 0x20UL);
-    target.addResource(CAM_CFG_LL, 0x24UL);
-    target.addResource(CAM_CFG_UR, 0xa8UL);
-    target.addResource(CAM_CFG_SIZE, 0x2cUL);
-    target.addResource(CAM_CFG_FILTER, 0x30UL);
-    target.addResource(CAM_VSYNC_POLARITY, 0x34UL);
+inline void vpvper::pulpissimo::gen::cam_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+    target.addResource(CAM_RX_SADDR, 0x0UL + offset);
+    target.addResource(CAM_RX_SIZE, 0x4UL + offset);
+    target.addResource(CAM_RX_CFG, 0x8UL + offset);
+    target.addResource(CAM_CFG_GLOB, 0x20UL + offset);
+    target.addResource(CAM_CFG_LL, 0x24UL + offset);
+    target.addResource(CAM_CFG_UR, 0x28UL + offset);
+    target.addResource(CAM_CFG_SIZE, 0x2cUL + offset);
+    target.addResource(CAM_CFG_FILTER, 0x30UL + offset);
+    target.addResource(CAM_VSYNC_POLARITY, 0x34UL + offset);
 }
 
 #endif // _PULPISSIMO_GEN_CAM_CHANNEL_H_

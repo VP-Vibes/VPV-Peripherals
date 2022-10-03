@@ -16,7 +16,7 @@
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace pulpissimo {
+namespace vpvper::pulpissimo {
 namespace gen {
 
 class filter_regs :
@@ -113,7 +113,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::filter_regs::filter_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::filter_regs::filter_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(REG_TX_CH0_ADD, r_REG_TX_CH0_ADD, 0, *this)
 , NAMED(REG_TX_CH0_CFG, r_REG_TX_CH0_CFG, 0, *this)
@@ -144,32 +144,32 @@ inline pulpissimo::gen::filter_regs::filter_regs(sc_core::sc_module_name nm)
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::filter_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(REG_TX_CH0_ADD, 0x0UL);
-    target.addResource(REG_TX_CH0_CFG, 0x4UL);
-    target.addResource(REG_TX_CH0_LEN0, 0x8UL);
-    target.addResource(REG_TX_CH0_LEN1, 0xcUL);
-    target.addResource(REG_TX_CH0_LEN2, 0x10UL);
-    target.addResource(REG_TX_CH1_ADD, 0x14UL);
-    target.addResource(REG_TX_CH1_CFG, 0x18UL);
-    target.addResource(REG_TX_CH1_LEN0, 0x1cUL);
-    target.addResource(REG_TX_CH1_LEN1, 0x20UL);
-    target.addResource(REG_TX_CH1_LEN2, 0x24UL);
-    target.addResource(REG_RX_CH_ADD, 0x28UL);
-    target.addResource(REG_RX_CH_CFG, 0x2cUL);
-    target.addResource(REG_RX_CH_LEN0, 0x30UL);
-    target.addResource(REG_RX_CH_LEN1, 0x34UL);
-    target.addResource(REG_RX_CH_LEN2, 0x38UL);
-    target.addResource(REG_AU_CFG, 0x3cUL);
-    target.addResource(REG_AU_REG0, 0x40UL);
-    target.addResource(REG_AU_REG1, 0x44UL);
-    target.addResource(REG_BINCU_TH, 0x48UL);
-    target.addResource(REG_BINCU_CNT, 0x4cUL);
-    target.addResource(REG_BINCU_SETUP, 0x50UL);
-    target.addResource(REG_BINCU_VAL, 0x54UL);
-    target.addResource(REG_FILT, 0x58UL);
-    target.addResource(REG_FILT_CMD, 0x5cUL);
-    target.addResource(REG_STATUS, 0x60UL);
+inline void vpvper::pulpissimo::gen::filter_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+    target.addResource(REG_TX_CH0_ADD, 0x0UL + offset);
+    target.addResource(REG_TX_CH0_CFG, 0x4UL + offset);
+    target.addResource(REG_TX_CH0_LEN0, 0x8UL + offset);
+    target.addResource(REG_TX_CH0_LEN1, 0xcUL + offset);
+    target.addResource(REG_TX_CH0_LEN2, 0x10UL + offset);
+    target.addResource(REG_TX_CH1_ADD, 0x14UL + offset);
+    target.addResource(REG_TX_CH1_CFG, 0x18UL + offset);
+    target.addResource(REG_TX_CH1_LEN0, 0x1cUL + offset);
+    target.addResource(REG_TX_CH1_LEN1, 0x20UL + offset);
+    target.addResource(REG_TX_CH1_LEN2, 0x24UL + offset);
+    target.addResource(REG_RX_CH_ADD, 0x28UL + offset);
+    target.addResource(REG_RX_CH_CFG, 0x2cUL + offset);
+    target.addResource(REG_RX_CH_LEN0, 0x30UL + offset);
+    target.addResource(REG_RX_CH_LEN1, 0x34UL + offset);
+    target.addResource(REG_RX_CH_LEN2, 0x38UL + offset);
+    target.addResource(REG_AU_CFG, 0x3cUL + offset);
+    target.addResource(REG_AU_REG0, 0x40UL + offset);
+    target.addResource(REG_AU_REG1, 0x44UL + offset);
+    target.addResource(REG_BINCU_TH, 0x48UL + offset);
+    target.addResource(REG_BINCU_CNT, 0x4cUL + offset);
+    target.addResource(REG_BINCU_SETUP, 0x50UL + offset);
+    target.addResource(REG_BINCU_VAL, 0x54UL + offset);
+    target.addResource(REG_FILT, 0x58UL + offset);
+    target.addResource(REG_FILT_CMD, 0x5cUL + offset);
+    target.addResource(REG_STATUS, 0x60UL + offset);
 }
 
 #endif // _PULPISSIMO_GEN_FILTER_H_
