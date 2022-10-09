@@ -16,7 +16,7 @@
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace pulpissimo {
+namespace vpvper::pulpissimo {
 namespace gen {
 
 class soc_ctrl_regs :
@@ -54,7 +54,7 @@ public:
     scc::sc_register<JTAG_REG_t> JTAG_REG;
     scc::sc_register<uint32_t> CORE_STATUS;
     scc::sc_register<FLL_CLOCK_SELECT_t> FLL_CLOCK_SELECT;
-    
+
     soc_ctrl_regs(sc_core::sc_module_name nm);
 
     template<unsigned BUSWIDTH=32>
@@ -66,7 +66,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::soc_ctrl_regs::soc_ctrl_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::soc_ctrl_regs::soc_ctrl_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(INFO, r_INFO, 0, *this)
 , NAMED(BOOT_ADR, r_BOOT_ADR, 0, *this)
@@ -79,7 +79,7 @@ inline pulpissimo::gen::soc_ctrl_regs::soc_ctrl_regs(sc_core::sc_module_name nm)
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::soc_ctrl_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+inline void vpvper::pulpissimo::gen::soc_ctrl_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(INFO, 0x0UL);
     target.addResource(BOOT_ADR, 0x4UL);
     target.addResource(FETCH_ENABLE, 0x8UL);

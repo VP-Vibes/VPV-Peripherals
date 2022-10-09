@@ -20,20 +20,7 @@ udma::udma(sc_core::sc_module_name nm) : sc_core::sc_module(nm), scc::tlm_target
   SC_METHOD(reset_cb);
   sensitive << rst_i;
 
-  /*
-    regs->i_uart.STATUS.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
-    regs->i_uart.VALID.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
-    regs->i_uart.DATA.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
-  */
-
-  regs->i_spi.SPIM_RX_SADDR.set_write_cb(
-      [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool {
-        std::cout << "UDMA-SPIM-SPIM_RX_SADDR: hello world - accessed properly!\n";
-        return true;
-      });
+  spim_regs_cb();
 }
 
 udma::~udma() {}  // NOLINT
@@ -47,5 +34,28 @@ void udma::reset_cb() {
     regs->reset_stop();
   }
 }
+
+////////////
+// the callback functions associated with SPI-M registers
+///////////
+// as per datasheet, the processor (CPU) prepares the stream of uDMA commands at an appropriate memory location.
+// Then it configures the command channels and the TX/RX channels accordingly.
+void udma::spim_regs_cb() {
+  // the write callback for SPIM_RX_SADDR register
+  // Reg Description: RX SPI uDMA transfer address of associated buffer
+  //
+  //
+  // returning false:
+  // -
+  regs->i_spi.SPIM_RX_SADDR.set_write_cb(
+      [this](scc::sc_register<uint32_t> &, uint32_t const &v, sc_core::sc_time t) -> bool {
+        std::cout << "UDMA-SPIM-SPIM_RX_SADDR: hello world - accessed properly!\n";
+        return true;
+      });
+}
+
+//////////
+// the callback functions associated with I2S registers
+//////////
 
 }  // namespace vpvper::pulpissimo
