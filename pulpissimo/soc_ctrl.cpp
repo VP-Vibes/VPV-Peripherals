@@ -61,6 +61,20 @@ soc_ctrl::soc_ctrl(sc_core::sc_module_name nm)
   // Fetch Enable register
   // ...
 
+  // PAD Mux register
+  regs->PAD_MUX.set_write_cb(
+    [this](scc::sc_register<uint32_t> &reg, uint32_t v, sc_core::sc_time t) -> bool {
+      reg.put(v);
+      return true;
+    }
+  );
+  regs->PAD_MUX.set_read_cb(
+    [this](const scc::sc_register<uint32_t> &reg, uint32_t &v, sc_core::sc_time t) -> bool {
+      v = reg.get();
+      return true;
+    }
+  );
+
   // JTAG register
   regs->JTAG_REG.set_write_cb(
     [this](scc::sc_register<uint32_t> &reg, uint32_t v, sc_core::sc_time t) -> bool {
@@ -75,7 +89,8 @@ soc_ctrl::soc_ctrl(sc_core::sc_module_name nm)
     }
   );
 
-  // ...
+  // CORE STATUS register
+  
 }
 
 soc_ctrl::~soc_ctrl() {}  // NOLINT

@@ -16,7 +16,7 @@
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace pulpissimo {
+namespace vpvper::pulpissimo {
 namespace gen {
 
 class timer_regs :
@@ -50,7 +50,7 @@ public:
     scc::sc_register<uint32_t> START_HI;
     scc::sc_register<uint32_t> RESET_LO;
     scc::sc_register<uint32_t> RESET_HI;
-    
+
     timer_regs(sc_core::sc_module_name nm);
 
     template<unsigned BUSWIDTH=32>
@@ -62,7 +62,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::timer_regs::timer_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::timer_regs::timer_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(CFG_LO, r_CFG_LO, 0, *this)
 , NAMED(CFG_HI, r_CFG_HI, 0, *this)
@@ -78,7 +78,7 @@ inline pulpissimo::gen::timer_regs::timer_regs(sc_core::sc_module_name nm)
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::timer_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+inline void vpvper::pulpissimo::gen::timer_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(CFG_LO, 0x0UL);
     target.addResource(CFG_HI, 0x4UL);
     target.addResource(CNT_LO, 0x8UL);

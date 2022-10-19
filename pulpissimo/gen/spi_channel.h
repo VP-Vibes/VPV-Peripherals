@@ -82,13 +82,13 @@ inline vpvper::pulpissimo::gen::spi_channel_regs::spi_channel_regs(sc_core::sc_m
 : sc_core::sc_module(nm)
 , NAMED(SPIM_RX_SADDR, r_SPIM_RX_SADDR, 0, *this)
 , NAMED(SPIM_RX_SIZE, r_SPIM_RX_SIZE, 0, *this)
-, NAMED(SPIM_RX_CFG, r_SPIM_RX_CFG, 0, *this)
+, NAMED(SPIM_RX_CFG, r_SPIM_RX_CFG, 0x4, *this, 0xffffffbf, 0xffffffdf)
 , NAMED(SPIM_TX_SADDR, r_SPIM_TX_SADDR, 0, *this)
 , NAMED(SPIM_TX_SIZE, r_SPIM_TX_SIZE, 0, *this)
 , NAMED(SPIM_TX_CFG, r_SPIM_TX_CFG, 0, *this)
 , NAMED(SPIM_CMD_SADDR, r_SPIM_CMD_SADDR, 0, *this)
 , NAMED(SPIM_CMD_SIZE, r_SPIM_CMD_SIZE, 0, *this)
-, NAMED(SPIM_CMD_CFG, r_SPIM_CMD_CFG, 0, *this)
+, NAMED(SPIM_CMD_CFG, r_SPIM_CMD_CFG, 0, *this, 0xffffffbf, 0xffffffdf)
 {
 }
 

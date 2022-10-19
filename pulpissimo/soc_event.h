@@ -8,7 +8,7 @@
 #define _PULPISSIMO_SOC_EVENT_H_
 #include <scc/tlm_target.h>
 
-namespace pulpissimo {
+namespace vpvper::pulpissimo {
 namespace gen {
 class soc_event_regs;
 }

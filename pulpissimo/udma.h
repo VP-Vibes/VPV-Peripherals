@@ -8,6 +8,8 @@
 #define _PULPISSIMO_UDMA_H_
 #include "scc/tlm_target.h"
 
+#include "scc/memory.h"
+
 namespace vpvper::pulpissimo {
 namespace gen {
 class udma_regs;
@@ -17,7 +19,7 @@ class udma : public sc_core::sc_module, public scc::tlm_target<> {
 public:
     sc_core::sc_in<sc_core::sc_time> clk_i{"clk_i"};
     sc_core::sc_in<bool> rst_i{"rst_i"};
-    udma(sc_core::sc_module_name nm);
+    udma(sc_core::sc_module_name nm, scc::memory<512_kB, 32> *l2_mem);
     virtual ~udma() override;
 
 protected:
@@ -28,6 +30,7 @@ protected:
 
     sc_core::sc_time clk;
     std::unique_ptr<gen::udma_regs> regs;
+    scc::memory<512_kB, 32> *l2_mem_{nullptr};
 };
 
 } /* namespace pulpissimo */

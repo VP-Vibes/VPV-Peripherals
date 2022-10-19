@@ -16,7 +16,7 @@
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace pulpissimo {
+namespace vpvper::pulpissimo {
 namespace gen {
 
 class soc_event_regs :
@@ -48,7 +48,7 @@ public:
     scc::sc_register_indexed<uint32_t, 8> ERR;
     scc::sc_register<TIMER_LO_t> TIMER_LO;
     scc::sc_register<TIMER_HI_t> TIMER_HI;
-    
+
     soc_event_regs(sc_core::sc_module_name nm);
 
     template<unsigned BUSWIDTH=32>
@@ -60,7 +60,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::soc_event_regs::soc_event_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::soc_event_regs::soc_event_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(SW_EVENT, r_SW_EVENT, 0, *this)
 , NAMED(FC_MASK, r_FC_MASK, 0, *this)
@@ -72,7 +72,7 @@ inline pulpissimo::gen::soc_event_regs::soc_event_regs(sc_core::sc_module_name n
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::soc_event_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+inline void vpvper::pulpissimo::gen::soc_event_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(SW_EVENT, 0x0UL);
     target.addResource(FC_MASK, 0x4UL);
     target.addResource(PR_MASK, 0x44UL);

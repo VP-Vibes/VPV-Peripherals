@@ -35,12 +35,13 @@ public:
     BEGIN_BF_DECL(FETCH_ENABLE_t, uint32_t);
         BF_FIELD(E, 0, 1);
     END_BF_DECL() r_FETCH_ENABLE;
-    std::array<uint32_t, 16> r_PAD_MUX;
+    std::array<uint32_t, 4> r_PAD_MUX;
+    std::array<uint32_t, 16> r_PAD_CFG;
     BEGIN_BF_DECL(JTAG_REG_t, uint32_t);
         BF_FIELD(JTAGRegIn, 8, 8);
         BF_FIELD(JTAGRegOut, 0, 8);
     END_BF_DECL() r_JTAG_REG;
-    uint32_t r_CORE_STATUS;
+    std::array<uint32_t, 2> r_CORE_STATUS;
     BEGIN_BF_DECL(FLL_CLOCK_SELECT_t, uint32_t);
         BF_FIELD(S, 0, 1);
     END_BF_DECL() r_FLL_CLOCK_SELECT;
@@ -50,9 +51,10 @@ public:
     scc::sc_register<INFO_t> INFO;
     scc::sc_register<uint32_t> BOOT_ADR;
     scc::sc_register<FETCH_ENABLE_t> FETCH_ENABLE;
-    scc::sc_register_indexed<uint32_t, 16> PAD_MUX;
+    scc::sc_register_indexed<uint32_t, 4> PAD_MUX;
+    scc::sc_register_indexed<uint32_t, 16> PAD_CFG;
     scc::sc_register<JTAG_REG_t> JTAG_REG;
-    scc::sc_register<uint32_t> CORE_STATUS;
+    scc::sc_register_indexed<uint32_t, 2> CORE_STATUS;
     scc::sc_register<FLL_CLOCK_SELECT_t> FLL_CLOCK_SELECT;
 
     soc_ctrl_regs(sc_core::sc_module_name nm);
@@ -72,6 +74,7 @@ inline vpvper::pulpissimo::gen::soc_ctrl_regs::soc_ctrl_regs(sc_core::sc_module_
 , NAMED(BOOT_ADR, r_BOOT_ADR, 0, *this)
 , NAMED(FETCH_ENABLE, r_FETCH_ENABLE, 0, *this)
 , NAMED(PAD_MUX, r_PAD_MUX, 0, *this)
+, NAMED(PAD_CFG, r_PAD_CFG, 0, *this)
 , NAMED(JTAG_REG, r_JTAG_REG, 0, *this)
 , NAMED(CORE_STATUS, r_CORE_STATUS, 0, *this)
 , NAMED(FLL_CLOCK_SELECT, r_FLL_CLOCK_SELECT, 0, *this)
@@ -83,9 +86,10 @@ inline void vpvper::pulpissimo::gen::soc_ctrl_regs::registerResources(scc::tlm_t
     target.addResource(INFO, 0x0UL);
     target.addResource(BOOT_ADR, 0x4UL);
     target.addResource(FETCH_ENABLE, 0x8UL);
-    target.addResource(PAD_MUX, 0x20UL);
+    target.addResource(PAD_MUX, 0x10UL);
+    target.addResource(PAD_CFG, 0x20UL);
     target.addResource(JTAG_REG, 0x74UL);
-    target.addResource(CORE_STATUS, 0xc0UL);
+    target.addResource(CORE_STATUS, 0xA0UL);
     target.addResource(FLL_CLOCK_SELECT, 0xc8UL);
 }
 
