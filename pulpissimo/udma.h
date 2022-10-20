@@ -25,7 +25,6 @@ public:
 protected:
     void clock_cb();
     void reset_cb();
-
     void spim_regs_cb();
 
     sc_core::sc_time clk;
