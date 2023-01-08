@@ -35,7 +35,11 @@ regfile soc_ctrl {
     reg {
         name = "PAD_MUX";
         regwidth=32;
-    } PAD_MUX[15:0] @0x20;
+    } PAD_MUX[3:0] @0x10;
+    reg {
+        name = "PAD_CFG";
+        regwidth=32;
+    } PAD_CFG[15:0] @0x20;    
     reg {
         name = "JTAG_REG";
         regwidth=32;
@@ -50,7 +54,7 @@ regfile soc_ctrl {
         name = "CORE_STATUS";
         regwidth=32;
         sw=r;
-    } CORE_STATUS = 0x1 @0xc0;
+    } CORE_STATUS[1:0] = 0x1 @0xa0;
     reg {
         name = "FLL_CLOCK_SELECT";
         regwidth=32;

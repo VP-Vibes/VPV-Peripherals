@@ -3,20 +3,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:35 CET 2023
  *             *      soc_ctrl.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_SOC_CTRL_H_
-#define _PULPISSIMO_GEN_SOC_CTRL_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace vpvper::pulpissimo {
+namespace vpvper {
+namespace pulpissimo {
 namespace gen {
 
 class soc_ctrl_regs :
@@ -56,7 +56,7 @@ public:
     scc::sc_register<JTAG_REG_t> JTAG_REG;
     scc::sc_register_indexed<uint32_t, 2> CORE_STATUS;
     scc::sc_register<FLL_CLOCK_SELECT_t> FLL_CLOCK_SELECT;
-
+    
     soc_ctrl_regs(sc_core::sc_module_name nm);
 
     template<unsigned BUSWIDTH=32>
@@ -64,6 +64,7 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
@@ -83,14 +84,13 @@ inline vpvper::pulpissimo::gen::soc_ctrl_regs::soc_ctrl_regs(sc_core::sc_module_
 
 template<unsigned BUSWIDTH>
 inline void vpvper::pulpissimo::gen::soc_ctrl_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(INFO, 0x0UL);
-    target.addResource(BOOT_ADR, 0x4UL);
-    target.addResource(FETCH_ENABLE, 0x8UL);
-    target.addResource(PAD_MUX, 0x10UL);
-    target.addResource(PAD_CFG, 0x20UL);
-    target.addResource(JTAG_REG, 0x74UL);
-    target.addResource(CORE_STATUS, 0xA0UL);
-    target.addResource(FLL_CLOCK_SELECT, 0xc8UL);
+    target.addResource(INFO, 0x0UL+offset);
+    target.addResource(BOOT_ADR, 0x4UL+offset);
+    target.addResource(FETCH_ENABLE, 0x8UL+offset);
+    target.addResource(PAD_MUX, 0x10UL+offset);
+    target.addResource(PAD_CFG, 0x20UL+offset);
+    target.addResource(JTAG_REG, 0x74UL+offset);
+    target.addResource(CORE_STATUS, 0xa0UL+offset);
+    target.addResource(FLL_CLOCK_SELECT, 0xc8UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_SOC_CTRL_H_

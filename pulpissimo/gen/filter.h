@@ -3,20 +3,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:45 CET 2023
  *             *      filter.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_FILTER_H_
-#define _PULPISSIMO_GEN_FILTER_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace vpvper::pulpissimo {
+namespace vpvper {
+namespace pulpissimo {
 namespace gen {
 
 class filter_regs :
@@ -109,6 +109,7 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
@@ -145,31 +146,30 @@ inline vpvper::pulpissimo::gen::filter_regs::filter_regs(sc_core::sc_module_name
 
 template<unsigned BUSWIDTH>
 inline void vpvper::pulpissimo::gen::filter_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(REG_TX_CH0_ADD, 0x0UL + offset);
-    target.addResource(REG_TX_CH0_CFG, 0x4UL + offset);
-    target.addResource(REG_TX_CH0_LEN0, 0x8UL + offset);
-    target.addResource(REG_TX_CH0_LEN1, 0xcUL + offset);
-    target.addResource(REG_TX_CH0_LEN2, 0x10UL + offset);
-    target.addResource(REG_TX_CH1_ADD, 0x14UL + offset);
-    target.addResource(REG_TX_CH1_CFG, 0x18UL + offset);
-    target.addResource(REG_TX_CH1_LEN0, 0x1cUL + offset);
-    target.addResource(REG_TX_CH1_LEN1, 0x20UL + offset);
-    target.addResource(REG_TX_CH1_LEN2, 0x24UL + offset);
-    target.addResource(REG_RX_CH_ADD, 0x28UL + offset);
-    target.addResource(REG_RX_CH_CFG, 0x2cUL + offset);
-    target.addResource(REG_RX_CH_LEN0, 0x30UL + offset);
-    target.addResource(REG_RX_CH_LEN1, 0x34UL + offset);
-    target.addResource(REG_RX_CH_LEN2, 0x38UL + offset);
-    target.addResource(REG_AU_CFG, 0x3cUL + offset);
-    target.addResource(REG_AU_REG0, 0x40UL + offset);
-    target.addResource(REG_AU_REG1, 0x44UL + offset);
-    target.addResource(REG_BINCU_TH, 0x48UL + offset);
-    target.addResource(REG_BINCU_CNT, 0x4cUL + offset);
-    target.addResource(REG_BINCU_SETUP, 0x50UL + offset);
-    target.addResource(REG_BINCU_VAL, 0x54UL + offset);
-    target.addResource(REG_FILT, 0x58UL + offset);
-    target.addResource(REG_FILT_CMD, 0x5cUL + offset);
-    target.addResource(REG_STATUS, 0x60UL + offset);
+    target.addResource(REG_TX_CH0_ADD, 0x0UL+offset);
+    target.addResource(REG_TX_CH0_CFG, 0x4UL+offset);
+    target.addResource(REG_TX_CH0_LEN0, 0x8UL+offset);
+    target.addResource(REG_TX_CH0_LEN1, 0xcUL+offset);
+    target.addResource(REG_TX_CH0_LEN2, 0x10UL+offset);
+    target.addResource(REG_TX_CH1_ADD, 0x14UL+offset);
+    target.addResource(REG_TX_CH1_CFG, 0x18UL+offset);
+    target.addResource(REG_TX_CH1_LEN0, 0x1cUL+offset);
+    target.addResource(REG_TX_CH1_LEN1, 0x20UL+offset);
+    target.addResource(REG_TX_CH1_LEN2, 0x24UL+offset);
+    target.addResource(REG_RX_CH_ADD, 0x28UL+offset);
+    target.addResource(REG_RX_CH_CFG, 0x2cUL+offset);
+    target.addResource(REG_RX_CH_LEN0, 0x30UL+offset);
+    target.addResource(REG_RX_CH_LEN1, 0x34UL+offset);
+    target.addResource(REG_RX_CH_LEN2, 0x38UL+offset);
+    target.addResource(REG_AU_CFG, 0x3cUL+offset);
+    target.addResource(REG_AU_REG0, 0x40UL+offset);
+    target.addResource(REG_AU_REG1, 0x44UL+offset);
+    target.addResource(REG_BINCU_TH, 0x48UL+offset);
+    target.addResource(REG_BINCU_CNT, 0x4cUL+offset);
+    target.addResource(REG_BINCU_SETUP, 0x50UL+offset);
+    target.addResource(REG_BINCU_VAL, 0x54UL+offset);
+    target.addResource(REG_FILT, 0x58UL+offset);
+    target.addResource(REG_FILT_CMD, 0x5cUL+offset);
+    target.addResource(REG_STATUS, 0x60UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_FILTER_H_

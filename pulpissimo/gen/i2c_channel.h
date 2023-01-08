@@ -3,20 +3,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:45 CET 2023
  *             *      i2c_channel.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_I2C_CHANNEL_H_
-#define _PULPISSIMO_GEN_I2C_CHANNEL_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace vpvper::pulpissimo {
+namespace vpvper {
+namespace pulpissimo {
 namespace gen {
 
 class i2c_channel_regs :
@@ -84,6 +84,7 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
@@ -106,17 +107,16 @@ inline vpvper::pulpissimo::gen::i2c_channel_regs::i2c_channel_regs(sc_core::sc_m
 
 template<unsigned BUSWIDTH>
 inline void vpvper::pulpissimo::gen::i2c_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(RX_SADDR, 0x0UL + offset);
-    target.addResource(RX_SIZE, 0x4UL + offset);
-    target.addResource(RX_CFG, 0x8UL + offset);
-    target.addResource(TX_SADDR, 0x10UL + offset);
-    target.addResource(TX_SIZE, 0x14UL + offset);
-    target.addResource(TX_CFG, 0x18UL + offset);
-    target.addResource(CMD_SADDR, 0x20UL + offset);
-    target.addResource(CMD_SIZE, 0x24UL + offset);
-    target.addResource(CMD_CFG, 0x28UL + offset);
-    target.addResource(STATUS, 0x30UL + offset);
-    target.addResource(SETUP, 0x34UL + offset);
+    target.addResource(RX_SADDR, 0x0UL+offset);
+    target.addResource(RX_SIZE, 0x4UL+offset);
+    target.addResource(RX_CFG, 0x8UL+offset);
+    target.addResource(TX_SADDR, 0x10UL+offset);
+    target.addResource(TX_SIZE, 0x14UL+offset);
+    target.addResource(TX_CFG, 0x18UL+offset);
+    target.addResource(CMD_SADDR, 0x20UL+offset);
+    target.addResource(CMD_SIZE, 0x24UL+offset);
+    target.addResource(CMD_CFG, 0x28UL+offset);
+    target.addResource(STATUS, 0x30UL+offset);
+    target.addResource(SETUP, 0x34UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_I2C_CHANNEL_H_

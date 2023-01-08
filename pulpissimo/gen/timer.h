@@ -3,20 +3,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:41 CET 2023
  *             *      timer.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_TIMER_H_
-#define _PULPISSIMO_GEN_TIMER_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace vpvper::pulpissimo {
+namespace vpvper {
+namespace pulpissimo {
 namespace gen {
 
 class timer_regs :
@@ -50,7 +50,7 @@ public:
     scc::sc_register<uint32_t> START_HI;
     scc::sc_register<uint32_t> RESET_LO;
     scc::sc_register<uint32_t> RESET_HI;
-
+    
     timer_regs(sc_core::sc_module_name nm);
 
     template<unsigned BUSWIDTH=32>
@@ -58,6 +58,7 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
@@ -79,16 +80,15 @@ inline vpvper::pulpissimo::gen::timer_regs::timer_regs(sc_core::sc_module_name n
 
 template<unsigned BUSWIDTH>
 inline void vpvper::pulpissimo::gen::timer_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(CFG_LO, 0x0UL);
-    target.addResource(CFG_HI, 0x4UL);
-    target.addResource(CNT_LO, 0x8UL);
-    target.addResource(CNT_HI, 0xcUL);
-    target.addResource(CMP_LO, 0x10UL);
-    target.addResource(CMP_HI, 0x14UL);
-    target.addResource(START_LO, 0x18UL);
-    target.addResource(START_HI, 0x1cUL);
-    target.addResource(RESET_LO, 0x20UL);
-    target.addResource(RESET_HI, 0x24UL);
+    target.addResource(CFG_LO, 0x0UL+offset);
+    target.addResource(CFG_HI, 0x4UL+offset);
+    target.addResource(CNT_LO, 0x8UL+offset);
+    target.addResource(CNT_HI, 0xcUL+offset);
+    target.addResource(CMP_LO, 0x10UL+offset);
+    target.addResource(CMP_HI, 0x14UL+offset);
+    target.addResource(START_LO, 0x18UL+offset);
+    target.addResource(START_HI, 0x1cUL+offset);
+    target.addResource(RESET_LO, 0x20UL+offset);
+    target.addResource(RESET_HI, 0x24UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_TIMER_H_

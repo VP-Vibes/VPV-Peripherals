@@ -3,19 +3,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:33 CET 2023
  *             *      gpio.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_GPIO_H_
-#define _PULPISSIMO_GEN_GPIO_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
+namespace vpvper {
 namespace pulpissimo {
 namespace gen {
 
@@ -94,11 +94,12 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(PADDIR_00_31, r_PADDIR_00_31, 0, *this)
 , NAMED(GPIOEN_00_31, r_GPIOEN_00_31, 0, *this)
@@ -132,35 +133,34 @@ inline pulpissimo::gen::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(PADDIR_00_31, 0x0UL);
-    target.addResource(GPIOEN_00_31, 0x4UL);
-    target.addResource(PADIN_00_31, 0x8UL);
-    target.addResource(PADOUT_00_31, 0xcUL);
-    target.addResource(PADOUTSET_00_31, 0x10UL);
-    target.addResource(PADOUTCLR_00_31, 0x14UL);
-    target.addResource(INTEN_00_31, 0x18UL);
-    target.addResource(INTTYPE_00_15, 0x1cUL);
-    target.addResource(INTTYPE_16_31, 0x20UL);
-    target.addResource(INTSTATUS_00_31, 0x24UL);
-    target.addResource(PADCFG_00_07, 0x28UL);
-    target.addResource(PADCFG_08_15, 0x2cUL);
-    target.addResource(PADCFG_16_23, 0x30UL);
-    target.addResource(PADCFG_24_31, 0x34UL);
-    target.addResource(PADDIR_32_63, 0x38UL);
-    target.addResource(GPIOEN_32_63, 0x3cUL);
-    target.addResource(PADIN_32_63, 0x40UL);
-    target.addResource(PADOUT_32_63, 0x44UL);
-    target.addResource(PADOUTSET_32_63, 0x48UL);
-    target.addResource(PADOUTCLR_32_63, 0x4cUL);
-    target.addResource(INTEN_32_63, 0x50UL);
-    target.addResource(INTTYPE_32_47, 0x54UL);
-    target.addResource(INTTYPE_48_63, 0x58UL);
-    target.addResource(INTSTATUS_32_63, 0x5cUL);
-    target.addResource(PADCFG_32_39, 0x60UL);
-    target.addResource(PADCFG_40_47, 0x64UL);
-    target.addResource(PADCFG_48_55, 0x68UL);
-    target.addResource(PADCFG_56_63, 0x6cUL);
+inline void vpvper::pulpissimo::gen::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+    target.addResource(PADDIR_00_31, 0x0UL+offset);
+    target.addResource(GPIOEN_00_31, 0x4UL+offset);
+    target.addResource(PADIN_00_31, 0x8UL+offset);
+    target.addResource(PADOUT_00_31, 0xcUL+offset);
+    target.addResource(PADOUTSET_00_31, 0x10UL+offset);
+    target.addResource(PADOUTCLR_00_31, 0x14UL+offset);
+    target.addResource(INTEN_00_31, 0x18UL+offset);
+    target.addResource(INTTYPE_00_15, 0x1cUL+offset);
+    target.addResource(INTTYPE_16_31, 0x20UL+offset);
+    target.addResource(INTSTATUS_00_31, 0x24UL+offset);
+    target.addResource(PADCFG_00_07, 0x28UL+offset);
+    target.addResource(PADCFG_08_15, 0x2cUL+offset);
+    target.addResource(PADCFG_16_23, 0x30UL+offset);
+    target.addResource(PADCFG_24_31, 0x34UL+offset);
+    target.addResource(PADDIR_32_63, 0x38UL+offset);
+    target.addResource(GPIOEN_32_63, 0x3cUL+offset);
+    target.addResource(PADIN_32_63, 0x40UL+offset);
+    target.addResource(PADOUT_32_63, 0x44UL+offset);
+    target.addResource(PADOUTSET_32_63, 0x48UL+offset);
+    target.addResource(PADOUTCLR_32_63, 0x4cUL+offset);
+    target.addResource(INTEN_32_63, 0x50UL+offset);
+    target.addResource(INTTYPE_32_47, 0x54UL+offset);
+    target.addResource(INTTYPE_48_63, 0x58UL+offset);
+    target.addResource(INTSTATUS_32_63, 0x5cUL+offset);
+    target.addResource(PADCFG_32_39, 0x60UL+offset);
+    target.addResource(PADCFG_40_47, 0x64UL+offset);
+    target.addResource(PADCFG_48_55, 0x68UL+offset);
+    target.addResource(PADCFG_56_63, 0x6cUL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_GPIO_H_

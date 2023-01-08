@@ -245,7 +245,7 @@ regfile udma {
             	name = "RX_SADDR";
             	fieldwidth = 32;
             } RX_SADDR =0;
-        } SPIM_RX_SADDR @0x100;
+        } SPIM_RX_SADDR @0x0;
         reg {
             name = "SPIM_RX_SIZE";
             desc = "RX SPI uDMA transfer size of buffer";
@@ -254,7 +254,7 @@ regfile udma {
                 name = "RX_SIZE";
                 fieldwidth = 32;
             } RX_SIZE =0;
-        } SPIM_RX_SIZE @0x104;
+        } SPIM_RX_SIZE @0x4;
         reg {
             name = "SPIM_RX_CFG";
             desc = "RX SPI uDMA transfer configuration";
@@ -267,14 +267,14 @@ regfile udma {
             } PENDING[5:5] =0;
             field {
                 name = "EN";
-            } EN[4:4] =0;
+            } EN[4:4] =0x1;
             field {
                 name = "DATASIZE";
             } DATASIZE[2:1] =0;
             field {
                 name = "CONTINOUS";
             } CONTINOUS[0:0] =0;
-        } SPIM_RX_CFG @0x108;
+        } SPIM_RX_CFG @0x8;
         reg {
             name = "SPIM_TX_SADDR";
             desc = "TX SPI uDMA transfer address of associated buffer";
@@ -283,7 +283,7 @@ regfile udma {
                 name = "TX_SADDR";
                 fieldwidth = 32;
             } TX_SADDR =0;
-        } SPIM_TX_SADDR @0x110;
+        } SPIM_TX_SADDR @0x10;
         reg {
             name = "SPIM_TX_SIZE";
             desc = "TX SPI uDMA transfer size of buffer";
@@ -292,7 +292,7 @@ regfile udma {
                 name = "TX_SIZE";
                 fieldwidth = 32;
             } TX_SIZE =0;
-        } SPIM_TX_SIZE @0x114;
+        } SPIM_TX_SIZE @0x14;
         reg {
             name = "SPIM_TX_CFG";
             desc = "TX SPI uDMA transfer configuration";
@@ -312,7 +312,7 @@ regfile udma {
             field {
                 name = "CONTINOUS";
             } CONTINOUS[0:0] =0;
-        } SPIM_TX_CFG @0x118;
+        } SPIM_TX_CFG @0x18;
         reg {
             name = "SPIM_CMD_SADDR";
             desc = "CMD SPI uDMA transfer address of associated buffer";
@@ -321,7 +321,7 @@ regfile udma {
                 name = "CMD_SADDR";
                 fieldwidth = 32;
             } CMD_SADDR =0;
-        } SPIM_CMD_SADDR @0x120;
+        } SPIM_CMD_SADDR @0x20;
         reg {
             name = "SPIM_CMD_SIZE";
             desc = "CMD SPI uDMA transfer size of buffer";
@@ -330,7 +330,7 @@ regfile udma {
                 name = "CMD_SIZE";
                 fieldwidth = 32;
             } CMD_SIZE = 0;
-        } SPIM_CMD_SIZE @0x124;
+        } SPIM_CMD_SIZE @0x24;
         reg {
             name = "SPIM_CMD_CFG";
             desc = "CMD SPI uDMA transfer configuration";
@@ -350,7 +350,7 @@ regfile udma {
             field {
                 name = "CONTINOUS";
             } CONTINOUS[0:0] =0;
-        } SPIM_CMD_CFG @0x128;
+        } SPIM_CMD_CFG @0x28;
     } spi @0x100;
     //=============================================================================
     // uDMA I2C Channel Registers
@@ -364,7 +364,7 @@ regfile udma {
                 name = "RX_SADDR";
                 fieldwidth = 32;
             } RX_SADDR =0;
-        } RX_SADDR @0x180;
+        } RX_SADDR @0x0;
         reg {
             name = "RX_SIZE";
             desc = "uDMA RX I2C buffer size configuration register.";
@@ -373,7 +373,7 @@ regfile udma {
                 name = "RX_SIZE";
                 fieldwidth = 32;
             } RX_SIZE =0;
-        } RX_SIZE @0x184;
+        } RX_SIZE @0x4;
         reg {
             name = "RX_CFG";
             desc = "uDMA RX I2C stream configuration register.";
@@ -393,7 +393,7 @@ regfile udma {
             field {
                 name = "CONTINOUS";
             } CONTINOUS[0:0] =0;
-        } RX_CFG @0x188;
+        } RX_CFG @0x8;
         reg {
             name = "TX_SADDR";
             desc = "uDMA TX I2C buffer base address configuration register.";
@@ -402,7 +402,7 @@ regfile udma {
                 name = "TX_SADDR";
                 fieldwidth = 32;
             } TX_SADDR =0;
-        } TX_SADDR @0x190;
+        } TX_SADDR @0x10;
         reg {
             name = "TX_SIZE";
             desc = "uDMA TX I2C buffer size configuration register.";
@@ -411,7 +411,7 @@ regfile udma {
                 name = "TX_SIZE";
                 fieldwidth = 32;
             } TX_SIZE =0;
-        } TX_SIZE @0x194;
+        } TX_SIZE @0x14;
         reg {
             name = "TX_CFG";
             desc = "uDMA TX I2C stream configuration register.";
@@ -431,7 +431,7 @@ regfile udma {
             field {
                 name = "CONTINOUS";
             } CONTINOUS[0:0] =0;
-        } TX_CFG @0x198;
+        } TX_CFG @0x18;
         reg {
             name = "CMD_SADDR";
             desc = "uDMA CMD I2C buffer base address configuration register.";
@@ -440,7 +440,7 @@ regfile udma {
                 name = "CMD_SADDR";
                 fieldwidth = 32;
             } CMD_SADDR =0;
-        } CMD_SADDR @0x1A0;
+        } CMD_SADDR @0x20;
         reg {
             name = "CMD_SIZE";
             desc = "uDMA CMD I2C buffer size configuration register.";
@@ -449,7 +449,7 @@ regfile udma {
                 name = "CMD_SIZE";
                 fieldwidth = 32;
             } CMD_SIZE = 0;
-        } CMD_SIZE @0x1A4;
+        } CMD_SIZE @0x24;
         reg {
             name = "CMD_CFG";
             desc = "uDMA CMD I2C stream configuration register.";
@@ -469,7 +469,7 @@ regfile udma {
             field {
                 name = "CONTINOUS";
             } CONTINOUS[0:0] =0;
-        } CMD_CFG @0x1A8;
+        } CMD_CFG @0x28;
         reg {
             name = "STATUS";
             desc = "uDMA I2C Status register.";
@@ -483,7 +483,7 @@ regfile udma {
             field {
                 name = "CONTINOUS";
             } BUSY[0:0] =0;
-        } STATUS @0x1B0;
+        } STATUS @0x30;
         reg {
             name = "SETUP";
             desc = "uDMA I2C Configuration register.";
@@ -491,7 +491,7 @@ regfile udma {
             field {
                 name = "DO_RST";
             } DO_RST[0:0] =0;
-        } SETUP @0x1B4;
+        } SETUP @0x34;
     } i2c0 @0x180;
     i2c_channel  i2c1 @0x200;
     //=============================================================================
@@ -747,7 +747,7 @@ regfile udma {
             field {
                 name = "FRAMESLICE_URX";
             } FRAMESLICE_URX[15:0] =0;
-        } CAM_CFG_UR @0xA8;
+        } CAM_CFG_UR @0x28;
         reg {
             name = "CAM_CFG_SIZE";
             desc = "Horizontal Resolution configuration register";

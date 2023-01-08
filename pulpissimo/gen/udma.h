@@ -3,13 +3,12 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:45 CET 2023
  *             *      udma.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_UDMA_H_
-#define _PULPISSIMO_GEN_UDMA_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
@@ -18,12 +17,12 @@
 #include "uart_channel.h"
 #include "spi_channel.h"
 #include "i2c_channel.h"
-#include "i2c_channel.h"
 #include "i2s_channel.h"
 #include "cam_channel.h"
 #include "filter.h"
 
-namespace vpvper::pulpissimo {
+namespace vpvper {
+namespace pulpissimo {
 namespace gen {
 
 class udma_regs :
@@ -79,6 +78,7 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
@@ -100,9 +100,9 @@ inline vpvper::pulpissimo::gen::udma_regs::udma_regs(sc_core::sc_module_name nm)
 
 template<unsigned BUSWIDTH>
 inline void vpvper::pulpissimo::gen::udma_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(CTRL_CFG_CG, 0UL);
-    target.addResource(CTRL_CFG_EVENT, 0x4UL);
-    target.addResource(CTRL_CFG_RST, 0x8UL);
+    target.addResource(CTRL_CFG_CG, 0UL+offset);
+    target.addResource(CTRL_CFG_EVENT, 0x4UL+offset);
+    target.addResource(CTRL_CFG_RST, 0x8UL+offset);
     i_uart.registerResources(target, 0x80UL+offset);
     i_spi.registerResources(target, 0x100UL+offset);
     i_i2c0.registerResources(target, 0x180UL+offset);
@@ -112,4 +112,3 @@ inline void vpvper::pulpissimo::gen::udma_regs::registerResources(scc::tlm_targe
     i_filt.registerResources(target, 0x400UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_UDMA_H_

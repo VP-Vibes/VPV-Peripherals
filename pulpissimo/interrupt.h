@@ -14,19 +14,23 @@ class interrupt_regs;
 }
 
 class interrupt : public sc_core::sc_module, public scc::tlm_target<> {
-public:
-    sc_core::sc_in<sc_core::sc_time> clk_i{"clk_i"};
-    sc_core::sc_in<bool> rst_i{"rst_i"};
-    interrupt(sc_core::sc_module_name nm);
-    virtual ~interrupt() override;
+ public:
+  sc_core::sc_in<sc_core::sc_time> clk_i{"clk_i"};
+  sc_core::sc_in<bool> rst_i{"rst_i"};
 
-protected:
-    void clock_cb();
-    void reset_cb();
-    sc_core::sc_time clk;
-    std::unique_ptr<gen::interrupt_regs> regs;
+  interrupt(sc_core::sc_module_name nm);
+  virtual ~interrupt() override;
+
+  void push(size_t);
+
+ protected:
+  sc_core::sc_time clk;
+  std::unique_ptr<gen::interrupt_regs> regs;
+
+  void clock_cb();
+  void reset_cb();
 };
 
-} /* namespace pulpissimo */
+}  // namespace vpvper::pulpissimo
 
 #endif /* _PULPISSIMO_INTERRUPT_H_ */

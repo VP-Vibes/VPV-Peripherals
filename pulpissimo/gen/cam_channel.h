@@ -3,20 +3,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:45 CET 2023
  *             *      cam_channel.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_CAM_CHANNEL_H_
-#define _PULPISSIMO_GEN_CAM_CHANNEL_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace vpvper::pulpissimo {
+namespace vpvper {
+namespace pulpissimo {
 namespace gen {
 
 class cam_channel_regs :
@@ -83,6 +83,7 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
@@ -103,15 +104,14 @@ inline vpvper::pulpissimo::gen::cam_channel_regs::cam_channel_regs(sc_core::sc_m
 
 template<unsigned BUSWIDTH>
 inline void vpvper::pulpissimo::gen::cam_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(CAM_RX_SADDR, 0x0UL + offset);
-    target.addResource(CAM_RX_SIZE, 0x4UL + offset);
-    target.addResource(CAM_RX_CFG, 0x8UL + offset);
-    target.addResource(CAM_CFG_GLOB, 0x20UL + offset);
-    target.addResource(CAM_CFG_LL, 0x24UL + offset);
-    target.addResource(CAM_CFG_UR, 0x28UL + offset);
-    target.addResource(CAM_CFG_SIZE, 0x2cUL + offset);
-    target.addResource(CAM_CFG_FILTER, 0x30UL + offset);
-    target.addResource(CAM_VSYNC_POLARITY, 0x34UL + offset);
+    target.addResource(CAM_RX_SADDR, 0x0UL+offset);
+    target.addResource(CAM_RX_SIZE, 0x4UL+offset);
+    target.addResource(CAM_RX_CFG, 0x8UL+offset);
+    target.addResource(CAM_CFG_GLOB, 0x20UL+offset);
+    target.addResource(CAM_CFG_LL, 0x24UL+offset);
+    target.addResource(CAM_CFG_UR, 0x28UL+offset);
+    target.addResource(CAM_CFG_SIZE, 0x2cUL+offset);
+    target.addResource(CAM_CFG_FILTER, 0x30UL+offset);
+    target.addResource(CAM_VSYNC_POLARITY, 0x34UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_CAM_CHANNEL_H_

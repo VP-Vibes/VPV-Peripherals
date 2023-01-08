@@ -3,20 +3,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:38 CET 2023
  *             *      soc_event.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_SOC_EVENT_H_
-#define _PULPISSIMO_GEN_SOC_EVENT_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
-namespace vpvper::pulpissimo {
+namespace vpvper {
+namespace pulpissimo {
 namespace gen {
 
 class soc_event_regs :
@@ -48,7 +48,7 @@ public:
     scc::sc_register_indexed<uint32_t, 8> ERR;
     scc::sc_register<TIMER_LO_t> TIMER_LO;
     scc::sc_register<TIMER_HI_t> TIMER_HI;
-
+    
     soc_event_regs(sc_core::sc_module_name nm);
 
     template<unsigned BUSWIDTH=32>
@@ -56,6 +56,7 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
@@ -73,12 +74,11 @@ inline vpvper::pulpissimo::gen::soc_event_regs::soc_event_regs(sc_core::sc_modul
 
 template<unsigned BUSWIDTH>
 inline void vpvper::pulpissimo::gen::soc_event_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(SW_EVENT, 0x0UL);
-    target.addResource(FC_MASK, 0x4UL);
-    target.addResource(PR_MASK, 0x44UL);
-    target.addResource(ERR, 0x64UL);
-    target.addResource(TIMER_LO, 0x84UL);
-    target.addResource(TIMER_HI, 0x88UL);
+    target.addResource(SW_EVENT, 0x0UL+offset);
+    target.addResource(FC_MASK, 0x4UL+offset);
+    target.addResource(PR_MASK, 0x44UL+offset);
+    target.addResource(ERR, 0x64UL+offset);
+    target.addResource(TIMER_LO, 0x84UL+offset);
+    target.addResource(TIMER_HI, 0x88UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_SOC_EVENT_H_

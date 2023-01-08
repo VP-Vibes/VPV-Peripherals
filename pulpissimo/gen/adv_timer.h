@@ -3,19 +3,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:33 CET 2023
  *             *      adv_timer.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_ADV_TIMER_H_
-#define _PULPISSIMO_GEN_ADV_TIMER_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
+namespace vpvper {
 namespace pulpissimo {
 namespace gen {
 
@@ -106,11 +106,12 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::adv_timer_regs::adv_timer_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::adv_timer_regs::adv_timer_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(T0_CMD, r_T0_CMD, 0, *this)
 , NAMED(T0_CONFIG, r_T0_CONFIG, 0, *this)
@@ -150,41 +151,40 @@ inline pulpissimo::gen::adv_timer_regs::adv_timer_regs(sc_core::sc_module_name n
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::adv_timer_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(T0_CMD, 0x0UL);
-    target.addResource(T0_CONFIG, 0x4UL);
-    target.addResource(T0_THRESHOLD, 0x8UL);
-    target.addResource(T0_TH_CHANNEL0, 0xcUL);
-    target.addResource(T0_TH_CHANNEL1, 0x10UL);
-    target.addResource(T0_TH_CHANNEL2, 0x14UL);
-    target.addResource(T0_TH_CHANNEL3, 0x18UL);
-    target.addResource(T0_COUNTER, 0x2cUL);
-    target.addResource(T1_CMD, 0x40UL);
-    target.addResource(T1_CONFIG, 0x44UL);
-    target.addResource(T1_THRESHOLD, 0x48UL);
-    target.addResource(T1_TH_CHANNEL0, 0x4cUL);
-    target.addResource(T1_TH_CHANNEL1, 0x50UL);
-    target.addResource(T1_TH_CHANNEL2, 0x54UL);
-    target.addResource(T1_TH_CHANNEL3, 0x58UL);
-    target.addResource(T1_COUNTER, 0x6cUL);
-    target.addResource(T2_CMD, 0x80UL);
-    target.addResource(T2_CONFIG, 0x84UL);
-    target.addResource(T2_THRESHOLD, 0x88UL);
-    target.addResource(T2_TH_CHANNEL0, 0x8cUL);
-    target.addResource(T2_TH_CHANNEL1, 0x90UL);
-    target.addResource(T2_TH_CHANNEL2, 0x94UL);
-    target.addResource(T2_TH_CHANNEL3, 0x98UL);
-    target.addResource(T2_COUNTER, 0xacUL);
-    target.addResource(T3_CMD, 0xc0UL);
-    target.addResource(T3_CONFIG, 0xc4UL);
-    target.addResource(T3_THRESHOLD, 0xc8UL);
-    target.addResource(T3_TH_CHANNEL0, 0xccUL);
-    target.addResource(T3_TH_CHANNEL1, 0xd0UL);
-    target.addResource(T3_TH_CHANNEL2, 0xd4UL);
-    target.addResource(T3_TH_CHANNEL3, 0xd8UL);
-    target.addResource(T3_COUNTER, 0xecUL);
-    target.addResource(EVENT_CFG, 0x100UL);
-    target.addResource(CG, 0x104UL);
+inline void vpvper::pulpissimo::gen::adv_timer_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+    target.addResource(T0_CMD, 0x0UL+offset);
+    target.addResource(T0_CONFIG, 0x4UL+offset);
+    target.addResource(T0_THRESHOLD, 0x8UL+offset);
+    target.addResource(T0_TH_CHANNEL0, 0xcUL+offset);
+    target.addResource(T0_TH_CHANNEL1, 0x10UL+offset);
+    target.addResource(T0_TH_CHANNEL2, 0x14UL+offset);
+    target.addResource(T0_TH_CHANNEL3, 0x18UL+offset);
+    target.addResource(T0_COUNTER, 0x2cUL+offset);
+    target.addResource(T1_CMD, 0x40UL+offset);
+    target.addResource(T1_CONFIG, 0x44UL+offset);
+    target.addResource(T1_THRESHOLD, 0x48UL+offset);
+    target.addResource(T1_TH_CHANNEL0, 0x4cUL+offset);
+    target.addResource(T1_TH_CHANNEL1, 0x50UL+offset);
+    target.addResource(T1_TH_CHANNEL2, 0x54UL+offset);
+    target.addResource(T1_TH_CHANNEL3, 0x58UL+offset);
+    target.addResource(T1_COUNTER, 0x6cUL+offset);
+    target.addResource(T2_CMD, 0x80UL+offset);
+    target.addResource(T2_CONFIG, 0x84UL+offset);
+    target.addResource(T2_THRESHOLD, 0x88UL+offset);
+    target.addResource(T2_TH_CHANNEL0, 0x8cUL+offset);
+    target.addResource(T2_TH_CHANNEL1, 0x90UL+offset);
+    target.addResource(T2_TH_CHANNEL2, 0x94UL+offset);
+    target.addResource(T2_TH_CHANNEL3, 0x98UL+offset);
+    target.addResource(T2_COUNTER, 0xacUL+offset);
+    target.addResource(T3_CMD, 0xc0UL+offset);
+    target.addResource(T3_CONFIG, 0xc4UL+offset);
+    target.addResource(T3_THRESHOLD, 0xc8UL+offset);
+    target.addResource(T3_TH_CHANNEL0, 0xccUL+offset);
+    target.addResource(T3_TH_CHANNEL1, 0xd0UL+offset);
+    target.addResource(T3_TH_CHANNEL2, 0xd4UL+offset);
+    target.addResource(T3_TH_CHANNEL3, 0xd8UL+offset);
+    target.addResource(T3_COUNTER, 0xecUL+offset);
+    target.addResource(EVENT_CFG, 0x100UL+offset);
+    target.addResource(CG, 0x104UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_ADV_TIMER_H_
