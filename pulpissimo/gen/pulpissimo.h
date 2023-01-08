@@ -1,5 +1,15 @@
-#ifndef _PULPISSIMO_MAP_H_
-#define _PULPISSIMO_MAP_H_
+/*
+ * Copyright (c) 2019 -2022 MINRES Technologies GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Created on: Sat Jan 07 23:53:33 CET 2023
+ *             *      pulpissimo.h Author: <RDL Generator>
+ *
+ */
+
+#pragma once
+
 // need double braces, see https://stackoverflow.com/questions/6893700/how-to-construct-stdarray-object-with-initializer-list#6894191
 const std::array<scc::target_memory_map_entry<32>, 8> pulpissimo_map = {{
     {i_fll.socket, 0x1a100000, 0x10},
@@ -12,4 +22,3 @@ const std::array<scc::target_memory_map_entry<32>, 8> pulpissimo_map = {{
     {i_timer.socket, 0x1a10b000, 0x28},
 }};
 
-#endif /* _PULPISSIMO_MAP_H_ */

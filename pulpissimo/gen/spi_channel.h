@@ -3,19 +3,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:45 CET 2023
  *             *      spi_channel.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_SPI_CHANNEL_H_
-#define _PULPISSIMO_GEN_SPI_CHANNEL_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
+namespace vpvper {
 namespace pulpissimo {
 namespace gen {
 
@@ -74,11 +74,12 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::spi_channel_regs::spi_channel_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::spi_channel_regs::spi_channel_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(SPIM_RX_SADDR, r_SPIM_RX_SADDR, 0, *this)
 , NAMED(SPIM_RX_SIZE, r_SPIM_RX_SIZE, 0, *this)
@@ -93,16 +94,15 @@ inline pulpissimo::gen::spi_channel_regs::spi_channel_regs(sc_core::sc_module_na
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::spi_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(SPIM_RX_SADDR, 0x100UL);
-    target.addResource(SPIM_RX_SIZE, 0x104UL);
-    target.addResource(SPIM_RX_CFG, 0x108UL);
-    target.addResource(SPIM_TX_SADDR, 0x110UL);
-    target.addResource(SPIM_TX_SIZE, 0x114UL);
-    target.addResource(SPIM_TX_CFG, 0x118UL);
-    target.addResource(SPIM_CMD_SADDR, 0x120UL);
-    target.addResource(SPIM_CMD_SIZE, 0x124UL);
-    target.addResource(SPIM_CMD_CFG, 0x128UL);
+inline void vpvper::pulpissimo::gen::spi_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+    target.addResource(SPIM_RX_SADDR, 0x0UL+offset);
+    target.addResource(SPIM_RX_SIZE, 0x4UL+offset);
+    target.addResource(SPIM_RX_CFG, 0x8UL+offset);
+    target.addResource(SPIM_TX_SADDR, 0x10UL+offset);
+    target.addResource(SPIM_TX_SIZE, 0x14UL+offset);
+    target.addResource(SPIM_TX_CFG, 0x18UL+offset);
+    target.addResource(SPIM_CMD_SADDR, 0x20UL+offset);
+    target.addResource(SPIM_CMD_SIZE, 0x24UL+offset);
+    target.addResource(SPIM_CMD_CFG, 0x28UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_SPI_CHANNEL_H_

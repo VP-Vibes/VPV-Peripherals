@@ -13,6 +13,16 @@ regfile interrupt {
         regwidth=32;
     } MASK @0x0;
     reg {
+        name = "MASK_SET";
+        desc = "";
+        regwidth=32;
+    } MASK_SET @0x4;
+    reg {
+        name = "MASK_CLR";
+        desc = "";
+        regwidth=32;
+    } MASK_CLR @0x8;        
+    reg {
         name = "INT";
         desc = "";
         regwidth=32;

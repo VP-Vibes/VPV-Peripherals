@@ -3,19 +3,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Created on: Tue Feb 15 10:40:56 CET 2022
+ * Created on: Sat Jan 07 23:53:45 CET 2023
  *             *      uart_channel.h Author: <RDL Generator>
  *
  */
 
-#ifndef _PULPISSIMO_GEN_UART_CHANNEL_H_
-#define _PULPISSIMO_GEN_UART_CHANNEL_H_
+#pragma once
 
 #include <scc/utilities.h>
 #include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 
+namespace vpvper {
 namespace pulpissimo {
 namespace gen {
 
@@ -102,11 +102,12 @@ public:
 };
 } // namespace gen
 } // namespace pulpissimo
+} // namespace vpvper
 //////////////////////////////////////////////////////////////////////////////
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline pulpissimo::gen::uart_channel_regs::uart_channel_regs(sc_core::sc_module_name nm)
+inline vpvper::pulpissimo::gen::uart_channel_regs::uart_channel_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(RX_SADDR, r_RX_SADDR, 0, *this)
 , NAMED(RX_SIZE, r_RX_SIZE, 0, *this)
@@ -124,19 +125,18 @@ inline pulpissimo::gen::uart_channel_regs::uart_channel_regs(sc_core::sc_module_
 }
 
 template<unsigned BUSWIDTH>
-inline void pulpissimo::gen::uart_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
-    target.addResource(RX_SADDR, 0x0UL);
-    target.addResource(RX_SIZE, 0x4UL);
-    target.addResource(RX_CFG, 0x8UL);
-    target.addResource(TX_SADDR, 0x10UL);
-    target.addResource(TX_SIZE, 0x14UL);
-    target.addResource(TX_CFG, 0x18UL);
-    target.addResource(STATUS, 0x20UL);
-    target.addResource(SETUP, 0x24UL);
-    target.addResource(ERROR, 0x28UL);
-    target.addResource(IRQ_EN, 0x2cUL);
-    target.addResource(VALID, 0x30UL);
-    target.addResource(DATA, 0x34UL);
+inline void vpvper::pulpissimo::gen::uart_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+    target.addResource(RX_SADDR, 0x0UL+offset);
+    target.addResource(RX_SIZE, 0x4UL+offset);
+    target.addResource(RX_CFG, 0x8UL+offset);
+    target.addResource(TX_SADDR, 0x10UL+offset);
+    target.addResource(TX_SIZE, 0x14UL+offset);
+    target.addResource(TX_CFG, 0x18UL+offset);
+    target.addResource(STATUS, 0x20UL+offset);
+    target.addResource(SETUP, 0x24UL+offset);
+    target.addResource(ERROR, 0x28UL+offset);
+    target.addResource(IRQ_EN, 0x2cUL+offset);
+    target.addResource(VALID, 0x30UL+offset);
+    target.addResource(DATA, 0x34UL+offset);
 }
 
-#endif // _PULPISSIMO_GEN_UART_CHANNEL_H_
