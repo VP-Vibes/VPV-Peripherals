@@ -21,8 +21,8 @@ soc_event::soc_event(sc_core::sc_module_name nm)
     sensitive << clk_i;
     SC_METHOD(reset_cb);
     sensitive << rst_i;
-    regs->SW_EVENT.set_read_cb([this](scc::sc_register<uint32_t> const&, uint32_t& v, sc_core::sc_time t)-> bool {return true;});
-    regs->ERR.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t)-> bool {return true;});
+    regs->SW_EVENT.set_read_cb([this](scc::sc_register<uint32_t> const&, uint32_t& v)-> bool {return true;});
+    regs->ERR.set_write_cb([this](size_t, scc::sc_register<uint32_t>&, uint32_t const& v)-> bool {return true;});
 }
 
 soc_event::~soc_event() {} // NOLINT
