@@ -17,7 +17,7 @@ template <typename BASE> class riscv_hart_msu_vp;
 
 namespace vpvper {
 namespace sifive {
-
+    
 class clint_regs;
 namespace SiFive {
 class core_complex;
