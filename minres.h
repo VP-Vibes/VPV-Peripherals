@@ -10,3 +10,4 @@
 #include "minres/presc.h"
 #include "minres/tim.h"
 #include "minres/uart_terminal.h"
+#include "minres/aclint.h"

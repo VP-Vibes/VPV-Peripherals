@@ -12,6 +12,7 @@ add_library(${PROJECT_NAME}_minres
 	qspi.cpp
 	irq.cpp
 	uart_terminal.cpp
+  aclint.cpp
 )
 target_include_directories(${PROJECT_NAME}_minres PUBLIC ${vpvper_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME}_minres PUBLIC scc)
