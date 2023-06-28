@@ -31,10 +31,10 @@ public:
     ~beh() override;
 
 protected:
-    tlm::scc::tlm_signal_bool_opt_out _sck_o;
-    tlm::scc::tlm_signal_bool_opt_out _mosi_o;
-    tlm::scc::tlm_signal_bool_opt_in _miso_i;
-    sc_core::sc_vector<tlm::scc::tlm_signal_bool_opt_out> _scs_o;
+    tlm::scc::tlm_signal_bool_opt_out sck_o{"sck_o"};
+    tlm::scc::tlm_signal_bool_opt_out mosi_o{"mosi_o"};
+    tlm::scc::tlm_signal_bool_opt_in miso_i{"miso_i"};
+    sc_core::sc_vector<tlm::scc::tlm_signal_bool_opt_out> scs_o{"scs_o", 4};
 
     void clock_cb();
     void reset_cb();
@@ -50,19 +50,15 @@ protected:
 beh::beh(sc_core::sc_module_name nm)
 : spi(nm)
 , tlm_target<>(clk)
-, NAMED(_sck_o)
-, NAMED(_mosi_o)
-, NAMED(_miso_i)
-, NAMED(_scs_o, 4)
 , NAMED(bit_true_transfer, false)
 , NAMEDD(regs, spi_regs)
 , rx_fifo(8)
 , tx_fifo(8) {
     spi::socket(scc::tlm_target<>::socket);
-    _sck_o(sck_o);
-    _mosi_o(mosi_o);
-    miso_i(_miso_i);
-    _scs_o(scs_o);
+    sck_o(spi::sck_o);
+    mosi_o(spi::mosi_o);
+    spi::miso_i(miso_i);
+    scs_o(spi::scs_o);
 
     regs->registerResources(*this);
     SC_METHOD(clock_cb);
@@ -71,7 +67,7 @@ beh::beh(sc_core::sc_module_name nm)
     sensitive << rst_i;
     dont_initialize();
     SC_THREAD(transmit_data);
-    _miso_i.register_nb_transport(
+    miso_i.register_nb_transport(
         [this](tlm::scc::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase, sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
             this->receive_data(gp, delay);
             return tlm::TLM_COMPLETED;
@@ -107,7 +103,7 @@ beh::beh(sc_core::sc_module_name nm)
                 tlm::scc::tlm_signal_gp<> gp;
                 gp.set_command(tlm::TLM_WRITE_COMMAND);
                 gp.set_value(true);
-                _scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
+                scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
             }
             reg.put(data);
             return true;
@@ -119,7 +115,7 @@ beh::beh(sc_core::sc_module_name nm)
             tlm::scc::tlm_signal_gp<> gp;
             gp.set_command(tlm::TLM_WRITE_COMMAND);
             gp.set_value(true);
-            _scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
+            scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
         }
         reg.put(data);
         return true;
@@ -132,7 +128,7 @@ beh::beh(sc_core::sc_module_name nm)
             tlm::scc::tlm_signal_gp<> gp;
             gp.set_command(tlm::TLM_WRITE_COMMAND);
             gp.set_value(true);
-            _scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
+            scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
         }
         reg.put(data);
         return true;
@@ -198,25 +194,25 @@ void beh::transmit_data() {
     while (true) {
         wait(tx_fifo.data_written_event());
         if (regs->r_csmode.mode != 3 && regs->r_csid < 4) // not in OFF mode
-            set_bit(false, _scs_o[regs->r_csid]);
-        set_bit(regs->r_sckmode.pol, _sck_o);
+            set_bit(false, scs_o[regs->r_csid]);
+        set_bit(regs->r_sckmode.pol, sck_o);
         while (tx_fifo.nb_read(txdata)) {
             regs->r_txdata.full = tx_fifo.num_free() == 0;
             regs->r_ip.txwm = regs->r_txmark.txmark <= (7 - tx_fifo.num_free()) ? 1 : 0;
             update_irq_evt.notify();
             bit_duration = 2 * (regs->r_sckdiv.div + 1) * clk;
             start_time = sc_core::sc_time_stamp();
-            set_bit(txdata & 0x80, _mosi_o); // 8 data bits, MSB first
-            auto s2m = set_bit(1 - regs->r_sckmode.pol, _sck_o, true);
+            set_bit(txdata & 0x80, mosi_o); // 8 data bits, MSB first
+            auto s2m = set_bit(1 - regs->r_sckmode.pol, sck_o, true);
             wait(bit_duration / 2);
-            set_bit(regs->r_sckmode.pol, _sck_o, true);
+            set_bit(regs->r_sckmode.pol, sck_o, true);
             wait(bit_duration / 2);
             if (bit_true_transfer.get_value()) {
                 for (size_t i = 0, mask = 0x40; i < 7; ++i, mask >>= 1) {
-                    set_bit(txdata & mask, _mosi_o); // 8 data bits, MSB first
-                    set_bit(1 - regs->r_sckmode.pol, _sck_o);
+                    set_bit(txdata & mask, mosi_o); // 8 data bits, MSB first
+                    set_bit(1 - regs->r_sckmode.pol, sck_o);
                     wait(bit_duration / 2);
-                    set_bit(regs->r_sckmode.pol, _sck_o);
+                    set_bit(regs->r_sckmode.pol, sck_o);
                     wait(bit_duration / 2);
                 }
             } else
@@ -225,7 +221,7 @@ void beh::transmit_data() {
             update_irq_evt.notify();
         }
         if (regs->r_csmode.mode == 0 && regs->r_csid < 4) // in AUTO mode
-            set_bit(false, _scs_o[regs->r_csid]);
+            set_bit(false, scs_o[regs->r_csid]);
     }
 }
 

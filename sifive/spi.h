@@ -49,12 +49,13 @@ public:
 protected:
     spi(sc_core::sc_module_name nm)
     : sc_core::sc_module(nm)
+    , socket{"$$$hier_socket$$$"} // place holder name
     , NAMED(clk_i)
     , NAMED(rst_i)
-    , NAMED(sck_o)
-    , NAMED(mosi_o)
-    , NAMED(miso_i)
-    , NAMED(scs_o, 4)
+    , sck_o("$$$sck_o$$$") // place holder name
+    , mosi_o("$$$mosi_o$$$") // place holder name
+    , miso_i("$$$miso_i$$$") // place holder name
+    , scs_o("$$$scs_o$$$", 4) // place holder name
     , NAMED(irq_o){};
 };
 
