@@ -26,7 +26,7 @@ public:
     template <typename T> using tlm_in = tlm::scc::tlm_signal_opt_target_socket<T>;
     template <typename T> using tlm_out = tlm::scc::tlm_signal_opt_initiator_socket<T>;
 
-    tlm::tlm_target_socket<> socket;
+    tlm::tlm_target_socket<scc::LT> socket;
     sc_core::sc_in<sc_core::sc_time> clk_i;
     sc_core::sc_in<bool> rst_i;
     tlm_out<bool> sck_o;
