@@ -45,6 +45,10 @@ uart::uart(sc_core::sc_module_name const& nm)
         });
     regs->txdata.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
         if (!this->regs->in_reset()) {
+            if(d.value()) {
+                wait(d);
+                d=SC_ZERO_TIME;
+            }
             reg.put(data);
             tx_fifo.nb_write(static_cast<uint8_t>(regs->r_txdata.data));
             regs->r_txdata.full = tx_fifo.num_free() == 0;
@@ -56,6 +60,10 @@ uart::uart(sc_core::sc_module_name const& nm)
     regs->rxdata.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data, sc_core::sc_time d) -> bool {
         if (!this->regs->in_reset()) {
             uint8_t val;
+            if(d.value()) {
+                wait(d);
+                d=SC_ZERO_TIME;
+            }
             if (rx_fifo.nb_read(val)) {
                 regs->r_rxdata.data = val;
                 if (regs->r_rxctrl.rxcnt <= rx_fifo.num_available()) {
