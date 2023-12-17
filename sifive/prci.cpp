@@ -16,8 +16,6 @@ using namespace sc_core;
 prci::prci(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(hfclk)
-, NAMED(rst_i)
-, NAMED(hfclk_o)
 , NAMEDD(regs, prci_regs) {
     regs->registerResources(*this);
     SC_METHOD(reset_cb);

@@ -18,52 +18,15 @@
 
 namespace vpvper {
 namespace sifive {
-namespace spi_impl {
 using namespace sc_core;
 
-class beh : public spi, public scc::tlm_target<> {
-public:
-    SC_HAS_PROCESS(beh); // NOLINT
-
-    cci::cci_param<bool> bit_true_transfer;
-
-    beh(sc_core::sc_module_name nm);
-    ~beh() override;
-
-protected:
-    tlm::scc::tlm_signal_bool_opt_out _sck_o;
-    tlm::scc::tlm_signal_bool_opt_out _mosi_o;
-    tlm::scc::tlm_signal_bool_opt_in _miso_i;
-    sc_core::sc_vector<tlm::scc::tlm_signal_bool_opt_out> _scs_o;
-
-    void clock_cb();
-    void reset_cb();
-    void transmit_data();
-    void receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay);
-    void update_irq();
-    sc_core::sc_event update_irq_evt;
-    sc_core::sc_time clk;
-    std::unique_ptr<spi_regs> regs;
-    sc_core::sc_fifo<uint8_t> rx_fifo, tx_fifo;
-};
-
-beh::beh(sc_core::sc_module_name nm)
-: spi(nm)
+SC_HAS_PROCESS(spi);
+spi::spi(sc_core::sc_module_name nm)
+: sc_core::sc_module(nm)
 , tlm_target<>(clk)
-, NAMED(_sck_o)
-, NAMED(_mosi_o)
-, NAMED(_miso_i)
-, NAMED(_scs_o, 4)
-, NAMED(bit_true_transfer, false)
 , NAMEDD(regs, spi_regs)
 , rx_fifo(8)
 , tx_fifo(8) {
-    spi::socket(scc::tlm_target<>::socket);
-    _sck_o(sck_o);
-    _mosi_o(mosi_o);
-    miso_i(_miso_i);
-    _scs_o(scs_o);
-
     regs->registerResources(*this);
     SC_METHOD(clock_cb);
     sensitive << clk_i;
@@ -71,7 +34,7 @@ beh::beh(sc_core::sc_module_name nm)
     sensitive << rst_i;
     dont_initialize();
     SC_THREAD(transmit_data);
-    _miso_i.register_nb_transport(
+    miso_i.register_nb_transport(
         [this](tlm::scc::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase, sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
             this->receive_data(gp, delay);
             return tlm::TLM_COMPLETED;
@@ -103,11 +66,11 @@ beh::beh(sc_core::sc_module_name nm)
         [this](const scc::sc_register<uint32_t> &reg, const uint32_t &data, sc_core::sc_time d) -> bool {
             if (regs->r_csmode.mode == 2 && regs->r_csmode.mode != bit_sub<0, 2>(data) && regs->r_csid < 4) {
                 tlm::tlm_phase phase(tlm::BEGIN_REQ);
-                sc_core::sc_time delay(SC_ZERO_TIME);
+                sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
                 tlm::scc::tlm_signal_gp<> gp;
                 gp.set_command(tlm::TLM_WRITE_COMMAND);
                 gp.set_value(true);
-                _scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
+                scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
             }
             reg.put(data);
             return true;
@@ -115,11 +78,11 @@ beh::beh(sc_core::sc_module_name nm)
     regs->csid.set_write_cb([this](const scc::sc_register<uint32_t> &reg, const uint32_t &data, sc_core::sc_time d) -> bool {
         if (regs->r_csmode.mode == 2 && regs->csid != data && regs->r_csid < 4) {
             tlm::tlm_phase phase(tlm::BEGIN_REQ);
-            sc_core::sc_time delay(SC_ZERO_TIME);
+            sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
             tlm::scc::tlm_signal_gp<> gp;
             gp.set_command(tlm::TLM_WRITE_COMMAND);
             gp.set_value(true);
-            _scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
+            scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
         }
         reg.put(data);
         return true;
@@ -128,11 +91,11 @@ beh::beh(sc_core::sc_module_name nm)
         auto diff = regs->csdef ^ data;
         if (regs->r_csmode.mode == 2 && diff != 0 && (regs->r_csid < 4) && (diff & (1 << regs->r_csid)) != 0) {
             tlm::tlm_phase phase(tlm::BEGIN_REQ);
-            sc_core::sc_time delay(SC_ZERO_TIME);
+            sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
             tlm::scc::tlm_signal_gp<> gp;
             gp.set_command(tlm::TLM_WRITE_COMMAND);
             gp.set_value(true);
-            _scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
+            scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
         }
         reg.put(data);
         return true;
@@ -153,22 +116,20 @@ beh::beh(sc_core::sc_module_name nm)
               << tx_fifo.data_written_event() << tx_fifo.data_read_event();
 }
 
-beh::~beh() = default;
+void spi::clock_cb() { this->clk = clk_i.read(); }
 
-void beh::clock_cb() { this->clk = clk_i.read(); }
-
-void beh::reset_cb() {
+void spi::reset_cb() {
     if (rst_i.read())
         regs->reset_start();
     else
         regs->reset_stop();
 }
 
-void beh::transmit_data() {
+void spi::transmit_data() {
     uint8_t txdata;
     tlm::tlm_phase phase(tlm::BEGIN_REQ);
-    sc_core::sc_time delay(SC_ZERO_TIME);
-    sc_core::sc_time bit_duration(SC_ZERO_TIME);
+    sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
+    sc_core::sc_time bit_duration(sc_core::SC_ZERO_TIME);
     sc_core::sc_time start_time;
 
     auto set_bit = [&](bool val, tlm::scc::tlm_signal_bool_opt_out &socket,
@@ -187,7 +148,7 @@ void beh::transmit_data() {
         tlm::tlm_phase phase(tlm::BEGIN_REQ);
         gp->acquire();
         phase = tlm::BEGIN_REQ;
-        delay = SC_ZERO_TIME;
+        delay = sc_core::SC_ZERO_TIME;
         socket->nb_transport_fw(*gp, phase, delay);
         std::pair<bool, uint32_t> ret{ext->tx.s2m_data_valid != 0, ext->tx.s2m_data};
         gp->release();
@@ -198,25 +159,25 @@ void beh::transmit_data() {
     while (true) {
         wait(tx_fifo.data_written_event());
         if (regs->r_csmode.mode != 3 && regs->r_csid < 4) // not in OFF mode
-            set_bit(false, _scs_o[regs->r_csid]);
-        set_bit(regs->r_sckmode.pol, _sck_o);
+            set_bit(false, scs_o[regs->r_csid]);
+        set_bit(regs->r_sckmode.pol, sck_o);
         while (tx_fifo.nb_read(txdata)) {
             regs->r_txdata.full = tx_fifo.num_free() == 0;
             regs->r_ip.txwm = regs->r_txmark.txmark <= (7 - tx_fifo.num_free()) ? 1 : 0;
             update_irq_evt.notify();
             bit_duration = 2 * (regs->r_sckdiv.div + 1) * clk;
             start_time = sc_core::sc_time_stamp();
-            set_bit(txdata & 0x80, _mosi_o); // 8 data bits, MSB first
-            auto s2m = set_bit(1 - regs->r_sckmode.pol, _sck_o, true);
+            set_bit(txdata & 0x80, mosi_o); // 8 data bits, MSB first
+            auto s2m = set_bit(1 - regs->r_sckmode.pol, sck_o, true);
             wait(bit_duration / 2);
-            set_bit(regs->r_sckmode.pol, _sck_o, true);
+            set_bit(regs->r_sckmode.pol, sck_o, true);
             wait(bit_duration / 2);
             if (bit_true_transfer.get_value()) {
                 for (size_t i = 0, mask = 0x40; i < 7; ++i, mask >= 1) {
-                    set_bit(txdata & mask, _mosi_o); // 8 data bits, MSB first
-                    set_bit(1 - regs->r_sckmode.pol, _sck_o);
+                    set_bit(txdata & mask, mosi_o); // 8 data bits, MSB first
+                    set_bit(1 - regs->r_sckmode.pol, sck_o);
                     wait(bit_duration / 2);
-                    set_bit(regs->r_sckmode.pol, _sck_o);
+                    set_bit(regs->r_sckmode.pol, sck_o);
                     wait(bit_duration / 2);
                 }
             } else
@@ -225,23 +186,17 @@ void beh::transmit_data() {
             update_irq_evt.notify();
         }
         if (regs->r_csmode.mode == 0 && regs->r_csid < 4) // in AUTO mode
-            set_bit(false, _scs_o[regs->r_csid]);
+            set_bit(false, scs_o[regs->r_csid]);
     }
 }
 
-void beh::receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {}
+void spi::receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {}
 
-void beh::update_irq() {
+void spi::update_irq() {
     regs->r_ip.rxwm = regs->r_rxmark.rxmark < rx_fifo.num_available();
     regs->r_ip.txwm = regs->r_txmark.txmark <= tx_fifo.num_available();
     regs->r_txdata.full = tx_fifo.num_free() == 0;
     irq_o.write((regs->r_ie.rxwm > 0 && regs->r_ip.rxwm > 0) || (regs->r_ie.txwm > 0 && regs->r_ip.txwm > 0));
-}
-} /* namespace spi:impl */
-
-template <> std::unique_ptr<spi> spi::create<spi_impl::beh>(sc_core::sc_module_name nm) {
-    auto *res = new spi_impl::beh(nm);
-    return std::unique_ptr<spi>(res);
 }
 
 } /* namespace sifive */

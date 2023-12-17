@@ -8,7 +8,7 @@
 #define _PRCI_H_
 
 #include "scc/tlm_target.h"
-
+#include <scc/signal_opt_ports.h>
 namespace vpvper {
 namespace sifive {
 
@@ -17,9 +17,9 @@ class prci_regs;
 class prci : public sc_core::sc_module, public scc::tlm_target<> {
 public:
     SC_HAS_PROCESS(prci);// NOLINT
-    sc_core::sc_port<sc_core::sc_signal_in_if<sc_core::sc_time>, 1, sc_core::SC_ZERO_OR_MORE_BOUND> hfxosc_i;
-    sc_core::sc_in<bool> rst_i;
-    sc_core::sc_out<sc_core::sc_time> hfclk_o;
+    scc::sc_in_opt<sc_core::sc_time> hfxosc_i{"hfxosc_i"};
+    sc_core::sc_in<bool> rst_i{"rst_i"};
+    sc_core::sc_out<sc_core::sc_time> hfclk_o{"hfclk_o"};
     prci(sc_core::sc_module_name nm);
     virtual ~prci() override; // need to keep it in source file because of fwd declaration of prci_regs
 
