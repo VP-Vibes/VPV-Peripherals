@@ -20,9 +20,6 @@ class rtl;
 
 class spi : public sc_core::sc_module {
 public:
-    template <typename TYPE>
-    static std::unique_ptr<spi> create(sc_core::sc_module_name nm);
-
     template <typename T> using tlm_in = tlm::scc::tlm_signal_opt_target_socket<T>;
     template <typename T> using tlm_out = tlm::scc::tlm_signal_opt_initiator_socket<T>;
 
@@ -46,7 +43,6 @@ public:
 
     ~spi() override = default;
 
-protected:
     spi(sc_core::sc_module_name nm)
     : sc_core::sc_module(nm)
     , socket{"$$$hier_socket$$$"} // place holder name

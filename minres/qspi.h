@@ -13,7 +13,7 @@
 namespace vpvper {
 namespace minres {
 
-class qspi_regs;
+class Apb3SpiXdrMasterCtrl;
 
 class qspi : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -42,7 +42,7 @@ public:
 protected:
     void reset_cb();
     sc_core::sc_time clk_period;
-    std::unique_ptr<qspi_regs> regs;
+    std::unique_ptr<Apb3SpiXdrMasterCtrl> regs;
 };
 
 using spi_tl = scc::tickless_clock<qspi>;

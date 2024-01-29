@@ -5,7 +5,7 @@
  */
 
 #include "gpio.h"
-#include "gen/gpio_regs.h"
+#include "gen/Apb3Gpio_regs.h"
 #include <scc/report.h>
 #include <scc/utilities.h>
 #include <limits>
@@ -18,13 +18,13 @@ using namespace sc_dt;
 gpio::gpio(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
-, NAMEDD(regs, gpio_regs)
+, NAMEDD(regs, Apb3Gpio)
 {
     regs->registerResources(*this);
     SC_METHOD(reset_cb);
     sensitive << rst_i;
     dont_initialize();
-    regs->pin_in.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data, sc_core::sc_time d) -> bool {
+    regs->value.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data, sc_core::sc_time d) -> bool {
         data = 0;
         for(auto i=0U; i<32; ++i) {
             if(pins_i[i].read())
@@ -32,12 +32,12 @@ gpio::gpio(sc_core::sc_module_name nm)
         }
         return true;
     });
-    regs->pin_out.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+    regs->write.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
         for(auto i=0U; i<32; ++i)
             pins_o[i].write(data & (1<<i));
         return true;
     });
-    regs->out_en.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+    regs->writeEnable.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
         for(auto i=0U; i<32; ++i)
             oe_o[i].write(data & (1<<i));
         return true;

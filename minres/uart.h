@@ -14,9 +14,9 @@
 namespace vpvper {
 namespace minres {
 
-class uart_regs;
+class Apb3Uart;
 
-class uart_terminal : public sc_core::sc_module, public scc::tlm_target<> {
+class uart : public sc_core::sc_module, public scc::tlm_target<> {
 public:
 
     sc_core::sc_in<bool> rst_i{"rst_i"};
@@ -25,9 +25,9 @@ public:
 
     sc_core::sc_out<bool> irq_o{"irq_o"};
 
-    uart_terminal(sc_core::sc_module_name nm);
+    uart(sc_core::sc_module_name nm);
 
-    virtual ~uart_terminal() override;
+    virtual ~uart() override;
 
     void set_clock_period(sc_core::sc_time period) {
         clk_period=period;
@@ -42,13 +42,13 @@ protected:
     void transmit_data();
     void update_irq();
     sc_core::sc_time clk_period;
-    std::unique_ptr<uart_regs> regs;
+    std::unique_ptr<Apb3Uart> regs;
     sc_core::sc_fifo<uint8_t> rx_fifo{"rx_fifo", 8}, tx_fifo{"tx_fifo", 8};
     std::vector<uint8_t> queue;
 };
 
-using uart_terminal_tc =scc::ticking_clock<uart_terminal>;
-using uart_terminal_tl =scc::tickless_clock<uart_terminal>;
+using uart_terminal_tc =scc::ticking_clock<uart>;
+using uart_terminal_tl =scc::tickless_clock<uart>;
 
 } /* namespace minres */
 } /* namespace vpvper */

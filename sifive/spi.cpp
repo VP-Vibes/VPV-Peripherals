@@ -234,11 +234,5 @@ void beh::update_irq() {
     irq_o.write((regs->r_ie.rxwm > 0 && regs->r_ip.rxwm > 0) || (regs->r_ie.txwm > 0 && regs->r_ip.txwm > 0));
 }
 } /* namespace spi:impl */
-
-template <> std::unique_ptr<spi> spi::create<spi_impl::beh>(sc_core::sc_module_name nm) {
-    auto *res = new spi_impl::beh(nm);
-    return std::unique_ptr<spi>(res);
-}
-
 } /* namespace sifive */
 } /* namespace vpvper */

@@ -7,11 +7,10 @@ cmake_minimum_required(VERSION 3.12)
 
 add_library(${PROJECT_NAME}_minres
 	gpio.cpp
-	presc.cpp
-	tim.cpp
+	timer.cpp
 	qspi.cpp
 	irq.cpp
-	uart_terminal.cpp
+	uart.cpp
   aclint.cpp
 )
 target_include_directories(${PROJECT_NAME}_minres PUBLIC ${vpvper_SOURCE_DIR})

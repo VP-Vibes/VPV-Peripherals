@@ -5,7 +5,7 @@
  */
 
 #include "irq.h"
-#include "gen/irq_regs.h"
+#include "gen/Apb3IrqCtrl_regs.h"
 #include <scc/report.h>
 #include <scc/utilities.h>
 #include <limits>
@@ -21,7 +21,7 @@ irq::irq(sc_core::sc_module_name nm, unsigned irq_width)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
 , pending_irq_i("pending_irq_i", irq_width)
-, regs(scc::make_unique<irq_regs>("regs"))
+, regs(scc::make_unique<Apb3IrqCtrl>("regs"))
 {
     regs->registerResources(*this);
     SC_METHOD(reset_cb);
@@ -31,13 +31,13 @@ irq::irq(sc_core::sc_module_name nm, unsigned irq_width)
     for(auto& pin: pending_irq_i)
         sensitive<<pin.pos();
 
-    regs->ip.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
-        regs->r_ip = data;
+    regs->pendingsReg.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+        regs->pendingsReg = data;
         update_irqs();
         return true;
     });
-    regs->ie.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
-        regs->r_ip = data;
+    regs->masksReg.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+        regs->pendingsReg = data;
         update_irqs();
         return true;
     });
@@ -57,9 +57,9 @@ void irq::reset_cb() {
 void irq::update_irqs() {
     unsigned mask = 1;
     for(unsigned i=0; i<pending_irq_i.size(); ++i, mask<<=1) {
-        if(pending_irq_i[i].read()) regs->r_ip |= mask;
+        if(pending_irq_i[i].read()) regs->pendingsReg |= mask;
     }
-    irq_o.write(regs->r_ip&regs->r_ie);
+    irq_o.write(regs->pendingsReg&regs->masksReg);
 }
 
 

@@ -5,7 +5,7 @@
  */
 
 #include "qspi.h"
-#include "gen/qspi_regs.h"
+#include "gen/Apb3SpiXdrMasterCtrl_regs.h"
 #include <scc/report.h>
 #include <scc/utilities.h>
 #include <limits>
@@ -18,14 +18,14 @@ using namespace sc_dt;
 qspi::qspi(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
-, NAMEDD(regs, qspi_regs)
+, NAMEDD(regs, Apb3SpiXdrMasterCtrl)
 {
     regs->registerResources(*this);
     SC_METHOD(reset_cb);
     sensitive << rst_i;
     dont_initialize();
-    regs->STATUS.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data, sc_core::sc_time d) -> bool {
-        regs->r_STATUS.txfree=32;
+    regs->status.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data, sc_core::sc_time d) -> bool {
+        regs->r_status.tx_free=32;
         return false;
     });
 }
