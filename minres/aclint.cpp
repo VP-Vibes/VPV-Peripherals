@@ -9,21 +9,19 @@ const int lfclk_mutiplier = 10; //hardcoded for unit test
 
 aclint::aclint(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
-,regs(scc::make_unique<Apb3AClint>("regs")) 
+, tlm_target<>(clk_period)
+,regs(scc::make_unique<Apb3AClint_regs>("regs")) 
 {
     SC_HAS_PROCESS(aclint);
-    regs->registerResources(mtime_target);
-    mtime.bind(mtime_target.socket);
+    regs->registerResources(*this);
     
-    SC_METHOD(tl_clock_cb);
-    sensitive << tlclk_i;
-    SC_METHOD(clock_reset_cb);
-    sensitive << lfclk_i << rst_i;
+    SC_METHOD(reset_cb);
+    sensitive << rst_i;
     regs->mtime_hi.set_write_cb([this](const scc::sc_register<uint32_t> &reg, const uint32_t data, sc_core::sc_time& d) -> bool{
         return false;
     });
     regs->mtime_hi.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data, sc_core::sc_time& d) -> bool{ 
-        uint64_t elapsed_clks = (sc_time_stamp() + d - last_updt)/clk;
+        uint64_t elapsed_clks = (sc_time_stamp() + d - last_updt)/clk_period;
         data = regs->in_reset() ? 0 : regs->r_mtime_hi + elapsed_clks;
         return true;
     });
@@ -32,7 +30,7 @@ aclint::aclint(sc_core::sc_module_name nm)
         return false;
     });
     regs->mtime_lo.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data, sc_core::sc_time& d) -> bool{ 
-        uint64_t elapsed_clks = (sc_time_stamp() + d - last_updt)/clk;
+        uint64_t elapsed_clks = (sc_time_stamp() + d - last_updt)/clk_period;
         data = regs->in_reset() ? 0 : regs->r_mtime_lo + elapsed_clks;
         return true;
     });
@@ -56,30 +54,36 @@ aclint::aclint(sc_core::sc_module_name nm)
         } 
         return false;
     });
+
+    regs->msip0.set_write_cb([this](const scc::sc_register<uint32_t> &reg, const uint32_t data, sc_core::sc_time& d) -> bool{
+        if(d.value()) wait(d);
+        if (!regs->in_reset()) {
+            reg.put(data);
+            msip_int_o->write(data&1);
+            return true;
+        } 
+        return false;
+    });
     SC_METHOD(update_mtime);
     sensitive << mtime_evt;
     dont_initialize(); 
 }
-void aclint::clock_reset_cb(){
+void aclint::reset_cb(){
     if (rst_i.read()) {
         regs->reset_start();
     } else if(rst_i.event()){
         regs->reset_stop();
     }
     update_mtime();
-    clk = lfclk_i.read();
-    update_mtime();
 }
-void aclint::tl_clock_cb(){
-    tlclk = tlclk_i.read();
-}
+
 void aclint::update_mtime(){
-    if(clk > SC_ZERO_TIME){
+    if(clk_period > SC_ZERO_TIME){
         uint64_t mtime = static_cast<uint64_t>(regs->r_mtime_hi)<<32 | regs->r_mtime_lo;
         uint64_t mtimecmp = static_cast<uint64_t>(regs->r_mtimecmp0hi)<<32 | regs->r_mtimecmp0lo;
         //update mtime register
-        uint64_t elapsed_clks = (sc_time_stamp() - last_updt)/clk;
-        last_updt += elapsed_clks * clk;
+        uint64_t elapsed_clks = (sc_time_stamp() - last_updt)/clk_period;
+        last_updt += elapsed_clks * clk_period;
         if(elapsed_clks){
             mtime += elapsed_clks;
             regs->mtime_hi = mtime >> 32;
@@ -97,7 +101,7 @@ void aclint::update_mtime(){
             }      
         
         if(smallest < std::numeric_limits<uint64_t>::max() && smallest > 0){
-            sc_time nexttrigger = lfclk_i * (smallest-mtime);
+            sc_time nexttrigger = clk_period * (smallest-mtime);
             mtime_evt.notify(nexttrigger);
         }
     }

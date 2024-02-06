@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef _MINRES_UART_TERMINAL_H_
-#define _MINRES_UART_TERMINAL_H_
+#ifndef _MINRES_UART_H_
+#define _MINRES_UART_H_
 
+#include "minres/gen/Apb3Uart_regs.h"
 #include <scc/tlm_target.h>
 #include <scc/clock_if_mixins.h>
 #include <cci_configuration>
@@ -14,7 +15,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3Uart;
+class Apb3Uart_regs;
 
 class uart : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -22,6 +23,8 @@ public:
     sc_core::sc_in<bool> rst_i{"rst_i"};
 
     sc_core::sc_out<bool> tx_o{"tx_o"};
+    
+    sc_core::sc_in<bool> rx_i{"rx_i"};
 
     sc_core::sc_out<bool> irq_o{"irq_o"};
 
@@ -42,15 +45,15 @@ protected:
     void transmit_data();
     void update_irq();
     sc_core::sc_time clk_period;
-    std::unique_ptr<Apb3Uart> regs;
+    std::unique_ptr<Apb3Uart_regs> regs;
     sc_core::sc_fifo<uint8_t> rx_fifo{"rx_fifo", 8}, tx_fifo{"tx_fifo", 8};
     std::vector<uint8_t> queue;
 };
 
-using uart_terminal_tc =scc::ticking_clock<uart>;
-using uart_terminal_tl =scc::tickless_clock<uart>;
+using uart_tc =scc::ticking_clock<uart>;
+using uart_tl =scc::tickless_clock<uart>;
 
 } /* namespace minres */
 } /* namespace vpvper */
 
-#endif /* _MINRES_UART_TERMINAL_H_ */
+#endif /* _MINRES_UART_H_ */

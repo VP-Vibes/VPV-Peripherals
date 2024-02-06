@@ -9,11 +9,12 @@
 
 #include <scc/tlm_target.h>
 #include <scc/clock_if_mixins.h>
+#include <sysc/communication/sc_signal_ports.h>
 
 namespace vpvper {
 namespace minres {
 
-class Apb3SpiXdrMasterCtrl;
+class Apb3SpiXdrMasterCtrl_regs;
 
 class qspi : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -23,13 +24,15 @@ public:
 
     sc_core::sc_out<bool> ssclk_o{"ssclk_o"};
 
-    sc_core::sc_vector<sc_core::sc_out<bool>> dq_o{"dq_o"};
+    sc_core::sc_vector<sc_core::sc_out<bool>> dq_o{"dq_o", 4};
 
-    sc_core::sc_vector<sc_core::sc_out<bool>> oe_o{"oe_o"};
+    sc_core::sc_vector<sc_core::sc_out<bool>> oe_o{"oe_o", 4};
 
-    sc_core::sc_vector<sc_core::sc_in<bool>> dq_i{"dq_i"};
+    sc_core::sc_vector<sc_core::sc_in<bool>> dq_i{"dq_i", 4};
 
-    tlm::scc::target_mixin<tlm::tlm_target_socket<32>> xip_sck{"xip_sck"};
+    sc_core::sc_out<bool> irq_o{"irq_o"};
+
+    tlm::scc::target_mixin<tlm::tlm_target_socket<scc::LT>> xip_sck{"xip_sck"};
 
     qspi(sc_core::sc_module_name nm);
 
@@ -42,11 +45,11 @@ public:
 protected:
     void reset_cb();
     sc_core::sc_time clk_period;
-    std::unique_ptr<Apb3SpiXdrMasterCtrl> regs;
+    std::unique_ptr<Apb3SpiXdrMasterCtrl_regs> regs;
 };
 
-using spi_tl = scc::tickless_clock<qspi>;
-using spi_tc = scc::ticking_clock<qspi>;
+using qspi_tl = scc::tickless_clock<qspi>;
+using qspi_tc = scc::ticking_clock<qspi>;
 
 } /* namespace minres */
 } /* namespace vpvper */

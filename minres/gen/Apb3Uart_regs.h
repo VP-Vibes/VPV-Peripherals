@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 - 2023 MINRES Technolgies GmbH
+ * Copyright (c) 2019 - 2024 MINRES Technolgies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,7 +15,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3Uart : public sc_core::sc_module, public scc::resetable {
+class Apb3Uart_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
@@ -63,7 +63,7 @@ public:
         scc::sc_register<frame_config_reg_t> frame_config_reg;
         scc::sc_register<status_reg_t> status_reg;
 
-    Apb3Uart(sc_core::sc_module_name nm);
+    Apb3Uart_regs(sc_core::sc_module_name nm);
 
     template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
 };
@@ -73,7 +73,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline Apb3Uart::Apb3Uart(sc_core::sc_module_name nm)
+inline Apb3Uart_regs::Apb3Uart_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(rx_tx_reg, r_rx_tx_reg, 0, *this)
 , NAMED(int_ctrl_reg, r_int_ctrl_reg, 0, *this)
@@ -81,7 +81,7 @@ inline Apb3Uart::Apb3Uart(sc_core::sc_module_name nm)
 , NAMED(frame_config_reg, r_frame_config_reg, 0, *this)
 , NAMED(status_reg, r_status_reg, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void Apb3Uart::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH> inline void Apb3Uart_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
     target.addResource(rx_tx_reg, 0x0UL);
     target.addResource(int_ctrl_reg, 0x4UL);
     target.addResource(clk_divider_reg, 0x8UL);

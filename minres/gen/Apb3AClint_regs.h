@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 - 2023 MINRES Technolgies GmbH
+ * Copyright (c) 2019 - 2024 MINRES Technolgies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,7 +15,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3AClint : public sc_core::sc_module, public scc::resetable {
+class Apb3AClint_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
@@ -43,7 +43,7 @@ public:
         scc::sc_register<uint32_t> mtime_lo;
         scc::sc_register<uint32_t> mtime_hi;
 
-    Apb3AClint(sc_core::sc_module_name nm);
+    Apb3AClint_regs(sc_core::sc_module_name nm);
 
     template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
 };
@@ -53,7 +53,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline Apb3AClint::Apb3AClint(sc_core::sc_module_name nm)
+inline Apb3AClint_regs::Apb3AClint_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(msip0, r_msip0, 0, *this)
 , NAMED(mtimecmp0lo, r_mtimecmp0lo, 0, *this)
@@ -61,7 +61,7 @@ inline Apb3AClint::Apb3AClint(sc_core::sc_module_name nm)
 , NAMED(mtime_lo, r_mtime_lo, 0, *this)
 , NAMED(mtime_hi, r_mtime_hi, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void Apb3AClint::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH> inline void Apb3AClint_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
     target.addResource(msip0, 0x0UL);
     target.addResource(mtimecmp0lo, 0x4000UL);
     target.addResource(mtimecmp0hi, 0x4004UL);

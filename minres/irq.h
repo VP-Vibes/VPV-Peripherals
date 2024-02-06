@@ -13,7 +13,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3IrqCtrl;
+class Apb3IrqCtrl_regs;
 
 class irq : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -35,7 +35,7 @@ protected:
     void reset_cb();
     void update_irqs();
     sc_core::sc_time clk_period;
-    std::unique_ptr<Apb3IrqCtrl> regs;
+    std::unique_ptr<Apb3IrqCtrl_regs> regs;
 };
 
 using irq_tl = scc::tickless_clock<irq>;

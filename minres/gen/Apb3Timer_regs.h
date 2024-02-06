@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 - 2023 MINRES Technolgies GmbH
+ * Copyright (c) 2019 - 2024 MINRES Technolgies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,7 +15,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3Timer : public sc_core::sc_module, public scc::resetable {
+class Apb3Timer_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
@@ -55,7 +55,7 @@ public:
         scc::sc_register<uint32_t> t1_overflow;
         scc::sc_register<uint32_t> t1_value;
 
-    Apb3Timer(sc_core::sc_module_name nm);
+    Apb3Timer_regs(sc_core::sc_module_name nm);
 
     template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
 };
@@ -65,7 +65,7 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline Apb3Timer::Apb3Timer(sc_core::sc_module_name nm)
+inline Apb3Timer_regs::Apb3Timer_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(prescaler, r_prescaler, 0, *this)
 , NAMED(t0_ctrl, r_t0_ctrl, 0, *this)
@@ -75,7 +75,7 @@ inline Apb3Timer::Apb3Timer(sc_core::sc_module_name nm)
 , NAMED(t1_overflow, r_t1_overflow, 0, *this)
 , NAMED(t1_value, r_t1_value, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void Apb3Timer::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH> inline void Apb3Timer_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
     target.addResource(prescaler, 0x0UL);
     target.addResource(t0_ctrl, 0x4UL);
     target.addResource(t0_overflow, 0x8UL);

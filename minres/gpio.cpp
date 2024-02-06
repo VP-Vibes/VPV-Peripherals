@@ -18,7 +18,7 @@ using namespace sc_dt;
 gpio::gpio(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
-, NAMEDD(regs, Apb3Gpio)
+, NAMEDD(regs, Apb3Gpio_regs)
 {
     regs->registerResources(*this);
     SC_METHOD(reset_cb);

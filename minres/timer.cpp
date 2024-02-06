@@ -16,7 +16,7 @@ namespace minres {
 timer::timer(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
-, regs(scc::make_unique<Apb3Timer>("regs"))
+, regs(scc::make_unique<Apb3Timer_regs>("regs"))
 {
     using this_class = timer;
     SC_HAS_PROCESS(this_class);

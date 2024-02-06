@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 - 2023 MINRES Technolgies GmbH
+ * Copyright (c) 2019 - 2024 MINRES Technolgies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,7 +15,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3Gpio : public sc_core::sc_module, public scc::resetable {
+class Apb3Gpio_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
@@ -35,7 +35,7 @@ public:
         scc::sc_register<uint32_t> write;
         scc::sc_register<uint32_t> writeEnable;
 
-    Apb3Gpio(sc_core::sc_module_name nm);
+    Apb3Gpio_regs(sc_core::sc_module_name nm);
 
     template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
 };
@@ -45,13 +45,13 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline Apb3Gpio::Apb3Gpio(sc_core::sc_module_name nm)
+inline Apb3Gpio_regs::Apb3Gpio_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(value, r_value, 0, *this)
 , NAMED(write, r_write, 0, *this)
 , NAMED(writeEnable, r_writeEnable, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void Apb3Gpio::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH> inline void Apb3Gpio_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
     target.addResource(value, 0x0UL);
     target.addResource(write, 0x4UL);
     target.addResource(writeEnable, 0x8UL);

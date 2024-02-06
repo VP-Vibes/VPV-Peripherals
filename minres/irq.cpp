@@ -21,7 +21,7 @@ irq::irq(sc_core::sc_module_name nm, unsigned irq_width)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
 , pending_irq_i("pending_irq_i", irq_width)
-, regs(scc::make_unique<Apb3IrqCtrl>("regs"))
+, regs(scc::make_unique<Apb3IrqCtrl_regs>("regs"))
 {
     regs->registerResources(*this);
     SC_METHOD(reset_cb);

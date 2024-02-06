@@ -18,7 +18,7 @@ using namespace sc_dt;
 qspi::qspi(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
-, NAMEDD(regs, Apb3SpiXdrMasterCtrl)
+, NAMEDD(regs, Apb3SpiXdrMasterCtrl_regs)
 {
     regs->registerResources(*this);
     SC_METHOD(reset_cb);
@@ -28,6 +28,7 @@ qspi::qspi(sc_core::sc_module_name nm)
         regs->r_status.tx_free=32;
         return false;
     });
+    //TODO write to irq
 }
 
 qspi::~qspi() = default;

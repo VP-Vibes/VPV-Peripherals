@@ -13,7 +13,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3Gpio;
+class Apb3Gpio_regs;
 
 class gpio : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -38,7 +38,7 @@ public:
 protected:
     void reset_cb();
     sc_core::sc_time clk_period;
-    std::unique_ptr<Apb3Gpio> regs;
+    std::unique_ptr<Apb3Gpio_regs> regs;
 };
 
 using gpio_tl = scc::tickless_clock<gpio>;
