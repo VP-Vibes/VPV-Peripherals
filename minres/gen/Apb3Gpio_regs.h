@@ -1,8 +1,9 @@
 /*
- * Copyright (c) 2019 - 2024 MINRES Technolgies GmbH
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+* Copyright (c) 2024 MINRES Technologies GmbH
+*
+* Generated at 2024-02-08 12:22:11 UTC 
+* by peakrdl_mnrs version 1.2.1
+*/
 
 #ifndef _APB3GPIO_H_
 #define _APB3GPIO_H_
