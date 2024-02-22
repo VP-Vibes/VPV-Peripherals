@@ -10,6 +10,7 @@
 #include <scc/tlm_target.h>
 #include <scc/clock_if_mixins.h>
 #include <sysc/communication/sc_signal_ports.h>
+#include <scc/memory.h>
 
 namespace vpvper {
 namespace minres {
@@ -32,7 +33,7 @@ public:
 
     sc_core::sc_out<bool> irq_o{"irq_o"};
 
-    tlm::scc::target_mixin<tlm::tlm_target_socket<scc::LT>> xip_sck{"xip_sck"};
+    tlm::tlm_target_socket<scc::LT> xip_sck{"xip_sck"};
 
     qspi(sc_core::sc_module_name nm);
 
@@ -46,6 +47,8 @@ protected:
     void reset_cb();
     sc_core::sc_time clk_period;
     std::unique_ptr<Apb3SpiXdrMasterCtrl_regs> regs;
+    scc::memory<16_MB, scc::LT> flash_mem {"flash_mem"};
+
 };
 
 using qspi_tl = scc::tickless_clock<qspi>;

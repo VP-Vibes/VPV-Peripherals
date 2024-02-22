@@ -1,8 +1,10 @@
 /*
-* Copyright (c) 2024 MINRES Technologies GmbH
+* Copyright (c) 2023 - 2024 MINRES Technologies GmbH
 *
-* Generated at 2024-02-08 12:22:11 UTC 
-* by peakrdl_mnrs version 1.2.1
+* SPDX-License-Identifier: Apache-2.0
+*
+* Generated at 2024-02-08 14:41:42 UTC 
+* by peakrdl_mnrs version 1.2.2
 */
 
 #ifndef _APB3ACLINT_H_

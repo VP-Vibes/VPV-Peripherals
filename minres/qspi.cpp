@@ -20,6 +20,7 @@ qspi::qspi(sc_core::sc_module_name nm)
 , tlm_target<>(clk_period)
 , NAMEDD(regs, Apb3SpiXdrMasterCtrl_regs)
 {
+    xip_sck(flash_mem.target);
     regs->registerResources(*this);
     SC_METHOD(reset_cb);
     sensitive << rst_i;
@@ -39,10 +40,9 @@ void qspi::reset_cb() {
     } else {
         regs->reset_stop();
     }
-    for(auto i=0U; i<32; ++i){
-        dq_o[i].write(false);
-        oe_o[i].write(false);
-    }
+
+    for(auto& p: dq_o)p->write(false);
+    for(auto& p: oe_o)p->write(false);
 }
 } /* namespace minres */
 } /* namespace vpvper */

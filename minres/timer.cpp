@@ -139,12 +139,12 @@ void timer::update_counter(unsigned idx) {
     auto any_tick = (enable & 1) && prescaler_tick_evt.triggered();
 
     auto mask = 1U;
-    for (auto pin : clear_i) {
+    for (auto& pin : clear_i) {
         any_clear |= (clear & mask) && pin->posedge();
         mask <<= 1;
     }
     mask = 2U;
-    for (auto pin : tick_i) {
+    for (auto& pin : tick_i) {
         any_tick |= (clear & mask) && pin->posedge();
         mask <<= 1;
     }
