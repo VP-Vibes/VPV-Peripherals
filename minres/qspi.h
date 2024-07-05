@@ -51,7 +51,24 @@ protected:
 
 };
 
-using qspi_tl = scc::tickless_clock<qspi>;
+struct qspi_tl : public qspi {
+    sc_core::sc_in<sc_core::sc_time> clk_i;
+
+    qspi_tl(sc_core::sc_module_name const& nm)
+    : qspi(nm) {
+        flash_mem.clk_i(clk_i);
+        SC_HAS_PROCESS(qspi_tl);
+        SC_METHOD(clock_cb);
+        this->sensitive << clk_i;
+    }
+
+    virtual ~qspi_tl() = default;
+
+private:
+    void clock_cb() { this->set_clock_period(clk_i.read()); }
+
+};
+
 using qspi_tc = scc::ticking_clock<qspi>;
 
 } /* namespace minres */
