@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
- 
+
 #ifndef _PULPISSIMO_SOC_EVENT_H_
 #define _PULPISSIMO_SOC_EVENT_H_
 #include <scc/tlm_target.h>

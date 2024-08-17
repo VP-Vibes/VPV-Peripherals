@@ -1,6 +1,7 @@
 #ifndef _PULPISSIMO_MAP_H_
 #define _PULPISSIMO_MAP_H_
-// need double braces, see https://stackoverflow.com/questions/6893700/how-to-construct-stdarray-object-with-initializer-list#6894191
+// need double braces, see
+// https://stackoverflow.com/questions/6893700/how-to-construct-stdarray-object-with-initializer-list#6894191
 const std::array<scc::target_memory_map_entry<32>, 8> pulpissimo_map = {{
     {i_fll.socket, 0x1a100000, 0x10},
     {i_gpio.socket, 0x1a101000, 0x70},

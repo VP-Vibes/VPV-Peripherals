@@ -11,18 +11,15 @@
 #ifndef _PULPISSIMO_GEN_CAM_CHANNEL_H_
 #define _PULPISSIMO_GEN_CAM_CHANNEL_H_
 
-#include <scc/utilities.h>
-#include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
+#include <scc/utilities.h>
+#include <util/bit_field.h>
 
 namespace pulpissimo {
 namespace gen {
 
-class cam_channel_regs :
-        public sc_core::sc_module,
-        public scc::resetable
-{
+class cam_channel_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
@@ -30,38 +27,38 @@ public:
     uint32_t r_CAM_RX_SADDR;
     uint32_t r_CAM_RX_SIZE;
     BEGIN_BF_DECL(CAM_RX_CFG_t, uint32_t);
-        BF_FIELD(CLR, 6, 1);
-        BF_FIELD(PENDING, 5, 1);
-        BF_FIELD(EN, 4, 1);
-        BF_FIELD(DATASIZE, 1, 2);
-        BF_FIELD(CONTINOUS, 0, 1);
+    BF_FIELD(CLR, 6, 1);
+    BF_FIELD(PENDING, 5, 1);
+    BF_FIELD(EN, 4, 1);
+    BF_FIELD(DATASIZE, 1, 2);
+    BF_FIELD(CONTINOUS, 0, 1);
     END_BF_DECL() r_CAM_RX_CFG;
     BEGIN_BF_DECL(CAM_CFG_GLOB_t, uint32_t);
-        BF_FIELD(CLR, 31, 1);
-        BF_FIELD(SHIFT, 11, 4);
-        BF_FIELD(FORMAT, 8, 3);
-        BF_FIELD(FRAMESLICE_EN, 7, 1);
-        BF_FIELD(FRAMEDROP_VAL, 1, 6);
-        BF_FIELD(FRAMEDROP_EN, 0, 1);
+    BF_FIELD(CLR, 31, 1);
+    BF_FIELD(SHIFT, 11, 4);
+    BF_FIELD(FORMAT, 8, 3);
+    BF_FIELD(FRAMESLICE_EN, 7, 1);
+    BF_FIELD(FRAMEDROP_VAL, 1, 6);
+    BF_FIELD(FRAMEDROP_EN, 0, 1);
     END_BF_DECL() r_CAM_CFG_GLOB;
     BEGIN_BF_DECL(CAM_CFG_LL_t, uint32_t);
-        BF_FIELD(FRAMESLICE_LLY, 16, 16);
-        BF_FIELD(FRAMESLICE_LLX, 0, 16);
+    BF_FIELD(FRAMESLICE_LLY, 16, 16);
+    BF_FIELD(FRAMESLICE_LLX, 0, 16);
     END_BF_DECL() r_CAM_CFG_LL;
     BEGIN_BF_DECL(CAM_CFG_UR_t, uint32_t);
-        BF_FIELD(FRAMESLICE_URY, 16, 16);
-        BF_FIELD(FRAMESLICE_URX, 0, 16);
+    BF_FIELD(FRAMESLICE_URY, 16, 16);
+    BF_FIELD(FRAMESLICE_URX, 0, 16);
     END_BF_DECL() r_CAM_CFG_UR;
     BEGIN_BF_DECL(CAM_CFG_SIZE_t, uint32_t);
-        BF_FIELD(ROWLEN, 16, 16);
+    BF_FIELD(ROWLEN, 16, 16);
     END_BF_DECL() r_CAM_CFG_SIZE;
     BEGIN_BF_DECL(CAM_CFG_FILTER_t, uint32_t);
-        BF_FIELD(R_COEFF, 16, 8);
-        BF_FIELD(G_COEFF, 8, 8);
-        BF_FIELD(B_COEFF, 0, 8);
+    BF_FIELD(R_COEFF, 16, 8);
+    BF_FIELD(G_COEFF, 8, 8);
+    BF_FIELD(B_COEFF, 0, 8);
     END_BF_DECL() r_CAM_CFG_FILTER;
     BEGIN_BF_DECL(CAM_VSYNC_POLARITY_t, uint32_t);
-        BF_FIELD(VSYNC_POLARITY, 0, 1);
+    BF_FIELD(VSYNC_POLARITY, 0, 1);
     END_BF_DECL() r_CAM_VSYNC_POLARITY;
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
@@ -75,11 +72,10 @@ public:
     scc::sc_register<CAM_CFG_SIZE_t> CAM_CFG_SIZE;
     scc::sc_register<CAM_CFG_FILTER_t> CAM_CFG_FILTER;
     scc::sc_register<CAM_VSYNC_POLARITY_t> CAM_VSYNC_POLARITY;
-    
+
     cam_channel_regs(sc_core::sc_module_name nm);
 
-    template<unsigned BUSWIDTH=32>
-    void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset = 0);
 };
 } // namespace gen
 } // namespace pulpissimo
@@ -97,11 +93,9 @@ inline pulpissimo::gen::cam_channel_regs::cam_channel_regs(sc_core::sc_module_na
 , NAMED(CAM_CFG_UR, r_CAM_CFG_UR, 0, *this)
 , NAMED(CAM_CFG_SIZE, r_CAM_CFG_SIZE, 0, *this)
 , NAMED(CAM_CFG_FILTER, r_CAM_CFG_FILTER, 0, *this)
-, NAMED(CAM_VSYNC_POLARITY, r_CAM_VSYNC_POLARITY, 0, *this)
-{
-}
+, NAMED(CAM_VSYNC_POLARITY, r_CAM_VSYNC_POLARITY, 0, *this) {}
 
-template<unsigned BUSWIDTH>
+template <unsigned BUSWIDTH>
 inline void pulpissimo::gen::cam_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(CAM_RX_SADDR, 0x0UL);
     target.addResource(CAM_RX_SIZE, 0x4UL);

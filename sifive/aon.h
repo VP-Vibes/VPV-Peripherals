@@ -16,7 +16,7 @@ class aon_regs;
 
 class aon : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-    SC_HAS_PROCESS(aon);// NOLINT
+    SC_HAS_PROCESS(aon); // NOLINT
     sc_core::sc_in<sc_core::sc_time> clk_i;
     sc_core::sc_in<bool> erst_n_i;
     sc_core::sc_out<sc_core::sc_time> lfclkc_o;

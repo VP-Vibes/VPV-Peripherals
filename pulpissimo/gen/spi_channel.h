@@ -11,18 +11,15 @@
 #ifndef _PULPISSIMO_GEN_SPI_CHANNEL_H_
 #define _PULPISSIMO_GEN_SPI_CHANNEL_H_
 
-#include <scc/utilities.h>
-#include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
+#include <scc/utilities.h>
+#include <util/bit_field.h>
 
 namespace pulpissimo {
 namespace gen {
 
-class spi_channel_regs :
-        public sc_core::sc_module,
-        public scc::resetable
-{
+class spi_channel_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
@@ -30,29 +27,29 @@ public:
     uint32_t r_SPIM_RX_SADDR;
     uint32_t r_SPIM_RX_SIZE;
     BEGIN_BF_DECL(SPIM_RX_CFG_t, uint32_t);
-        BF_FIELD(CLR, 6, 1);
-        BF_FIELD(PENDING, 5, 1);
-        BF_FIELD(EN, 4, 1);
-        BF_FIELD(DATASIZE, 1, 2);
-        BF_FIELD(CONTINOUS, 0, 1);
+    BF_FIELD(CLR, 6, 1);
+    BF_FIELD(PENDING, 5, 1);
+    BF_FIELD(EN, 4, 1);
+    BF_FIELD(DATASIZE, 1, 2);
+    BF_FIELD(CONTINOUS, 0, 1);
     END_BF_DECL() r_SPIM_RX_CFG;
     uint32_t r_SPIM_TX_SADDR;
     uint32_t r_SPIM_TX_SIZE;
     BEGIN_BF_DECL(SPIM_TX_CFG_t, uint32_t);
-        BF_FIELD(CLR, 6, 1);
-        BF_FIELD(PENDING, 5, 1);
-        BF_FIELD(EN, 4, 1);
-        BF_FIELD(DATASIZE, 1, 2);
-        BF_FIELD(CONTINOUS, 0, 1);
+    BF_FIELD(CLR, 6, 1);
+    BF_FIELD(PENDING, 5, 1);
+    BF_FIELD(EN, 4, 1);
+    BF_FIELD(DATASIZE, 1, 2);
+    BF_FIELD(CONTINOUS, 0, 1);
     END_BF_DECL() r_SPIM_TX_CFG;
     uint32_t r_SPIM_CMD_SADDR;
     uint32_t r_SPIM_CMD_SIZE;
     BEGIN_BF_DECL(SPIM_CMD_CFG_t, uint32_t);
-        BF_FIELD(CLR, 6, 1);
-        BF_FIELD(PENDING, 5, 1);
-        BF_FIELD(EN, 4, 1);
-        BF_FIELD(DATASIZE, 1, 2);
-        BF_FIELD(CONTINOUS, 0, 1);
+    BF_FIELD(CLR, 6, 1);
+    BF_FIELD(PENDING, 5, 1);
+    BF_FIELD(EN, 4, 1);
+    BF_FIELD(DATASIZE, 1, 2);
+    BF_FIELD(CONTINOUS, 0, 1);
     END_BF_DECL() r_SPIM_CMD_CFG;
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
@@ -66,11 +63,10 @@ public:
     scc::sc_register<uint32_t> SPIM_CMD_SADDR;
     scc::sc_register<uint32_t> SPIM_CMD_SIZE;
     scc::sc_register<SPIM_CMD_CFG_t> SPIM_CMD_CFG;
-    
+
     spi_channel_regs(sc_core::sc_module_name nm);
 
-    template<unsigned BUSWIDTH=32>
-    void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset = 0);
 };
 } // namespace gen
 } // namespace pulpissimo
@@ -88,11 +84,9 @@ inline pulpissimo::gen::spi_channel_regs::spi_channel_regs(sc_core::sc_module_na
 , NAMED(SPIM_TX_CFG, r_SPIM_TX_CFG, 0, *this)
 , NAMED(SPIM_CMD_SADDR, r_SPIM_CMD_SADDR, 0, *this)
 , NAMED(SPIM_CMD_SIZE, r_SPIM_CMD_SIZE, 0, *this)
-, NAMED(SPIM_CMD_CFG, r_SPIM_CMD_CFG, 0, *this)
-{
-}
+, NAMED(SPIM_CMD_CFG, r_SPIM_CMD_CFG, 0, *this) {}
 
-template<unsigned BUSWIDTH>
+template <unsigned BUSWIDTH>
 inline void pulpissimo::gen::spi_channel_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(SPIM_RX_SADDR, 0x100UL);
     target.addResource(SPIM_RX_SIZE, 0x104UL);

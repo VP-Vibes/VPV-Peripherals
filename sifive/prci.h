@@ -16,7 +16,7 @@ class prci_regs;
 
 class prci : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-    SC_HAS_PROCESS(prci);// NOLINT
+    SC_HAS_PROCESS(prci); // NOLINT
     scc::sc_in_opt<sc_core::sc_time> hfxosc_i{"hfxosc_i"};
     sc_core::sc_in<bool> rst_i{"rst_i"};
     sc_core::sc_out<sc_core::sc_time> hfclk_o{"hfclk_o"};

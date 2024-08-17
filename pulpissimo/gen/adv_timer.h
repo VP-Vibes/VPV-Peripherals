@@ -11,18 +11,15 @@
 #ifndef _PULPISSIMO_GEN_ADV_TIMER_H_
 #define _PULPISSIMO_GEN_ADV_TIMER_H_
 
-#include <scc/utilities.h>
-#include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
+#include <scc/utilities.h>
+#include <util/bit_field.h>
 
 namespace pulpissimo {
 namespace gen {
 
-class adv_timer_regs :
-        public sc_core::sc_module,
-        public scc::resetable
-{
+class adv_timer_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
@@ -98,11 +95,10 @@ public:
     scc::sc_register<uint32_t> T3_COUNTER;
     scc::sc_register<uint32_t> EVENT_CFG;
     scc::sc_register<uint32_t> CG;
-    
+
     adv_timer_regs(sc_core::sc_module_name nm);
 
-    template<unsigned BUSWIDTH=32>
-    void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset = 0);
 };
 } // namespace gen
 } // namespace pulpissimo
@@ -145,11 +141,9 @@ inline pulpissimo::gen::adv_timer_regs::adv_timer_regs(sc_core::sc_module_name n
 , NAMED(T3_TH_CHANNEL3, r_T3_TH_CHANNEL3, 0, *this)
 , NAMED(T3_COUNTER, r_T3_COUNTER, 0, *this)
 , NAMED(EVENT_CFG, r_EVENT_CFG, 0, *this)
-, NAMED(CG, r_CG, 0, *this)
-{
-}
+, NAMED(CG, r_CG, 0, *this) {}
 
-template<unsigned BUSWIDTH>
+template <unsigned BUSWIDTH>
 inline void pulpissimo::gen::adv_timer_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(T0_CMD, 0x0UL);
     target.addResource(T0_CONFIG, 0x4UL);

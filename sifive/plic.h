@@ -17,8 +17,8 @@ class plic_regs;
 
 class plic : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-    enum {NUM_IRQ=64};
-    SC_HAS_PROCESS(plic);// NOLINT
+    enum { NUM_IRQ = 64 };
+    SC_HAS_PROCESS(plic); // NOLINT
     sc_core::sc_in<sc_core::sc_time> clk_i{"clk_i"};
     sc_core::sc_in<bool> rst_i{"rst_i"};
     sc_core::sc_vector<sc_core::sc_in<bool>> global_interrupts_i{"global_interrupts_i", NUM_IRQ};

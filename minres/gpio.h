@@ -7,8 +7,8 @@
 #ifndef _GPIO_H_
 #define _GPIO_H_
 
-#include <scc/tlm_target.h>
 #include <scc/clock_if_mixins.h>
+#include <scc/tlm_target.h>
 
 namespace vpvper {
 namespace minres {
@@ -17,11 +17,11 @@ class Apb3Gpio_regs;
 
 class gpio : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-    SC_HAS_PROCESS(gpio);// NOLINT
+    SC_HAS_PROCESS(gpio); // NOLINT
 
     sc_core::sc_in<bool> rst_i{"rst_i"};
 
-    sc_core::sc_vector<sc_core::sc_out<bool>> pins_o{"pins_o",32};
+    sc_core::sc_vector<sc_core::sc_out<bool>> pins_o{"pins_o", 32};
 
     sc_core::sc_vector<sc_core::sc_out<bool>> oe_o{"oe_o", 32};
 
@@ -31,9 +31,7 @@ public:
 
     virtual ~gpio() override; // need to keep it in source file because of fwd declaration of gpio_regs
 
-    void set_clock_period(sc_core::sc_time period) {
-        clk_period=period;
-    }
+    void set_clock_period(sc_core::sc_time period) { clk_period = period; }
 
 protected:
     void reset_cb();

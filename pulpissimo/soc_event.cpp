@@ -10,7 +10,7 @@
 #include <scc/utilities.h>
 
 namespace pulpissimo {
-SC_HAS_PROCESS(soc_event);// NOLINT
+SC_HAS_PROCESS(soc_event); // NOLINT
 
 soc_event::soc_event(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
@@ -21,8 +21,8 @@ soc_event::soc_event(sc_core::sc_module_name nm)
     sensitive << clk_i;
     SC_METHOD(reset_cb);
     sensitive << rst_i;
-    regs->SW_EVENT.set_read_cb([this](scc::sc_register<uint32_t> const&, uint32_t& v)-> bool {return true;});
-    regs->ERR.set_write_cb([this](size_t, scc::sc_register<uint32_t>&, uint32_t const& v)-> bool {return true;});
+    regs->SW_EVENT.set_read_cb([this](scc::sc_register<uint32_t> const&, uint32_t& v) -> bool { return true; });
+    regs->ERR.set_write_cb([this](size_t, scc::sc_register<uint32_t>&, uint32_t const& v) -> bool { return true; });
 }
 
 soc_event::~soc_event() {} // NOLINT
@@ -30,7 +30,7 @@ soc_event::~soc_event() {} // NOLINT
 void soc_event::clock_cb() { this->clk = clk_i.read(); }
 
 void soc_event::reset_cb() {
-    if (rst_i.read()) {
+    if(rst_i.read()) {
         regs->reset_start();
     } else {
         regs->reset_stop();

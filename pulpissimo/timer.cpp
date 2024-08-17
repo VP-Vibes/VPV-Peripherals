@@ -10,7 +10,7 @@
 #include "scc/utilities.h"
 
 namespace pulpissimo {
-SC_HAS_PROCESS(timer);// NOLINT
+SC_HAS_PROCESS(timer); // NOLINT
 
 timer::timer(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
@@ -28,7 +28,7 @@ timer::~timer() {} // NOLINT
 void timer::clock_cb() { this->clk = clk_i.read(); }
 
 void timer::reset_cb() {
-    if (rst_i.read()) {
+    if(rst_i.read()) {
         regs->reset_start();
     } else {
         regs->reset_stop();

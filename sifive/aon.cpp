@@ -34,7 +34,7 @@ void aon::clock_cb() { this->clk = clk_i.read(); }
 aon::~aon() {} // NOLINT
 
 void aon::reset_cb() {
-    if (!erst_n_i.read()) {
+    if(!erst_n_i.read()) {
         regs->reset_start();
         rst_o = true;
     } else {

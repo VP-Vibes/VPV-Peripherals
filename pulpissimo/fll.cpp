@@ -10,7 +10,7 @@
 #include "scc/utilities.h"
 
 namespace pulpissimo {
-SC_HAS_PROCESS(fll);// NOLINT
+SC_HAS_PROCESS(fll); // NOLINT
 
 fll::fll(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
@@ -22,14 +22,15 @@ fll::fll(sc_core::sc_module_name nm)
     SC_METHOD(reset_cb);
     sensitive << rst_i;
 
-    auto ro_wr_cb = [this](scc::sc_register<uint32_t>&, uint32_t const & v, sc_core::sc_time t)-> bool {return true;};
+    auto ro_wr_cb = [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; };
     regs->STATUS.set_write_cb(ro_wr_cb);
-    regs->STATUS.set_read_cb([this](scc::sc_register<gen::fll_regs::STATUS_t> const & reg, uint32_t& v, sc_core::sc_time t)-> bool {
-        gen::fll_regs::STATUS_t st = reg.get();
-        st.MF = regs->r_CFG1.MFN;
-        regs->r_STATUS = st;
-        return false;
-    });
+    regs->STATUS.set_read_cb(
+        [this](scc::sc_register<gen::fll_regs::STATUS_t> const& reg, uint32_t& v, sc_core::sc_time t) -> bool {
+            gen::fll_regs::STATUS_t st = reg.get();
+            st.MF = regs->r_CFG1.MFN;
+            regs->r_STATUS = st;
+            return false;
+        });
 }
 
 fll::~fll() {} // NOLINT
@@ -37,7 +38,7 @@ fll::~fll() {} // NOLINT
 void fll::clock_cb() { this->clk = clk_i.read(); }
 
 void fll::reset_cb() {
-    if (rst_i.read()) {
+    if(rst_i.read()) {
         regs->reset_start();
     } else {
         regs->reset_stop();

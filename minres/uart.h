@@ -8,9 +8,9 @@
 #define _MINRES_UART_H_
 
 #include "minres/gen/Apb3Uart_regs.h"
-#include <scc/tlm_target.h>
-#include <scc/clock_if_mixins.h>
 #include <cci_configuration>
+#include <scc/clock_if_mixins.h>
+#include <scc/tlm_target.h>
 
 namespace vpvper {
 namespace minres {
@@ -19,11 +19,10 @@ class Apb3Uart_regs;
 
 class uart : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-
     sc_core::sc_in<bool> rst_i{"rst_i"};
 
     sc_core::sc_out<bool> tx_o{"tx_o"};
-    
+
     sc_core::sc_in<bool> rx_i{"rx_i"};
 
     sc_core::sc_out<bool> irq_o{"irq_o"};
@@ -32,9 +31,7 @@ public:
 
     virtual ~uart() override;
 
-    void set_clock_period(sc_core::sc_time period) {
-        clk_period=period;
-    }
+    void set_clock_period(sc_core::sc_time period) { clk_period = period; }
 
     cci::cci_param<unsigned> fifo_depth{"fifo_depth", 32};
 
@@ -50,8 +47,8 @@ protected:
     std::vector<uint8_t> queue;
 };
 
-using uart_tc =scc::ticking_clock<uart>;
-using uart_tl =scc::tickless_clock<uart>;
+using uart_tc = scc::ticking_clock<uart>;
+using uart_tl = scc::tickless_clock<uart>;
 
 } /* namespace minres */
 } /* namespace vpvper */

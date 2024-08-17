@@ -13,11 +13,11 @@ namespace iss {
 namespace arch {
 template <typename BASE> class riscv_hart_msu_vp;
 }
-}
+} // namespace iss
 
 namespace vpvper {
 namespace sifive {
-    
+
 class clint_regs;
 namespace SiFive {
 class core_complex;
@@ -25,7 +25,7 @@ class core_complex;
 
 class clint : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-    SC_HAS_PROCESS(clint);// NOLINT
+    SC_HAS_PROCESS(clint); // NOLINT
     sc_core::sc_in<sc_core::sc_time> tlclk_i;
     sc_core::sc_in<sc_core::sc_time> lfclk_i;
     sc_core::sc_in<bool> rst_i;

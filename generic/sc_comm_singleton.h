@@ -23,48 +23,49 @@ class WsHandler : public seasocks::WebSocket::Handler {
 public:
     explicit WsHandler() {}
 
-    void onConnect(seasocks::WebSocket *connection) override;
+    void onConnect(seasocks::WebSocket* connection) override;
 
-    void onData(seasocks::WebSocket *connection, const char *data) override;
+    void onData(seasocks::WebSocket* connection, const char* data) override;
 
-    void onDisconnect(seasocks::WebSocket *connection) override;
+    void onDisconnect(seasocks::WebSocket* connection) override;
 
     void send(std::string msg) {
-        for (auto *con : _connections) con->send(msg);
+        for(auto* con : _connections)
+            con->send(msg);
     }
 
-    void set_receive_callback(std::function<void(const char *data)> cb) { callback = cb; }
+    void set_receive_callback(std::function<void(const char* data)> cb) { callback = cb; }
 
 private:
-    std::set<seasocks::WebSocket *> _connections;
-    std::function<void(const char *data)> callback;
+    std::set<seasocks::WebSocket*> _connections;
+    std::function<void(const char* data)> callback;
 };
 
 class sc_comm_singleton : public sc_core::sc_module {
     struct DefaultPageHandler : public seasocks::PageHandler {
-        DefaultPageHandler(sc_comm_singleton &o)
+        DefaultPageHandler(sc_comm_singleton& o)
         : owner(o) {}
-        virtual std::shared_ptr<seasocks::Response> handle(const seasocks::Request &request);
-        sc_comm_singleton &owner;
+        virtual std::shared_ptr<seasocks::Response> handle(const seasocks::Request& request);
+        sc_comm_singleton& owner;
     };
 
 public:
     sc_comm_singleton() = delete;
 
-    sc_comm_singleton(const sc_comm_singleton &) = delete;
+    sc_comm_singleton(const sc_comm_singleton&) = delete;
 
-    sc_comm_singleton &operator=(sc_comm_singleton &o) = delete;
+    sc_comm_singleton& operator=(sc_comm_singleton& o) = delete;
 
     virtual ~sc_comm_singleton();
 
-    static sc_comm_singleton &inst() {
+    static sc_comm_singleton& inst() {
         static sc_comm_singleton i("__sc_singleton");
         return i;
     }
 
-    seasocks::Server &get_server();
+    seasocks::Server& get_server();
 
-    void registerWebSocketHandler(const char *endpoint, std::shared_ptr<seasocks::WebSocket::Handler> handler,
+    void registerWebSocketHandler(const char* endpoint, std::shared_ptr<seasocks::WebSocket::Handler> handler,
                                   bool allowCrossOriginRequests = false);
 
     void execute(std::function<void()> f);
@@ -84,7 +85,7 @@ private:
     std::vector<std::string> endpoints;
 };
 
-} /* namespace sifive */
+} // namespace generic
 } /* namespace vpvper*/
 
 #endif /* _SYSC_SC_COMM_SINGLETON_H_ */

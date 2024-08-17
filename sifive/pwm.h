@@ -8,9 +8,9 @@
 #define _PWM_H_
 
 #include "cci_configuration"
+#include "scc/tlm_target.h"
 #include "tlm/scc/signal_initiator_mixin.h"
 #include "tlm/scc/signal_target_mixin.h"
-#include "scc/tlm_target.h"
 #include <tlm/scc/tlm_signal.h>
 
 namespace vpvper {
@@ -20,7 +20,7 @@ class pwm_regs;
 
 class pwm : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-    SC_HAS_PROCESS(pwm);// NOLINT
+    SC_HAS_PROCESS(pwm); // NOLINT
     sc_core::sc_in<sc_core::sc_time> clk_i;
     sc_core::sc_in<bool> rst_i;
 

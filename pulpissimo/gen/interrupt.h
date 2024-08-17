@@ -11,18 +11,15 @@
 #ifndef _PULPISSIMO_GEN_INTERRUPT_H_
 #define _PULPISSIMO_GEN_INTERRUPT_H_
 
-#include <scc/utilities.h>
-#include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
+#include <scc/utilities.h>
+#include <util/bit_field.h>
 
 namespace pulpissimo {
 namespace gen {
 
-class interrupt_regs :
-        public sc_core::sc_module,
-        public scc::resetable
-{
+class interrupt_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
@@ -46,11 +43,10 @@ public:
     scc::sc_register<uint32_t> ACK_SET;
     scc::sc_register<uint32_t> ACK_CLR;
     scc::sc_register<uint32_t> FIFO_DATA;
-    
+
     interrupt_regs(sc_core::sc_module_name nm);
 
-    template<unsigned BUSWIDTH=32>
-    void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset = 0);
 };
 } // namespace gen
 } // namespace pulpissimo
@@ -67,11 +63,9 @@ inline pulpissimo::gen::interrupt_regs::interrupt_regs(sc_core::sc_module_name n
 , NAMED(ACK, r_ACK, 0, *this)
 , NAMED(ACK_SET, r_ACK_SET, 0, *this)
 , NAMED(ACK_CLR, r_ACK_CLR, 0, *this)
-, NAMED(FIFO_DATA, r_FIFO_DATA, 0, *this)
-{
-}
+, NAMED(FIFO_DATA, r_FIFO_DATA, 0, *this) {}
 
-template<unsigned BUSWIDTH>
+template <unsigned BUSWIDTH>
 inline void pulpissimo::gen::interrupt_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(MASK, 0x0UL);
     target.addResource(INT, 0xcUL);

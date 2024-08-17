@@ -11,67 +11,64 @@
 #ifndef _PULPISSIMO_GEN_FILTER_H_
 #define _PULPISSIMO_GEN_FILTER_H_
 
-#include <scc/utilities.h>
-#include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
+#include <scc/utilities.h>
+#include <util/bit_field.h>
 
 namespace pulpissimo {
 namespace gen {
 
-class filter_regs :
-        public sc_core::sc_module,
-        public scc::resetable
-{
+class filter_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
     uint32_t r_REG_TX_CH0_ADD;
     BEGIN_BF_DECL(REG_TX_CH0_CFG_t, uint32_t);
-        BF_FIELD(MODE, 8, 2);
-        BF_FIELD(SIZE, 0, 2);
+    BF_FIELD(MODE, 8, 2);
+    BF_FIELD(SIZE, 0, 2);
     END_BF_DECL() r_REG_TX_CH0_CFG;
     uint32_t r_REG_TX_CH0_LEN0;
     uint32_t r_REG_TX_CH0_LEN1;
     uint32_t r_REG_TX_CH0_LEN2;
     uint32_t r_REG_TX_CH1_ADD;
     BEGIN_BF_DECL(REG_TX_CH1_CFG_t, uint32_t);
-        BF_FIELD(MODE, 8, 2);
-        BF_FIELD(SIZE, 0, 2);
+    BF_FIELD(MODE, 8, 2);
+    BF_FIELD(SIZE, 0, 2);
     END_BF_DECL() r_REG_TX_CH1_CFG;
     uint32_t r_REG_TX_CH1_LEN0;
     uint32_t r_REG_TX_CH1_LEN1;
     uint32_t r_REG_TX_CH1_LEN2;
     uint32_t r_REG_RX_CH_ADD;
     BEGIN_BF_DECL(REG_RX_CH_CFG_t, uint32_t);
-        BF_FIELD(MODE, 8, 2);
-        BF_FIELD(SIZE, 0, 2);
+    BF_FIELD(MODE, 8, 2);
+    BF_FIELD(SIZE, 0, 2);
     END_BF_DECL() r_REG_RX_CH_CFG;
     uint32_t r_REG_RX_CH_LEN0;
     uint32_t r_REG_RX_CH_LEN1;
     uint32_t r_REG_RX_CH_LEN2;
     BEGIN_BF_DECL(REG_AU_CFG_t, uint32_t);
-        BF_FIELD(SHIFT, 16, 5);
-        BF_FIELD(MODE, 8, 4);
-        BF_FIELD(BYPASS, 1, 1);
-        BF_FIELD(SIGNED, 0, 1);
+    BF_FIELD(SHIFT, 16, 5);
+    BF_FIELD(MODE, 8, 4);
+    BF_FIELD(BYPASS, 1, 1);
+    BF_FIELD(SIGNED, 0, 1);
     END_BF_DECL() r_REG_AU_CFG;
     uint32_t r_REG_AU_REG0;
     uint32_t r_REG_AU_REG1;
     uint32_t r_REG_BINCU_TH;
     BEGIN_BF_DECL(REG_BINCU_CNT_t, uint32_t);
-        BF_FIELD(EN, 31, 1);
-        BF_FIELD(COUNT, 0, 20);
+    BF_FIELD(EN, 31, 1);
+    BF_FIELD(COUNT, 0, 20);
     END_BF_DECL() r_REG_BINCU_CNT;
     uint32_t r_REG_BINCU_SETUP;
     uint32_t r_REG_BINCU_VAL;
     uint32_t r_REG_FILT;
     BEGIN_BF_DECL(REG_FILT_CMD_t, uint32_t);
-        BF_FIELD(START, 0, 1);
+    BF_FIELD(START, 0, 1);
     END_BF_DECL() r_REG_FILT_CMD;
     BEGIN_BF_DECL(REG_STATUS_t, uint32_t);
-        BF_FIELD(DONE, 0, 1);
+    BF_FIELD(DONE, 0, 1);
     END_BF_DECL() r_REG_STATUS;
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
@@ -101,11 +98,10 @@ public:
     scc::sc_register<uint32_t> REG_FILT;
     scc::sc_register<REG_FILT_CMD_t> REG_FILT_CMD;
     scc::sc_register<REG_STATUS_t> REG_STATUS;
-    
+
     filter_regs(sc_core::sc_module_name nm);
 
-    template<unsigned BUSWIDTH=32>
-    void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset = 0);
 };
 } // namespace gen
 } // namespace pulpissimo
@@ -139,11 +135,9 @@ inline pulpissimo::gen::filter_regs::filter_regs(sc_core::sc_module_name nm)
 , NAMED(REG_BINCU_VAL, r_REG_BINCU_VAL, 0, *this)
 , NAMED(REG_FILT, r_REG_FILT, 0, *this)
 , NAMED(REG_FILT_CMD, r_REG_FILT_CMD, 0, *this)
-, NAMED(REG_STATUS, r_REG_STATUS, 0, *this)
-{
-}
+, NAMED(REG_STATUS, r_REG_STATUS, 0, *this) {}
 
-template<unsigned BUSWIDTH>
+template <unsigned BUSWIDTH>
 inline void pulpissimo::gen::filter_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(REG_TX_CH0_ADD, 0x0UL);
     target.addResource(REG_TX_CH0_CFG, 0x4UL);

@@ -17,7 +17,7 @@ class gpio : public sc_core::sc_module, public scc::tlm_target<> {
 public:
     sc_core::sc_in<sc_core::sc_time> clk_i{"clk_i"};
     sc_core::sc_in<bool> rst_i{"rst_i"};
-    sc_core::sc_vector<sc_core::sc_in<bool>>  in{"in", 64};
+    sc_core::sc_vector<sc_core::sc_in<bool>> in{"in", 64};
     sc_core::sc_vector<sc_core::sc_out<bool>> out{"out", 64};
     sc_core::sc_vector<sc_core::sc_out<bool>> dir{"dir", 64};
     sc_core::sc_out<bool> irq_o{"irq_o"};

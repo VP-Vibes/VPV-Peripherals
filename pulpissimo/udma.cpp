@@ -10,7 +10,7 @@
 #include "scc/utilities.h"
 
 namespace pulpissimo {
-SC_HAS_PROCESS(udma);// NOLINT
+SC_HAS_PROCESS(udma); // NOLINT
 
 udma::udma(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
@@ -21,9 +21,12 @@ udma::udma(sc_core::sc_module_name nm)
     sensitive << clk_i;
     SC_METHOD(reset_cb);
     sensitive << rst_i;
-    regs->i_uart.STATUS.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t)-> bool {return true;});
-    regs->i_uart.VALID.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t)-> bool {return true;});
-    regs->i_uart.DATA.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t)-> bool {return true;});
+    regs->i_uart.STATUS.set_write_cb(
+        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
+    regs->i_uart.VALID.set_write_cb(
+        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
+    regs->i_uart.DATA.set_write_cb(
+        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
 }
 
 udma::~udma() {} // NOLINT
@@ -31,7 +34,7 @@ udma::~udma() {} // NOLINT
 void udma::clock_cb() { this->clk = clk_i.read(); }
 
 void udma::reset_cb() {
-    if (rst_i.read()) {
+    if(rst_i.read()) {
         regs->reset_start();
     } else {
         regs->reset_stop();

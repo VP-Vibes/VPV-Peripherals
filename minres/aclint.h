@@ -7,8 +7,8 @@
 #ifndef _ACLINT_H_
 #define _ACLINT_H_
 
-#include <scc/tlm_target.h>
 #include <scc/clock_if_mixins.h>
+#include <scc/tlm_target.h>
 #include <sysc/communication/sc_signal_ports.h>
 
 namespace vpvper {
@@ -16,18 +16,19 @@ namespace minres {
 
 class Apb3AClint_regs;
 
-class aclint : public sc_core::sc_module, public scc::tlm_target<>{
+class aclint : public sc_core::sc_module, public scc::tlm_target<> {
 public:
     sc_core::sc_in<bool> rst_i{"rst_i"};
     sc_core::sc_out<bool> mtime_int_o{"mtime_int_o"};
     sc_core::sc_out<bool> msip_int_o{"msip_int_o"};
     aclint(sc_core::sc_module_name nm);
-    virtual ~aclint(); 
+    virtual ~aclint();
     void set_clock_period(sc_core::sc_time period) {
         update_mtime();
-        clk_period=period;
+        clk_period = period;
         update_mtime();
     }
+
 protected:
     void tl_clock_cb();
     void reset_cb();
@@ -38,7 +39,7 @@ protected:
 };
 using aclint_tl = scc::tickless_clock<aclint>;
 using aclint_tc = scc::ticking_clock<aclint>;
-} /* namespace sifive */
+} // namespace minres
 } /* namespace vpvper */
 
 #endif /* _ACLINT_H_ */

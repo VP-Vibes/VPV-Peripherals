@@ -11,18 +11,15 @@
 #ifndef _PULPISSIMO_GEN_TIMER_H_
 #define _PULPISSIMO_GEN_TIMER_H_
 
-#include <scc/utilities.h>
-#include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
+#include <scc/utilities.h>
+#include <util/bit_field.h>
 
 namespace pulpissimo {
 namespace gen {
 
-class timer_regs :
-        public sc_core::sc_module,
-        public scc::resetable
-{
+class timer_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
@@ -50,11 +47,10 @@ public:
     scc::sc_register<uint32_t> START_HI;
     scc::sc_register<uint32_t> RESET_LO;
     scc::sc_register<uint32_t> RESET_HI;
-    
+
     timer_regs(sc_core::sc_module_name nm);
 
-    template<unsigned BUSWIDTH=32>
-    void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset = 0);
 };
 } // namespace gen
 } // namespace pulpissimo
@@ -73,11 +69,9 @@ inline pulpissimo::gen::timer_regs::timer_regs(sc_core::sc_module_name nm)
 , NAMED(START_LO, r_START_LO, 0, *this)
 , NAMED(START_HI, r_START_HI, 0, *this)
 , NAMED(RESET_LO, r_RESET_LO, 0, *this)
-, NAMED(RESET_HI, r_RESET_HI, 0, *this)
-{
-}
+, NAMED(RESET_HI, r_RESET_HI, 0, *this) {}
 
-template<unsigned BUSWIDTH>
+template <unsigned BUSWIDTH>
 inline void pulpissimo::gen::timer_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(CFG_LO, 0x0UL);
     target.addResource(CFG_HI, 0x4UL);

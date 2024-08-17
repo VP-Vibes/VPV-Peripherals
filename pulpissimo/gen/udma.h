@@ -11,44 +11,40 @@
 #ifndef _PULPISSIMO_GEN_UDMA_H_
 #define _PULPISSIMO_GEN_UDMA_H_
 
-#include <scc/utilities.h>
-#include <util/bit_field.h>
-#include <scc/register.h>
-#include <scc/tlm_target.h>
-#include "uart_channel.h"
-#include "spi_channel.h"
-#include "i2c_channel.h"
-#include "i2c_channel.h"
-#include "i2s_channel.h"
 #include "cam_channel.h"
 #include "filter.h"
+#include "i2c_channel.h"
+#include "i2s_channel.h"
+#include "spi_channel.h"
+#include "uart_channel.h"
+#include <scc/register.h>
+#include <scc/tlm_target.h>
+#include <scc/utilities.h>
+#include <util/bit_field.h>
 
 namespace pulpissimo {
 namespace gen {
 
-class udma_regs :
-        public sc_core::sc_module,
-        public scc::resetable
-{
+class udma_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
     BEGIN_BF_DECL(CTRL_CFG_CG_t, uint32_t);
-        BF_FIELD(CG_FILTER, 7, 1);
-        BF_FIELD(CG_CAM, 6, 1);
-        BF_FIELD(CG_I2S, 5, 1);
-        BF_FIELD(CG_SDIO, 4, 1);
-        BF_FIELD(CG_I2C1, 3, 1);
-        BF_FIELD(CG_I2C0, 2, 1);
-        BF_FIELD(CG_SPIM, 1, 1);
-        BF_FIELD(CG_UART, 1, 1);
+    BF_FIELD(CG_FILTER, 7, 1);
+    BF_FIELD(CG_CAM, 6, 1);
+    BF_FIELD(CG_I2S, 5, 1);
+    BF_FIELD(CG_SDIO, 4, 1);
+    BF_FIELD(CG_I2C1, 3, 1);
+    BF_FIELD(CG_I2C0, 2, 1);
+    BF_FIELD(CG_SPIM, 1, 1);
+    BF_FIELD(CG_UART, 1, 1);
     END_BF_DECL() r_CTRL_CFG_CG;
     BEGIN_BF_DECL(CTRL_CFG_EVENT_t, uint32_t);
-        BF_FIELD(CMP_EVT3, 24, 8);
-        BF_FIELD(CMP_EVT2, 16, 8);
-        BF_FIELD(CMP_EVT1, 8, 8);
-        BF_FIELD(CMP_EVT0, 0, 8);
+    BF_FIELD(CMP_EVT3, 24, 8);
+    BF_FIELD(CMP_EVT2, 16, 8);
+    BF_FIELD(CMP_EVT1, 8, 8);
+    BF_FIELD(CMP_EVT0, 0, 8);
     END_BF_DECL() r_CTRL_CFG_EVENT;
     uint32_t r_CTRL_CFG_RST;
     uart_channel_regs i_uart{"uart"};
@@ -71,11 +67,10 @@ public:
     // scc::sc_register_file<i2s_channel_regs> i2s;
     // scc::sc_register_file<cam_channel_regs> cam;
     // scc::sc_register_file<filter_regs> filt;
-    
+
     udma_regs(sc_core::sc_module_name nm);
 
-    template<unsigned BUSWIDTH=32>
-    void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset = 0);
 };
 } // namespace gen
 } // namespace pulpissimo
@@ -95,21 +90,20 @@ inline pulpissimo::gen::udma_regs::udma_regs(sc_core::sc_module_name nm)
 // , NAMED(i2s, i_i2s, 0, *this)
 // , NAMED(cam, i_cam, 0, *this)
 // , NAMED(filt, i_filt, 0, *this)
-{
-}
+{}
 
-template<unsigned BUSWIDTH>
+template <unsigned BUSWIDTH>
 inline void pulpissimo::gen::udma_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(CTRL_CFG_CG, 0UL);
     target.addResource(CTRL_CFG_EVENT, 0x4UL);
     target.addResource(CTRL_CFG_RST, 0x8UL);
-    i_uart.registerResources(target, 0x80UL+offset);
-    i_spi.registerResources(target, 0x100UL+offset);
-    i_i2c0.registerResources(target, 0x180UL+offset);
-    i_i2c1.registerResources(target, 0x200UL+offset);
-    i_i2s.registerResources(target, 0x300UL+offset);
-    i_cam.registerResources(target, 0x380UL+offset);
-    i_filt.registerResources(target, 0x400UL+offset);
+    i_uart.registerResources(target, 0x80UL + offset);
+    i_spi.registerResources(target, 0x100UL + offset);
+    i_i2c0.registerResources(target, 0x180UL + offset);
+    i_i2c1.registerResources(target, 0x200UL + offset);
+    i_i2s.registerResources(target, 0x300UL + offset);
+    i_cam.registerResources(target, 0x380UL + offset);
+    i_filt.registerResources(target, 0x400UL + offset);
 }
 
 #endif // _PULPISSIMO_GEN_UDMA_H_

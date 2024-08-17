@@ -11,33 +11,30 @@
 #ifndef _PULPISSIMO_GEN_SOC_EVENT_H_
 #define _PULPISSIMO_GEN_SOC_EVENT_H_
 
-#include <scc/utilities.h>
-#include <util/bit_field.h>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
+#include <scc/utilities.h>
+#include <util/bit_field.h>
 
 namespace pulpissimo {
 namespace gen {
 
-class soc_event_regs :
-        public sc_core::sc_module,
-        public scc::resetable
-{
+class soc_event_regs : public sc_core::sc_module, public scc::resetable {
 public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
     BEGIN_BF_DECL(SW_EVENT_t, uint32_t);
-        BF_FIELD(EVENT, 0, 8);
+    BF_FIELD(EVENT, 0, 8);
     END_BF_DECL() r_SW_EVENT;
     std::array<uint32_t, 8> r_FC_MASK;
     std::array<uint32_t, 8> r_PR_MASK;
     std::array<uint32_t, 8> r_ERR;
     BEGIN_BF_DECL(TIMER_LO_t, uint32_t);
-        BF_FIELD(TIMER_LO_EVENT, 0, 8);
+    BF_FIELD(TIMER_LO_EVENT, 0, 8);
     END_BF_DECL() r_TIMER_LO;
     BEGIN_BF_DECL(TIMER_HI_t, uint32_t);
-        BF_FIELD(TIMER_HI_EVENT, 0, 8);
+    BF_FIELD(TIMER_HI_EVENT, 0, 8);
     END_BF_DECL() r_TIMER_HI;
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
@@ -48,11 +45,10 @@ public:
     scc::sc_register_indexed<uint32_t, 8> ERR;
     scc::sc_register<TIMER_LO_t> TIMER_LO;
     scc::sc_register<TIMER_HI_t> TIMER_HI;
-    
+
     soc_event_regs(sc_core::sc_module_name nm);
 
-    template<unsigned BUSWIDTH=32>
-    void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset=0);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset = 0);
 };
 } // namespace gen
 } // namespace pulpissimo
@@ -67,11 +63,9 @@ inline pulpissimo::gen::soc_event_regs::soc_event_regs(sc_core::sc_module_name n
 , NAMED(PR_MASK, r_PR_MASK, 0, *this)
 , NAMED(ERR, r_ERR, 0, *this)
 , NAMED(TIMER_LO, r_TIMER_LO, 0, *this)
-, NAMED(TIMER_HI, r_TIMER_HI, 0, *this)
-{
-}
+, NAMED(TIMER_HI, r_TIMER_HI, 0, *this) {}
 
-template<unsigned BUSWIDTH>
+template <unsigned BUSWIDTH>
 inline void pulpissimo::gen::soc_event_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(SW_EVENT, 0x0UL);
     target.addResource(FC_MASK, 0x4UL);

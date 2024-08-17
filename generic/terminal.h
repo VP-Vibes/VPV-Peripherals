@@ -25,7 +25,7 @@ public:
 
     terminal();
 
-    terminal(const sc_core::sc_module_name &nm);
+    terminal(const sc_core::sc_module_name& nm);
 
     virtual ~terminal();
 
@@ -33,13 +33,13 @@ public:
 
 protected:
     void before_end_of_elaboration();
-    void receive(tlm::scc::tlm_signal_gp<sc_dt::sc_logic> &gp, sc_core::sc_time &delay);
+    void receive(tlm::scc::tlm_signal_gp<sc_dt::sc_logic>& gp, sc_core::sc_time& delay);
 
     std::vector<uint8_t> queue;
     std::shared_ptr<WsHandler> handler;
     sc_core::sc_time last_tx_start = sc_core::SC_ZERO_TIME;
 };
-}
-}
+} // namespace generic
+} // namespace vpvper
 
 #endif /* _SYSC_TOP_TERMINAL_H_ */
