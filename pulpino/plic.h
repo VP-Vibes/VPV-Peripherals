@@ -145,7 +145,7 @@ public:
 ///\class Plic
 ///\brief Platform level interrupt controller
 ///\details only up to 32 sources [31:0] for 4 [3:0] targets supported. Limited due to scc::tlm_target_bfs_register_base
-///not supporting dynamic construction of registers (move=)
+/// not supporting dynamic construction of registers (move=)
 template <typename owner_t, size_t N_TARGET, size_t N_SOURCE, uint32_t LE_SRC_MASK = 0,
           size_t N_LINEREGS = (N_SOURCE >> 5) + ((N_SOURCE % 32) ? 1 : 0)>
 class Plic : public scc::tlm_target_bfs<PlicRegs, owner_t> {
