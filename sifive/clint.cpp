@@ -44,8 +44,13 @@ clint::clint(sc_core::sc_module_name nm)
         data = reg.get();
         return true;
     });
-    regs->mtime.set_write_cb(
-        [this](scc::sc_register<uint64_t>& reg, uint64_t data, sc_core::sc_time d) -> bool { return false; });
+    regs->mtime.set_write_cb([this](scc::sc_register<uint64_t>& reg, uint64_t data, sc_core::sc_time d) -> bool {
+        if(!regs->in_reset()) {
+            reg.put(data);
+            this->update_mtime();
+        }
+        return true;
+    });
     regs->msip.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         reg.put(data);
         msip_int_o.write(regs->r_msip.msip);
