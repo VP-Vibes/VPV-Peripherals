@@ -39,7 +39,6 @@ protected:
     void reset_cb();
     void update_mtime();
     sc_core::sc_time clk, last_updt;
-    unsigned cnt_fraction;
     std::unique_ptr<clint_regs> regs;
     sc_core::sc_event mtime_evt;
 };
