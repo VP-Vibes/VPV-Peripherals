@@ -77,17 +77,11 @@ void aclint::update_mtime() {
         }
 
         // check for and handle interrupts
-        mtime_evt.cancel();
         uint64_t smallest = std::numeric_limits<uint64_t>::max();
-        if(mtimecmp <= mtime)
-            mtime_int_o.write(true);
-        else {
-            mtime_int_o.write(false);
-            smallest = std::min(smallest, mtimecmp);
-        }
-
-        if(smallest < std::numeric_limits<uint64_t>::max() && smallest > 0) {
-            sc_time nexttrigger = clk_period * (smallest - mtime);
+        mtime_int_o.write(mtimecmp <= mtime);
+        mtime_evt.cancel();
+        if(mtimecmp > mtime) {
+            sc_time nexttrigger = clk_period * (mtimecmp - mtime);
             mtime_evt.notify(nexttrigger);
         }
     } else
