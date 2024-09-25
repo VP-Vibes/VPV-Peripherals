@@ -52,7 +52,7 @@ clint::clint(sc_module_name nm)
     });
     regs->msip.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_time d) -> bool {
         reg.put(data);
-        msip_int_o.write(regs->r_msip.msip);
+       write_msip_irq(regs->r_msip.msip);
         return true;
     });
     SC_METHOD(update_mtime);
@@ -71,8 +71,8 @@ clint::~clint() = default;
 void clint::reset_cb() {
     if(rst_i.read()) {
         regs->reset_start();
-        msip_int_o.write(false);
-        mtime_int_o.write(false);
+        write_msip_irq(false);
+        write_mtime_irq(false);
     } else
         regs->reset_stop();
 }
@@ -82,7 +82,7 @@ void clint::update_mtime() {
         uint64_t elapsed_clks = (sc_time_stamp() - last_updt) / clk; // get the number of clock periods since last invocation
         last_updt += elapsed_clks * clk;                             // increment the last_updt timestamp by the number of clocks
         regs->r_mtime += elapsed_clks;                               // update mtime reg
-        mtime_int_o.write(regs->r_mtimecmp <= regs->r_mtime);
+        write_mtime_irq(regs->r_mtimecmp <= regs->r_mtime);
         mtime_evt.cancel();
         if(regs->r_mtimecmp > regs->r_mtime) {
             sc_time next_trigger = (clk * lfclk_mutiplier) * (regs->r_mtimecmp - regs->mtime);
@@ -92,6 +92,30 @@ void clint::update_mtime() {
    } else
         last_updt = sc_time_stamp();
 }
+
+void clint::write_mtime_irq(bool irq) {
+#ifdef SC_SIGNAL_IF
+    mtime_int_o.write(irq);
+#else
+    sc_core::sc_time t;
+    tlm::tlm_phase p{tlm::BEGIN_REQ};
+    tlm::scc::tlm_signal_gp<bool> gp;
+    gp.set_value(irq);
+    mtime_int_o->nb_transport_fw(gp, p, t);
+#endif
+} 
+
+void clint::write_msip_irq(bool irq) {
+#ifdef SC_SIGNAL_IF
+    msip_int_o.write(regs->r_msip.msip);
+#else
+    sc_core::sc_time t;
+    tlm::tlm_phase p{tlm::BEGIN_REQ};
+    tlm::scc::tlm_signal_gp<bool> gp;
+    gp.set_value(irq);
+    msip_int_o->nb_transport_fw(gp, p, t);
+#endif
+} 
 
 } /* namespace sifive */
 } /* namespace vpvper */
