@@ -9,6 +9,9 @@
 
 #include <scc/register.h>
 #include <scc/tlm_target.h>
+#ifndef SC_SIGNAL_IF
+#include <tlm/scc/signal_initiator_mixin.h>
+#endif
 
 namespace vpvper {
 namespace sifive {
@@ -22,7 +25,11 @@ public:
     sc_core::sc_in<sc_core::sc_time> clk_i{"clk_i"};
     sc_core::sc_in<bool> rst_i{"rst_i"};
     sc_core::sc_vector<sc_core::sc_in<bool>> global_interrupts_i{"global_interrupts_i", NUM_IRQ};
+#ifdef SC_SIGNAL_IF
     sc_core::sc_out<bool> core_interrupt_o{"core_interrupt_o"};
+#else
+    tlm::scc::tlm_signal_bool_out core_interrupt_o{"core_interrupt_o"};
+#endif
     sc_core::sc_event raise_int_ev;
     sc_core::sc_event clear_int_ev;
     plic(sc_core::sc_module_name nm);
@@ -35,6 +42,7 @@ protected:
     void global_int_port_cb();
     void handle_pending_int();
     void reset_pending_int(uint32_t irq);
+    void write_irq(bool irq);
 
     void raise_core_interrupt();
     void clear_core_interrupt();

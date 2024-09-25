@@ -19,6 +19,9 @@ add_library(${PROJECT_NAME}_sifive
  	uart_terminal.cpp
 	gpio.cpp
 )
+if(USE_SC_SIGNAL4IRQ)
+    target_compile_definitions(${PROJECT_NAME}_sifive PUBLIC SC_SIGNAL_IF)
+endif()
 target_include_directories(${PROJECT_NAME}_sifive PUBLIC ${vpvper_SOURCE_DIR})
 if(SEASOCKS_LIB)
 	target_compile_definitions(${PROJECT_NAME}_sifive PUBLIC HAS_WEB_SOCKETS)

@@ -6,9 +6,11 @@
 
 #include "plic.h"
 #include "gen/plic_regs.h"
+#include "tlm/scc/tlm_signal_gp.h"
 
 #include <scc/report.h>
 #include <scc/utilities.h>
+#include <tlm_core/tlm_2/tlm_generic_payload/tlm_phase.h>
 
 namespace vpvper {
 namespace sifive {
@@ -116,7 +118,7 @@ void plic::handle_pending_int() {
 
     if(raise_int) {
         regs->r_claim_complete = claim_int;
-        core_interrupt_o.write(true);
+        write_irq(true);
         // todo: evluate clock period
     } else {
         regs->r_claim_complete = 0;
@@ -132,11 +134,21 @@ void plic::reset_pending_int(uint32_t irq) {
     auto reg_idx = irq >> 5;
     auto bit_ofs = irq & 0x1F;
     regs->r_pending[reg_idx] &= ~(0x1 << bit_ofs);
-    core_interrupt_o.write(false);
-
+    write_irq(false);
     // evaluate next pending interrupt
     handle_pending_int();
 }
 
+void plic::write_irq(bool irq) {
+#ifdef SC_SIGNAL_IF
+    core_interrupt_o.write(irq);
+#else
+    sc_core::sc_time t;
+    tlm::tlm_phase p{tlm::BEGIN_REQ};
+    tlm::scc::tlm_signal_gp<bool> gp;
+    gp.set_value(irq);
+    core_interrupt_o->nb_transport_fw(gp, p, t);
+#endif
+} 
 } /* namespace sifive */
 } /* namespace vpvper */
