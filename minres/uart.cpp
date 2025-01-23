@@ -5,7 +5,7 @@
  */
 
 #include "uart.h"
-#include "gen/Apb3Uart_regs.h"
+#include "gen/uart_regs.h"
 
 #include <scc/report.h>
 #include <scc/utilities.h>
@@ -22,7 +22,7 @@ SC_HAS_PROCESS(uart); // NOLINT
 uart::uart(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
-, NAMEDD(regs, Apb3Uart_regs) {
+, NAMEDD(regs, uart_regs) {
     regs->registerResources(*this);
     //    SC_METHOD(clock_cb);
     //    sensitive << clk_i.pos();

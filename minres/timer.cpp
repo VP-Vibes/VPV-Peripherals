@@ -5,7 +5,7 @@
  */
 
 #include "timer.h"
-#include "gen/Apb3Timer_regs.h"
+#include "gen/timercounter_regs.h"
 #include <sysc/kernel/sc_module.h>
 #include <sysc/kernel/sc_time.h>
 
@@ -16,7 +16,7 @@ namespace minres {
 timer::timer(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
-, regs(scc::make_unique<Apb3Timer_regs>("regs")) {
+, regs(scc::make_unique<timercounter_regs>("regs")) {
     using this_class = timer;
     SC_HAS_PROCESS(this_class);
     regs->registerResources(*this);
@@ -36,12 +36,12 @@ timer::timer(sc_core::sc_module_name nm)
             update_counter_evts[1].notify(sc_core::SC_ZERO_TIME);
             return true;
         });
-    regs->t0_value.set_read_cb(
+    regs->t0_counter.set_read_cb(
         [this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
             data = counters[0] & ((1ULL << COUNTER_WIDTH) - 1);
             return true;
         });
-    regs->t1_value.set_read_cb(
+    regs->t1_counter.set_read_cb(
         [this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
             data = counters[1] & ((1ULL << COUNTER_WIDTH) - 1);
             return true;

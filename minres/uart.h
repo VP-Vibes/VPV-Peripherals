@@ -7,7 +7,7 @@
 #ifndef _MINRES_UART_H_
 #define _MINRES_UART_H_
 
-#include "minres/gen/Apb3Uart_regs.h"
+#include "minres/gen/uart_regs.h"
 #include <cci_configuration>
 #include <scc/clock_if_mixins.h>
 #include <scc/tlm_target.h>
@@ -15,7 +15,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3Uart_regs;
+class uart_regs;
 
 class uart : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -42,7 +42,7 @@ protected:
     void transmit_data();
     void update_irq();
     sc_core::sc_time clk_period;
-    std::unique_ptr<Apb3Uart_regs> regs;
+    std::unique_ptr<uart_regs> regs;
     sc_core::sc_fifo<uint8_t> rx_fifo{"rx_fifo", 8}, tx_fifo{"tx_fifo", 8};
     std::vector<uint8_t> queue;
 };

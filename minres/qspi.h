@@ -15,7 +15,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3SpiXdrMasterCtrl_regs;
+class apb3spi_regs;
 
 class qspi : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -44,7 +44,7 @@ public:
 protected:
     void reset_cb();
     sc_core::sc_time clk_period;
-    std::unique_ptr<Apb3SpiXdrMasterCtrl_regs> regs;
+    std::unique_ptr<apb3spi_regs> regs;
     scc::memory<16_MB, scc::LT> flash_mem{"flash_mem"};
 };
 

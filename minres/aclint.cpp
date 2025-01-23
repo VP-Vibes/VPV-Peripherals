@@ -1,5 +1,5 @@
 #include "aclint.h"
-#include "gen/Apb3AClint_regs.h"
+#include "gen/aclint_regs.h"
 #include <cstdint>
 
 namespace vpvper {
@@ -11,7 +11,7 @@ const int lfclk_mutiplier = 10; // hardcoded for unit test
 aclint::aclint(sc_module_name nm)
 : sc_module(nm)
 , tlm_target<>(clk_period)
-, regs(make_unique<Apb3AClint_regs>("regs")) {
+, regs(make_unique<aclint_regs>("regs")) {
     SC_HAS_PROCESS(aclint);
     regs->registerResources(*this);
 

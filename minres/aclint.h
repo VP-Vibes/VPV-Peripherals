@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef _ACLINT_H_
-#define _ACLINT_H_
+#pragma once
 
 #include <scc/clock_if_mixins.h>
 #include <scc/tlm_target.h>
@@ -14,7 +13,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3AClint_regs;
+class aclint_regs;
 
 class aclint : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -34,7 +33,7 @@ protected:
     void reset_cb();
     void update_mtime();
     sc_core::sc_time clk_period, last_updt;
-    std::unique_ptr<Apb3AClint_regs> regs;
+    std::unique_ptr<aclint_regs> regs;
     sc_core::sc_event mtime_evt;
 };
 using aclint_tl = scc::tickless_clock<aclint>;
@@ -42,4 +41,4 @@ using aclint_tc = scc::ticking_clock<aclint>;
 } // namespace minres
 } /* namespace vpvper */
 
-#endif /* _ACLINT_H_ */
+

@@ -7,7 +7,7 @@
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
-#include "minres/gen/Apb3Timer_regs.h"
+#include "minres/gen/timercounter_regs.h"
 #include <array>
 #include <cstdint>
 #include <scc/clock_if_mixins.h>
@@ -18,7 +18,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3Timer_regs;
+class timercounter_regs;
 
 class timer : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -52,7 +52,7 @@ protected:
     void update_counter1() { update_counter(1); };
     void update_counter(unsigned idx);
     void update_prescaler();
-    std::unique_ptr<Apb3Timer_regs> regs;
+    std::unique_ptr<timercounter_regs> regs;
     uint64_t presc_counter{0};
     std::array<uint64_t, NUM_COUNTER> counters;
     sc_core::sc_time last_cnt_update;

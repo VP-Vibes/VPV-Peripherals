@@ -5,7 +5,7 @@
  */
 
 #include "gpio.h"
-#include "gen/Apb3Gpio_regs.h"
+#include "gen/gpio_regs.h"
 #include <limits>
 #include <scc/report.h>
 #include <scc/utilities.h>
@@ -18,7 +18,7 @@ using namespace sc_dt;
 gpio::gpio(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
-, NAMEDD(regs, Apb3Gpio_regs) {
+, NAMEDD(regs, gpio_regs) {
     regs->registerResources(*this);
     SC_METHOD(reset_cb);
     sensitive << rst_i;

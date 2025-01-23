@@ -5,7 +5,7 @@
  */
 
 #include "qspi.h"
-#include "gen/Apb3SpiXdrMasterCtrl_regs.h"
+#include "gen/apb3spi_regs.h"
 #include <limits>
 #include <scc/report.h>
 #include <scc/utilities.h>
@@ -18,7 +18,7 @@ using namespace sc_dt;
 qspi::qspi(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
-, NAMEDD(regs, Apb3SpiXdrMasterCtrl_regs) {
+, NAMEDD(regs, apb3spi_regs) {
     xip_sck(flash_mem.target);
     regs->registerResources(*this);
     SC_METHOD(reset_cb);

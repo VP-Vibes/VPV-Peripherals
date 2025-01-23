@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef _GPIO_H_
-#define _GPIO_H_
+#pragma once
 
 #include <scc/clock_if_mixins.h>
 #include <scc/tlm_target.h>
@@ -13,7 +12,7 @@
 namespace vpvper {
 namespace minres {
 
-class Apb3Gpio_regs;
+class gpio_regs;
 
 class gpio : public sc_core::sc_module, public scc::tlm_target<> {
 public:
@@ -36,7 +35,7 @@ public:
 protected:
     void reset_cb();
     sc_core::sc_time clk_period;
-    std::unique_ptr<Apb3Gpio_regs> regs;
+    std::unique_ptr<gpio_regs> regs;
 };
 
 using gpio_tl = scc::tickless_clock<gpio>;
@@ -45,4 +44,4 @@ using gpio_tc = scc::ticking_clock<gpio>;
 } /* namespace minres */
 } /* namespace vpvper */
 
-#endif /* _GPIO_H_ */
+
