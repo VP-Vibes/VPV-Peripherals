@@ -2,7 +2,6 @@
 #define DMA_H
 
 #include "gen/dma_regs.h"
-#include "tlm/scc/initiator_mixin.h"
 #include <cci_configuration>
 #include <scc/clock_if_mixins.h>
 #include <scc/tlm_target.h>

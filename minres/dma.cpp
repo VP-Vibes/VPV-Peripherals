@@ -27,11 +27,15 @@ dma::dma(sc_core::sc_module_name nm)
         bool new_ch1 = regs->r_control.ch1_enable_transfer;
 
         if(prev_ch0 == 0 && new_ch0 == 1) {
+            regs->r_status.ch0_busy = 1;
             ch0_enable_event.notify(SC_ZERO_TIME); // Trigger event immediately
+            regs->r_control.ch0_enable_transfer = 0; //Reset the flag to 0
         }
 
         if(prev_ch1 == 0 && new_ch1 == 1) {
-            ch1_enable_event.notify(SC_ZERO_TIME); // Trigger event immediately
+            regs->r_status.ch1_busy = 1;
+            ch1_enable_event.notify(SC_ZERO_TIME);
+            regs->r_control.ch1_enable_transfer = 0;
         }
 
         return true;
@@ -43,7 +47,6 @@ dma::dma(sc_core::sc_module_name nm)
     sensitive << rst_i;
     dont_initialize();
 
-    // SC_THREAD(update_signal);
     SC_THREAD(transfer_process_ch0);
     SC_THREAD(transfer_process_ch1);
 
@@ -67,41 +70,48 @@ void dma::reset_cb() {
 
 void dma::transfer_process_ch0() {
     while(true) {
-        // Wait for channel 0 enable and event trigger
         wait(ch0_enable_event);
 
-        if(regs->r_control.ch0_enable_transfer && !regs->r_status.ch0_busy) {
-            regs->r_status.ch0_busy = 1;
+        {
             uint32_t src_addr = regs->r_ch0_src_start_addr;
             uint32_t dst_addr = regs->r_ch0_dst_start_addr;
             uint32_t seg_length = regs->r_ch0_transfer.seg_length;
             uint32_t seg_count = regs->r_ch0_transfer.seg_count;
+            uint32_t width = regs->r_ch0_transfer.width;
+
+            // Use a buffer for segment transfer
+            std::vector<uint8_t> buffer(seg_length * (1 << width));
 
             for(uint32_t seg = 0; seg < seg_count; seg++) {
-                // Transfer data for this segment
-                for(uint32_t i = 0; i < seg_length; i++) {
-                    tlm::tlm_generic_payload trans;
-                    sc_time delay = SC_ZERO_TIME;
-                    uint8_t data;
+                tlm::tlm_generic_payload trans;
+                sc_time delay = SC_ZERO_TIME;
 
-                    // Read from source
-                    trans.set_command(tlm::TLM_READ_COMMAND);
-                    trans.set_address(src_addr);
-                    trans.set_data_ptr(&data);
-                    trans.set_data_length(1);
-                    initiator_socket->b_transport(trans, delay);
+                // Read entire segment in one TLM transaction
+                trans.set_command(tlm::TLM_READ_COMMAND);
+                trans.set_address(src_addr);
+                trans.set_data_ptr(buffer.data());
+                trans.set_data_length(buffer.size());
+                trans.set_streaming_width(buffer.size()); // Set full streaming width
+                trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
 
-                    // Write to destination
-                    trans.set_command(tlm::TLM_WRITE_COMMAND);
-                    trans.set_address(dst_addr);
-                    initiator_socket->b_transport(trans, delay);
+                initiator_socket->b_transport(trans, delay);
 
-                    // Update addresses based on step (per-byte increment)
-                    src_addr += regs->r_ch0_src_addr_inc.src_step;
-                    dst_addr += regs->r_ch0_dst_addr_inc.dst_step;
+                if(trans.get_response_status() != tlm::TLM_OK_RESPONSE) {
+                    SCCFATAL("DMA") << "TLM transaction failed at READ ch0";
                 }
 
-                // Update addresses with stride after each segment
+                // Write entire segment in one TLM transaction
+                trans.set_command(tlm::TLM_WRITE_COMMAND);
+                trans.set_address(dst_addr);
+                trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+
+                initiator_socket->b_transport(trans, delay);
+
+                if(trans.get_response_status() != tlm::TLM_OK_RESPONSE) {
+                    SCCFATAL("DMA") << "TLM transaction failed at WRITE ch0";
+                }
+
+                // Update addresses using stride
                 src_addr += regs->r_ch0_src_addr_inc.src_stride;
                 dst_addr += regs->r_ch0_dst_addr_inc.dst_stride;
 
@@ -122,37 +132,43 @@ void dma::transfer_process_ch0() {
 }
 
 void dma::transfer_process_ch1() {
-    // Similar logic for Channel 1
     while(true) {
-
         wait(ch1_enable_event);
 
-        if(regs->r_control.ch1_enable_transfer && !regs->r_status.ch1_busy) {
-            regs->r_status.ch1_busy = 1;
+        {
             uint32_t src_addr = regs->r_ch1_src_start_addr;
             uint32_t dst_addr = regs->r_ch1_dst_start_addr;
             uint32_t seg_length = regs->r_ch1_transfer.seg_length;
             uint32_t seg_count = regs->r_ch1_transfer.seg_count;
+            uint32_t width = regs->r_ch1_transfer.width;
+
+            std::vector<uint8_t> buffer(seg_length * (1 << width));
 
             for(uint32_t seg = 0; seg < seg_count; seg++) {
+                tlm::tlm_generic_payload trans;
+                sc_time delay = SC_ZERO_TIME;
 
-                for(uint32_t i = 0; i < seg_length; i++) {
-                    tlm::tlm_generic_payload trans;
-                    sc_time delay = SC_ZERO_TIME;
-                    uint8_t data;
+                trans.set_command(tlm::TLM_READ_COMMAND);
+                trans.set_address(src_addr);
+                trans.set_data_ptr(buffer.data());
+                trans.set_data_length(buffer.size());
+                trans.set_streaming_width(buffer.size()); // Set full streaming width
+                trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
 
-                    trans.set_command(tlm::TLM_READ_COMMAND);
-                    trans.set_address(src_addr);
-                    trans.set_data_ptr(&data);
-                    trans.set_data_length(1);
-                    initiator_socket->b_transport(trans, delay);
+                initiator_socket->b_transport(trans, delay);
 
-                    trans.set_command(tlm::TLM_WRITE_COMMAND);
-                    trans.set_address(dst_addr);
-                    initiator_socket->b_transport(trans, delay);
+                if(trans.get_response_status() != tlm::TLM_OK_RESPONSE) {
+                    SCCFATAL("DMA") << "TLM transaction failed at READ ch1";
+                }
 
-                    src_addr += regs->r_ch1_src_addr_inc.src_step;
-                    dst_addr += regs->r_ch1_dst_addr_inc.dst_step;
+                trans.set_command(tlm::TLM_WRITE_COMMAND);
+                trans.set_address(dst_addr);
+                trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+
+                initiator_socket->b_transport(trans, delay);
+
+                if(trans.get_response_status() != tlm::TLM_OK_RESPONSE) {
+                    SCCFATAL("DMA") << "TLM transaction failed at WRITE ch1";
                 }
 
                 src_addr += regs->r_ch1_src_addr_inc.src_stride;
