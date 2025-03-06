@@ -10,9 +10,8 @@
 namespace vpvper {
 namespace generic {
 
-spi_mem::spi_mem(sc_core::sc_module_name const& nm ) {
+spi_mem::spi_mem(sc_core::sc_module_name const& nm) {
     // TODO Auto-generated constructor stub
-
 }
 
 spi_mem::~spi_mem() {
@@ -20,4 +19,4 @@ spi_mem::~spi_mem() {
 }
 
 } /* namespace generic */
-}
+} // namespace vpvper

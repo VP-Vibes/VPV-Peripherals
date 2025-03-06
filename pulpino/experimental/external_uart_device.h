@@ -45,7 +45,7 @@ public:
     virtual ~ExternalUARTDevice(void) {}
 
 protected:
-    virtual void sense_input(void){};
+    virtual void sense_input(void) {};
     virtual int read(unsigned char* buf);
     virtual int write(unsigned char* buf);
 };

@@ -11,8 +11,8 @@
 #include <scc/memory.h>
 #include <scc/tlm_target.h>
 #include <spi/spi_tlm.h>
-#include <tlm/nw/initiator_mixin.h>
 #include <sysc/communication/sc_signal_ports.h>
+#include <tlm/nw/initiator_mixin.h>
 
 namespace vpvper {
 namespace minres {

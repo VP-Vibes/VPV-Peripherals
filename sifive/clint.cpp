@@ -52,7 +52,7 @@ clint::clint(sc_module_name nm)
     });
     regs->msip.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_time d) -> bool {
         reg.put(data);
-       write_msip_irq(regs->r_msip.msip);
+        write_msip_irq(regs->r_msip.msip);
         return true;
     });
     SC_METHOD(update_mtime);
@@ -79,17 +79,18 @@ void clint::reset_cb() {
 
 void clint::update_mtime() {
     if(clk > SC_ZERO_TIME) {
-        uint64_t elapsed_clks = (sc_time_stamp() - last_updt) / clk; // get the number of clock periods since last invocation
-        last_updt += elapsed_clks * clk;                             // increment the last_updt timestamp by the number of clocks
-        regs->r_mtime += elapsed_clks;                               // update mtime reg
+        uint64_t elapsed_clks =
+            (sc_time_stamp() - last_updt) / clk; // get the number of clock periods since last invocation
+        last_updt += elapsed_clks * clk;         // increment the last_updt timestamp by the number of clocks
+        regs->r_mtime += elapsed_clks;           // update mtime reg
         write_mtime_irq(regs->r_mtimecmp <= regs->r_mtime);
         mtime_evt.cancel();
         if(regs->r_mtimecmp > regs->r_mtime) {
             sc_time next_trigger = (clk * lfclk_mutiplier) * (regs->r_mtimecmp - regs->mtime);
             mtime_evt.notify(next_trigger);
             SCCTRACE() << "Timer fires at " << sc_time_stamp() + next_trigger;
-       }
-   } else
+        }
+    } else
         last_updt = sc_time_stamp();
 }
 
@@ -103,7 +104,7 @@ void clint::write_mtime_irq(bool irq) {
     gp.set_value(irq);
     mtime_int_o->nb_transport_fw(gp, p, t);
 #endif
-} 
+}
 
 void clint::write_msip_irq(bool irq) {
 #ifdef SC_SIGNAL_IF
@@ -115,7 +116,7 @@ void clint::write_msip_irq(bool irq) {
     gp.set_value(irq);
     msip_int_o->nb_transport_fw(gp, p, t);
 #endif
-} 
+}
 
 } /* namespace sifive */
 } /* namespace vpvper */

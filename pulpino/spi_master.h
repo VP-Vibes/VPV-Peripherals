@@ -70,7 +70,7 @@ public:
         {"TXFIFO", 0x18}, // SPI Transmit FIFO
         {"RXFIFO", 0x20}, // SPI Receive FIFO
         {"INTCFG", 0x24}  // Inerrupt Configuration
-    }};                   ///< SPIMaster registers
+    }}; ///< SPIMaster registers
     std::array<scc::bitfield<uint32_t>, 19> bitfields{{
         // Bitfields not declared in Documentation -> used in the Treiber files of Pulpino
         {getRegister("STATUS"), "TX_STATUS", 24, 8, "spi.UNKNOWN_TXFIFO"}, // how much of the FIFO is in use right now
@@ -97,7 +97,7 @@ public:
         {getRegister("TXFIFO"), "TX_FIFO", 0, 32, "spi.TX"}, // Transmit Data (Write Data into the FIFO)
         {getRegister("RXFIFO"), "RX_FIFO", 0, 32, "spi.RX"}, // Receive Data (Read Data from the FIFO)
         {getRegister("INTCFG"), "EN_INT", 31, 1, "spi.EN"}   // Enable Interrupts
-    }};                                                      ///< SPIMaster register bitfields
+    }}; ///< SPIMaster register bitfields
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor
     SPIMasterRegs(sc_core::sc_module_name name)

@@ -14,10 +14,10 @@ namespace minres {
 
 class dma : public sc_core::sc_module, public scc::tlm_target<> {
 public:
-    sc_core::sc_in<bool> rst_i{"rst_i"};     // Reset signal
-    sc_core::sc_out<bool> irq_o{"irq_o"};    // Interrupt output
-    sc_core::sc_event ch0_enable_event;      // Event for register bit
-    sc_core::sc_event ch1_enable_event;      // Event for register bit
+    sc_core::sc_in<bool> rst_i{"rst_i"};  // Reset signal
+    sc_core::sc_out<bool> irq_o{"irq_o"}; // Interrupt output
+    sc_core::sc_event ch0_enable_event;   // Event for register bit
+    sc_core::sc_event ch1_enable_event;   // Event for register bit
 
     // TLM Sockets
     tlm_utils::simple_initiator_socket<dma, scc::LT> initiator_socket;

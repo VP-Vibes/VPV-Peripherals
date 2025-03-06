@@ -28,12 +28,10 @@ qspi::qspi(sc_core::sc_module_name nm)
         regs->r_status.tx_free = 32;
         return false;
     });
-    regs->data.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
-        return false;
-    });
-    regs->data.set_write_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t const& data, sc_core::sc_time d) -> bool {
-        return false;
-    });
+    regs->data.set_read_cb(
+        [this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool { return false; });
+    regs->data.set_write_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t const& data,
+                                   sc_core::sc_time d) -> bool { return false; });
     // TODO write to irq
 }
 

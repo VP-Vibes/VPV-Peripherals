@@ -81,7 +81,7 @@ public:
         {"CLAIM-COMPLETE_CTX1", 0x201004}, // Interrupt claim/complete for context 1.
         {"CLAIM-COMPLETE_CTX2", 0x202004}, // Interrupt claim/complete for context 2.
         {"CLAIM-COMPLETE_CTX3", 0x203004}  // Interrupt claim/complete for context 3.
-    }};                                    ///< Plic registers
+    }}; ///< Plic registers
 
     std::array<scc::bitfield<uint32_t>, 32 + 1 + 3 * 4> bitfields{{
         {getRegister("IP_SOURCE31-0"), "IP_SOURCE31-0", 0, 32, "plic.ip31-0"},

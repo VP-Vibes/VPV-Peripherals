@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <systemc>
-#include <scc/utilities.h>
 #include <cci_configuration>
+#include <scc/utilities.h>
+#include <systemc>
 
 namespace vpvper {
 namespace generic {
@@ -23,14 +23,14 @@ public:
 
     cci::cci_param<bool> active_level{"active_level", true, "Duration of the reset being active"};
 
-    rst_gen(sc_core::sc_module_name const& nm):sc_core::sc_module(nm) {
+    rst_gen(sc_core::sc_module_name const& nm)
+    : sc_core::sc_module(nm) {
         SC_THREAD(run);
     }
 
     rst_gen(sc_core::sc_module_name const& nm, bool active_level)
     : sc_core::sc_module(nm)
-    , active_level{"active_level", active_level, "Duration of the reset being active"}
-    {
+    , active_level{"active_level", active_level, "Duration of the reset being active"} {
         SC_THREAD(run);
     }
 

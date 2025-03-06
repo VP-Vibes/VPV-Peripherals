@@ -40,5 +40,3 @@ using aclint_tl = scc::tickless_clock<aclint>;
 using aclint_tc = scc::ticking_clock<aclint>;
 } // namespace minres
 } /* namespace vpvper */
-
-

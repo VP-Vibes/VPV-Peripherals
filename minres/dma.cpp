@@ -28,8 +28,8 @@ dma::dma(sc_core::sc_module_name nm)
 
         if(prev_ch0 == 0 && new_ch0 == 1) {
             regs->r_status.ch0_busy = 1;
-            ch0_enable_event.notify(SC_ZERO_TIME); // Trigger event immediately
-            regs->r_control.ch0_enable_transfer = 0; //Reset the flag to 0
+            ch0_enable_event.notify(SC_ZERO_TIME);   // Trigger event immediately
+            regs->r_control.ch0_enable_transfer = 0; // Reset the flag to 0
         }
 
         if(prev_ch1 == 0 && new_ch1 == 1) {

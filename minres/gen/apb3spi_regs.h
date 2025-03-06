@@ -1,11 +1,11 @@
 /*
-* Copyright (c) 2023 - 2025 MINRES Technologies GmbH
-*
-* SPDX-License-Identifier: Apache-2.0
-*
-* Generated at 2025-01-21 12:45:36 UTC 
-* by peakrdl_mnrs version 1.2.9
-*/
+ * Copyright (c) 2023 - 2025 MINRES Technologies GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Generated at 2025-01-21 12:45:36 UTC
+ * by peakrdl_mnrs version 1.2.9
+ */
 
 #ifndef _APB3SPI_H_
 #define _APB3SPI_H_
@@ -23,108 +23,106 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
-        BEGIN_BF_DECL(data_t, uint32_t);
-        BF_FIELD(data, 0, 8);
-        BF_FIELD(write, 8, 1);
-        BF_FIELD(read, 9, 1);
-        BF_FIELD(ssgen, 11, 1);
-        BF_FIELD(rx_data_invalid, 31, 1);
-        END_BF_DECL() r_data;
-    
-        BEGIN_BF_DECL(status_t, uint32_t);
-        BF_FIELD(tx_free, 0, 5);
-        BF_FIELD(rx_avail, 16, 5);
-        END_BF_DECL() r_status;
-    
-        BEGIN_BF_DECL(config_t, uint32_t);
-        BF_FIELD(kind, 0, 2);
-        BF_FIELD(mode, 4, 2);
-        END_BF_DECL() r_config;
-    
-        BEGIN_BF_DECL(intr_t, uint32_t);
-        BF_FIELD(tx_ie, 0, 1);
-        BF_FIELD(rx_ie, 1, 1);
-        BF_FIELD(tx_ip, 8, 1);
-        BF_FIELD(rx_ip, 9, 1);
-        BF_FIELD(tx_active, 16, 1);
-        END_BF_DECL() r_intr;
-    
-        BEGIN_BF_DECL(sclk_config_t, uint32_t);
-        BF_FIELD(clk_divider, 0, 12);
-        END_BF_DECL() r_sclk_config;
-    
-        BEGIN_BF_DECL(ssgen_setup_t, uint32_t);
-        BF_FIELD(setup_cycles, 0, 12);
-        END_BF_DECL() r_ssgen_setup;
-    
-        BEGIN_BF_DECL(ssgen_hold_t, uint32_t);
-        BF_FIELD(hold_cycles, 0, 12);
-        END_BF_DECL() r_ssgen_hold;
-    
-        BEGIN_BF_DECL(ssgen_disable_t, uint32_t);
-        BF_FIELD(disable_cycles, 0, 12);
-        END_BF_DECL() r_ssgen_disable;
-    
-        BEGIN_BF_DECL(ssgen_active_high_t, uint32_t);
-        BF_FIELD(spi_cs_active_high, 0, 1);
-        END_BF_DECL() r_ssgen_active_high;
-    
-        BEGIN_BF_DECL(xip_enable_t, uint32_t);
-        BF_FIELD(enable, 0, 1);
-        END_BF_DECL() r_xip_enable;
-    
-        BEGIN_BF_DECL(xip_config_t, uint32_t);
-        BF_FIELD(instruction, 0, 8);
-        BF_FIELD(enable, 8, 1);
-        BF_FIELD(dummy_value, 16, 8);
-        BF_FIELD(dummy_count, 24, 4);
-        END_BF_DECL() r_xip_config;
-    
-        BEGIN_BF_DECL(xip_mode_t, uint32_t);
-        BF_FIELD(instruction, 0, 2);
-        BF_FIELD(address, 8, 2);
-        BF_FIELD(dummy, 16, 2);
-        BF_FIELD(payload, 24, 2);
-        END_BF_DECL() r_xip_mode;
-    
-        BEGIN_BF_DECL(xip_write_t, uint32_t);
-        BF_FIELD(data, 0, 8);
-        END_BF_DECL() r_xip_write;
-    
-        BEGIN_BF_DECL(xip_read_write_t, uint32_t);
-        BF_FIELD(data, 0, 8);
-        END_BF_DECL() r_xip_read_write;
-    
-        BEGIN_BF_DECL(xip_read_t, uint32_t);
-        BF_FIELD(data, 0, 8);
-        END_BF_DECL() r_xip_read;
-    
+    BEGIN_BF_DECL(data_t, uint32_t);
+    BF_FIELD(data, 0, 8);
+    BF_FIELD(write, 8, 1);
+    BF_FIELD(read, 9, 1);
+    BF_FIELD(ssgen, 11, 1);
+    BF_FIELD(rx_data_invalid, 31, 1);
+    END_BF_DECL() r_data;
+
+    BEGIN_BF_DECL(status_t, uint32_t);
+    BF_FIELD(tx_free, 0, 5);
+    BF_FIELD(rx_avail, 16, 5);
+    END_BF_DECL() r_status;
+
+    BEGIN_BF_DECL(config_t, uint32_t);
+    BF_FIELD(kind, 0, 2);
+    BF_FIELD(mode, 4, 2);
+    END_BF_DECL() r_config;
+
+    BEGIN_BF_DECL(intr_t, uint32_t);
+    BF_FIELD(tx_ie, 0, 1);
+    BF_FIELD(rx_ie, 1, 1);
+    BF_FIELD(tx_ip, 8, 1);
+    BF_FIELD(rx_ip, 9, 1);
+    BF_FIELD(tx_active, 16, 1);
+    END_BF_DECL() r_intr;
+
+    BEGIN_BF_DECL(sclk_config_t, uint32_t);
+    BF_FIELD(clk_divider, 0, 12);
+    END_BF_DECL() r_sclk_config;
+
+    BEGIN_BF_DECL(ssgen_setup_t, uint32_t);
+    BF_FIELD(setup_cycles, 0, 12);
+    END_BF_DECL() r_ssgen_setup;
+
+    BEGIN_BF_DECL(ssgen_hold_t, uint32_t);
+    BF_FIELD(hold_cycles, 0, 12);
+    END_BF_DECL() r_ssgen_hold;
+
+    BEGIN_BF_DECL(ssgen_disable_t, uint32_t);
+    BF_FIELD(disable_cycles, 0, 12);
+    END_BF_DECL() r_ssgen_disable;
+
+    BEGIN_BF_DECL(ssgen_active_high_t, uint32_t);
+    BF_FIELD(spi_cs_active_high, 0, 1);
+    END_BF_DECL() r_ssgen_active_high;
+
+    BEGIN_BF_DECL(xip_enable_t, uint32_t);
+    BF_FIELD(enable, 0, 1);
+    END_BF_DECL() r_xip_enable;
+
+    BEGIN_BF_DECL(xip_config_t, uint32_t);
+    BF_FIELD(instruction, 0, 8);
+    BF_FIELD(enable, 8, 1);
+    BF_FIELD(dummy_value, 16, 8);
+    BF_FIELD(dummy_count, 24, 4);
+    END_BF_DECL() r_xip_config;
+
+    BEGIN_BF_DECL(xip_mode_t, uint32_t);
+    BF_FIELD(instruction, 0, 2);
+    BF_FIELD(address, 8, 2);
+    BF_FIELD(dummy, 16, 2);
+    BF_FIELD(payload, 24, 2);
+    END_BF_DECL() r_xip_mode;
+
+    BEGIN_BF_DECL(xip_write_t, uint32_t);
+    BF_FIELD(data, 0, 8);
+    END_BF_DECL() r_xip_write;
+
+    BEGIN_BF_DECL(xip_read_write_t, uint32_t);
+    BF_FIELD(data, 0, 8);
+    END_BF_DECL() r_xip_read_write;
+
+    BEGIN_BF_DECL(xip_read_t, uint32_t);
+    BF_FIELD(data, 0, 8);
+    END_BF_DECL() r_xip_read;
 
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
-    
-        scc::sc_register<data_t> data;
-        scc::sc_register<status_t> status;
-        scc::sc_register<config_t> config;
-        scc::sc_register<intr_t> intr;
-        scc::sc_register<sclk_config_t> sclk_config;
-        scc::sc_register<ssgen_setup_t> ssgen_setup;
-        scc::sc_register<ssgen_hold_t> ssgen_hold;
-        scc::sc_register<ssgen_disable_t> ssgen_disable;
-        scc::sc_register<ssgen_active_high_t> ssgen_active_high;
-        scc::sc_register<xip_enable_t> xip_enable;
-        scc::sc_register<xip_config_t> xip_config;
-        scc::sc_register<xip_mode_t> xip_mode;
-        scc::sc_register<xip_write_t> xip_write;
-        scc::sc_register<xip_read_write_t> xip_read_write;
-        scc::sc_register<xip_read_t> xip_read;
+
+    scc::sc_register<data_t> data;
+    scc::sc_register<status_t> status;
+    scc::sc_register<config_t> config;
+    scc::sc_register<intr_t> intr;
+    scc::sc_register<sclk_config_t> sclk_config;
+    scc::sc_register<ssgen_setup_t> ssgen_setup;
+    scc::sc_register<ssgen_hold_t> ssgen_hold;
+    scc::sc_register<ssgen_disable_t> ssgen_disable;
+    scc::sc_register<ssgen_active_high_t> ssgen_active_high;
+    scc::sc_register<xip_enable_t> xip_enable;
+    scc::sc_register<xip_config_t> xip_config;
+    scc::sc_register<xip_mode_t> xip_mode;
+    scc::sc_register<xip_write_t> xip_write;
+    scc::sc_register<xip_read_write_t> xip_read_write;
+    scc::sc_register<xip_read_t> xip_read;
 
     apb3spi_regs(sc_core::sc_module_name nm);
 
-    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target);
 };
-
 
 //////////////////////////////////////////////////////////////////////////////
 // member functions
@@ -148,7 +146,7 @@ inline apb3spi_regs::apb3spi_regs(sc_core::sc_module_name nm)
 , NAMED(xip_read_write, r_xip_read_write, 0, *this)
 , NAMED(xip_read, r_xip_read, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void apb3spi_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH> inline void apb3spi_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(data, 0x0UL);
     target.addResource(status, 0x4UL);
     target.addResource(config, 0x8UL);
@@ -165,6 +163,6 @@ template <unsigned BUSWIDTH> inline void apb3spi_regs::registerResources(scc::tl
     target.addResource(xip_read_write, 0x54UL);
     target.addResource(xip_read, 0x58UL);
 }
-}//namespace minres
-}//namespace vpvper
+} // namespace minres
+} // namespace vpvper
 #endif // _APB3SPI_H_

@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include <cci_configuration>
 #include <scc/clock_if_mixins.h>
 #include <scc/tlm_target.h>
-#include <cci_configuration>
 
 namespace vpvper {
 namespace minres {
@@ -46,5 +46,3 @@ using gpio_tc = scc::ticking_clock<gpio>;
 
 } /* namespace minres */
 } /* namespace vpvper */
-
-

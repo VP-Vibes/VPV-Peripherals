@@ -149,6 +149,6 @@ void plic::write_irq(bool irq) {
     gp.set_value(irq);
     core_interrupt_o->nb_transport_fw(gp, p, t);
 #endif
-} 
+}
 } /* namespace sifive */
 } /* namespace vpvper */
