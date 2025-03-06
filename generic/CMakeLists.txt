@@ -23,7 +23,7 @@ else()
 	endif()	
 endif()
 
-add_library(${PROJECT_NAME}_generic terminal.cpp ${WEBSOCKET_SRC})
+add_library(${PROJECT_NAME}_generic terminal.cpp ${WEBSOCKET_SRC} spi_mem.cpp)
 target_include_directories(${PROJECT_NAME}_generic PUBLIC ${vpvper_SOURCE_DIR})
 if(SEASOCKS_LIB)
 	target_compile_definitions(${PROJECT_NAME}_generic PUBLIC HAS_WEB_SOCKETS)

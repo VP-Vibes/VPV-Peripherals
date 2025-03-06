@@ -10,6 +10,8 @@
 #include <scc/clock_if_mixins.h>
 #include <scc/memory.h>
 #include <scc/tlm_target.h>
+#include <spi/spi_tlm.h>
+#include <tlm/nw/initiator_mixin.h>
 #include <sysc/communication/sc_signal_ports.h>
 
 namespace vpvper {
@@ -23,13 +25,7 @@ public:
 
     sc_core::sc_in<bool> rst_i{"rst_i"};
 
-    sc_core::sc_out<bool> ssclk_o{"ssclk_o"};
-
-    sc_core::sc_vector<sc_core::sc_out<bool>> dq_o{"dq_o", 4};
-
-    sc_core::sc_vector<sc_core::sc_out<bool>> oe_o{"oe_o", 4};
-
-    sc_core::sc_vector<sc_core::sc_in<bool>> dq_i{"dq_i", 4};
+    tlm::nw::initiator_mixin<spi::spi_pkt_initiator_socket<>> isck{"isck"};
 
     sc_core::sc_out<bool> irq_o{"irq_o"};
 
@@ -45,7 +41,7 @@ protected:
     void reset_cb();
     sc_core::sc_time clk_period;
     std::unique_ptr<apb3spi_regs> regs;
-    scc::memory<16_MB, scc::LT> flash_mem{"flash_mem"};
+    scc::memory_tl<16_MB, scc::LT> flash_mem{"flash_mem"};
 };
 
 struct qspi_tl : public qspi {
