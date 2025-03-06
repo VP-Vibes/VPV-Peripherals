@@ -25,7 +25,7 @@ public:
         {"MTIMECMPHI", (0x4000 + 4)}, // Timer compare register high word ( 63:32 )
         {"MTIMELO", 0xBFF8},          // Timer (count) register low word  ( 31:0 )
         {"MTIMEHI", (0xBFF8 + 4)}     // Timer (count) register high word ( 63:32 )
-    }}; ///< Clint registers
+    }};                               ///< Clint registers
 
     std::array<scc::bitfield<uint32_t>, 5> bitfields{
         {{getRegister("MSIP"), "MSIP", 0, 1, "clint.MSIP"},
