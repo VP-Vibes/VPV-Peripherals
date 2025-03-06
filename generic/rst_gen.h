@@ -7,6 +7,8 @@
 #pragma once
 
 #include <systemc>
+#include <scc/utilities.h>
+#include <cci_configuration>
 
 namespace vpvper {
 namespace generic {
@@ -15,17 +17,28 @@ class rst_gen : public sc_core::sc_module {
     SC_HAS_PROCESS(rst_gen);
 
 public:
-    rst_gen(sc_core::sc_module_name const& nm) { SC_THREAD(run); }
-    sc_core::sc_out<bool> rst{"rst"};
-    sc_core::sc_out<bool> rst_n{"rst_n"};
+    sc_core::sc_out<bool> rst_o{"rst_o"};
+
+    cci::cci_param<sc_core::sc_time> duration{"duration", 100_ns, "Duration of the reset being active"};
+
+    cci::cci_param<bool> active_level{"active_level", true, "Duration of the reset being active"};
+
+    rst_gen(sc_core::sc_module_name const& nm):sc_core::sc_module(nm) {
+        SC_THREAD(run);
+    }
+
+    rst_gen(sc_core::sc_module_name const& nm, bool active_level)
+    : sc_core::sc_module(nm)
+    , active_level{"active_level", active_level, "Duration of the reset being active"}
+    {
+        SC_THREAD(run);
+    }
 
 private:
     void run() {
-        rst.write(true);
-        rst_n.write(false);
-        wait(100_ns);
-        rst.write(false);
-        rst_n.write(true);
+        rst_o.write(active_level.get_value());
+        wait(duration.get_value());
+        rst_o.write(!active_level.get_value());
     }
 };
 
