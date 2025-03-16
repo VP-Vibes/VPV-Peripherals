@@ -7,15 +7,15 @@
 #ifndef _QSPI_H_
 #define _QSPI_H_
 
+#include <deque>
 #include <scc/clock_if_mixins.h>
 #include <scc/memory.h>
-#include <scc/tlm_target.h>
 #include <scc/peq.h>
+#include <scc/tlm_target.h>
 #include <spi/spi_tlm.h>
 #include <sysc/communication/sc_signal_ports.h>
 #include <tlm/nw/initiator_mixin.h>
 #include <tlm/nw/target_mixin.h>
-#include <deque>
 
 namespace vpvper {
 namespace minres {

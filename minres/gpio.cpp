@@ -41,7 +41,8 @@ gpio::gpio(sc_core::sc_module_name nm)
             oe_o[i].write(data & (1 << i));
         return true;
     });
-    regs->boot_sel.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
+    regs->boot_sel.set_read_cb(
+        [this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
             regs->r_boot_sel.bootSel = boot_sel.get_value();
             data = regs->r_boot_sel;
             return true;
