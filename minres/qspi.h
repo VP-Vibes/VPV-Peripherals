@@ -10,9 +10,12 @@
 #include <scc/clock_if_mixins.h>
 #include <scc/memory.h>
 #include <scc/tlm_target.h>
+#include <scc/peq.h>
 #include <spi/spi_tlm.h>
 #include <sysc/communication/sc_signal_ports.h>
 #include <tlm/nw/initiator_mixin.h>
+#include <tlm/nw/target_mixin.h>
+#include <deque>
 
 namespace vpvper {
 namespace minres {
@@ -25,7 +28,7 @@ public:
 
     sc_core::sc_in<bool> rst_i{"rst_i"};
 
-    tlm::nw::initiator_mixin<spi::spi_pkt_initiator_socket<>> isck{"isck"};
+    tlm::nw::initiator_mixin<spi::spi_pkt_initiator_socket<>> spi_i{"spi_i"};
 
     sc_core::sc_out<bool> irq_o{"irq_o"};
 
@@ -39,28 +42,16 @@ public:
 
 protected:
     void reset_cb();
+    void peq_cb();
     sc_core::sc_time clk_period;
     std::unique_ptr<apb3spi_regs> regs;
-    scc::memory_tl<16_MB, scc::LT> flash_mem{"flash_mem"};
+    scc::memory<16_MB, scc::LT> flash_mem{"flash_mem"};
+    unsigned sel_slv_id{std::numeric_limits<unsigned>::max()};
+    scc::peq<unsigned> cmd;
+    std::deque<unsigned> rsp;
 };
 
-struct qspi_tl : public qspi {
-    sc_core::sc_in<sc_core::sc_time> clk_i;
-
-    qspi_tl(sc_core::sc_module_name const& nm)
-    : qspi(nm) {
-        flash_mem.clk_i(clk_i);
-        SC_HAS_PROCESS(qspi_tl);
-        SC_METHOD(clock_cb);
-        this->sensitive << clk_i;
-    }
-
-    virtual ~qspi_tl() = default;
-
-private:
-    void clock_cb() { this->set_clock_period(clk_i.read()); }
-};
-
+using qspi_tl = scc::tickless_clock<qspi>;
 using qspi_tc = scc::ticking_clock<qspi>;
 
 } /* namespace minres */

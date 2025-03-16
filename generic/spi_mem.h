@@ -12,6 +12,7 @@
 #include <scc/utilities.h>
 #include <spi/spi_tlm.h>
 #include <sysc/kernel/sc_module.h>
+#include <tlm/nw/initiator_mixin.h>
 #include <tlm/nw/target_mixin.h>
 #include <util/sparse_array.h>
 
@@ -20,7 +21,7 @@ namespace generic {
 
 class spi_mem : public sc_core::sc_module {
 public:
-    tlm::nw::target_mixin<spi::spi_pkt_target_socket<>> tsck{"tsck"};
+    tlm::nw::target_mixin<spi::spi_pkt_target_socket<>> spi_t{"spi_t"};
 
     cci::cci_param<unsigned> slave_id{"slave_id", 0, "SPI slave id aka id of the slave select"};
 
