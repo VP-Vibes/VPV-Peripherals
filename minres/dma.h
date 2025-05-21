@@ -35,6 +35,9 @@ protected:
 
     sc_core::sc_time clk_period;
     std::unique_ptr<dma_regs> regs;
+
+private:
+    void do_transfer(uint32_t seg_length, uint32_t width, uint32_t seg_count, uint32_t& src_addr, uint32_t& dst_addr);
 };
 
 using dma_tl = scc::tickless_clock<dma>;
