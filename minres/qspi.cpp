@@ -9,6 +9,8 @@
 #include <limits>
 #include <scc/report.h>
 #include <scc/utilities.h>
+#include <tlm/scc/tlm_extensions.h>
+#include <vector>
 
 namespace vpvper {
 namespace minres {
@@ -19,22 +21,53 @@ qspi::qspi(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk_period)
 , NAMEDD(regs, apb3spi_regs) {
-    xip_sck(flash_mem.target);
     regs->registerResources(*this);
     SC_METHOD(reset_cb);
     sensitive << rst_i;
     dont_initialize();
 
+    spi_i.register_nb_transport_bw(
+        [this](spi::spi_packet_payload& trans, tlm::tlm_phase& ph, sc_core::sc_time& t) -> tlm::tlm_sync_enum {
+            if(ph == tlm::nw::CONFIRM) {
+                switch(trans.get_data().size()) {
+                case 1:
+                    rsp.push_back(*trans.get_data().data());
+                    break;
+                case 2:
+                case 4:
+                default:
+                    SCCWARN(SCMOD) << "Unsupported data width: " << trans.get_data().size();
+                }
+                ph = tlm::nw::RESPONSE;
+            }
+            return tlm::TLM_ACCEPTED;
+        });
+    xip_sck.register_b_transport([this](tlm::tlm_generic_payload& gp, sc_core::sc_time& t) {
+        spi::spi_packet_payload spi_gp;
+        tlm::scc::tlm_payload_extension gp_ext;
+        gp_ext.gp = &gp;
+        spi_gp.set_extension(&gp_ext);
+        spi_i->b_transport(spi_gp, t);
+    });
     SC_THREAD(peq_cb);
     sensitive << cmd.event();
 
     regs->status.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
-        regs->r_status.tx_free = 31;
-        data = regs->r_status;
+        if(!this->regs->in_reset()) {
+            data = regs->r_status = (rsp.size() & 0xff) << 16 | 32 - cmd.size();
+            SCCDEBUG(SCMOD) << "read status 0x" << std::hex << data;
+        }
         return true;
     });
     regs->data.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
         if(!this->regs->in_reset()) {
+            if(pending_read && rsp.size()) {
+                regs->r_data = (rsp.size() == 0 ? 0x80000000 : 0) | rsp.front();
+                rsp.pop_front();
+                pending_read = false;
+            } else
+                regs->r_data = (rsp.size() == 0 ? 0x80000000 : 0);
+            data = regs->r_data;
             SCCDEBUG(SCMOD) << "read data 0x" << std::hex << data;
         }
         return true;
@@ -45,8 +78,11 @@ qspi::qspi(sc_core::sc_module_name nm)
                 SCCDEBUG(SCMOD) << "write data 0x" << std::hex << data;
                 switch(data & 0xf00) {
                 case 0x100: // write cmd
-                case 0x200: // read cmd
                     cmd.notify(data & 0x3ff);
+                    break;
+                case 0x200: // read cmd
+                    regs->r_status = (rsp.size() & 0xff) << 16 | (regs->r_status & 0xffff);
+                    pending_read = true;
                     break;
                 case 0x800: // ssgen cmd
                     if(data & 0x80) {
@@ -96,8 +132,13 @@ void qspi::peq_cb() {
     wait(sc_core::SC_ZERO_TIME);
     while(true) {
         auto e = cmd.get();
-        spi::spi_packet_payload payload(sel_slv_id);
-        // payload.set_data()
+        auto payload = spi::spi_pkt_mm::get().allocate();
+        payload->set_target_id(sel_slv_id - 1);
+        payload->get_data().push_back(static_cast<uint8_t>(e));
+        tlm::tlm_phase ph{tlm::nw::REQUEST};
+        sc_core::sc_time t;
+        spi_i->nb_transport_fw(*payload, ph, t);
+        regs->r_status = (regs->r_status & 0xffff0000) | (cmd.size() & 0xff) << 16;
     }
 }
 

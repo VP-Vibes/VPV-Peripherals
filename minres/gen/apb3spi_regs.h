@@ -131,7 +131,7 @@ public:
 inline apb3spi_regs::apb3spi_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , NAMED(data, r_data, 0, *this)
-, NAMED(status, r_status, 0, *this)
+, NAMED(status, r_status, 0x20, *this)
 , NAMED(config, r_config, 0, *this)
 , NAMED(intr, r_intr, 0, *this)
 , NAMED(sclk_config, r_sclk_config, 0, *this)
