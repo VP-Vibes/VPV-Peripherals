@@ -9,11 +9,13 @@
 #define VPVPER_GENERIC_SPI_MEM_H_
 
 #include <cci_configuration>
+#include <scc/memory.h>
 #include <scc/utilities.h>
 #include <spi/spi_tlm.h>
 #include <sysc/kernel/sc_module.h>
 #include <tlm/nw/initiator_mixin.h>
 #include <tlm/nw/target_mixin.h>
+#include <tlm/scc/initiator_mixin.h>
 #include <util/sparse_array.h>
 
 namespace vpvper {
@@ -32,7 +34,11 @@ public:
     virtual ~spi_mem();
 
 private:
-    util::sparse_array<uint8_t, 4_GB> mem;
+    scc::peq<unsigned> cmd;
+    void cmd_cb();
+    scc::memory<256_MB, scc::LT> mem{"mem"};
+    tlm::scc::initiator_mixin<tlm::tlm_initiator_socket<scc::LT>> sckt{"sckt"};
+    bool wren{false};
 };
 
 } /* namespace generic */
