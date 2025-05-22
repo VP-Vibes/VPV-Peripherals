@@ -20,6 +20,7 @@ add_library(${PROJECT_NAME}_pulpissimo
 )
 target_include_directories(${PROJECT_NAME}_pulpissimo PUBLIC ${vpvper_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME}_pulpissimo PUBLIC scc)
+add_library(${PROJECT_NAME}::pulpissimo ALIAS ${PROJECT_NAME}_pulpissimo)
 
 install(TARGETS ${PROJECT_NAME}_pulpissimo COMPONENT ${PROJECT_NAME}_pulpissimo
   EXPORT ${PROJECT_NAME}_pulpissimoTargets                         # for downstream dependencies

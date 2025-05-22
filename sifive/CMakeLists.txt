@@ -28,6 +28,7 @@ if(SEASOCKS_LIB)
 	target_link_libraries(${PROJECT_NAME}_sifive PUBLIC ${PROJECT_NAME}_generic)
 endif()
 target_link_libraries(${PROJECT_NAME}_sifive PUBLIC ${PROJECT_NAME}_generic scc)
+add_library(${PROJECT_NAME}::sifive ALIAS ${PROJECT_NAME}_sifive)
 
 install(TARGETS ${PROJECT_NAME}_sifive COMPONENT ${PROJECT_NAME}_sifive
   EXPORT ${PROJECT_NAME}_genericTargets                         # for downstream dependencies

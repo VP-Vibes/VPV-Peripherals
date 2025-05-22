@@ -16,6 +16,7 @@ add_library(${PROJECT_NAME}_minres
 )
 target_include_directories(${PROJECT_NAME}_minres PUBLIC ${vpvper_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME}_minres PUBLIC scc)
+add_library(${PROJECT_NAME}::minres ALIAS ${PROJECT_NAME}_minres)
 
 install(TARGETS ${PROJECT_NAME}_minres COMPONENT ${PROJECT_NAME}_minres
   EXPORT ${PROJECT_NAME}_minresTargets                         # for downstream dependencies

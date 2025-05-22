@@ -21,6 +21,7 @@ else()
   target_include_directories(${PROJECT_NAME}_pulpino INTERFACE ${vpvper_SOURCE_DIR})
   target_link_libraries(${PROJECT_NAME}_pulpino INTERFACE scc)
 endif()
+add_library(${PROJECT_NAME}::pulpino ALIAS ${PROJECT_NAME}_pulpino)
 
 install(TARGETS ${PROJECT_NAME}_pulpino COMPONENT ${PROJECT_NAME}_pulpino
   EXPORT ${PROJECT_NAME}_pulpinoTargets                         # for downstream dependencies
