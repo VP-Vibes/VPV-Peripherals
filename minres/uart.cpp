@@ -49,6 +49,7 @@ uart::uart(sc_core::sc_module_name nm)
                 } else
                     regs->r_rx_tx_reg.rx_avail = 0;
                 regs->r_rx_tx_reg.tx_free = tx_fifo.num_free() != 0;
+                regs->r_rx_tx_reg.tx_empty = tx_fifo.num_available() == 0;
                 data = reg.get() & reg.rdmask;
             }
             return true;

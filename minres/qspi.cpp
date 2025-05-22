@@ -48,6 +48,7 @@ qspi::qspi(sc_core::sc_module_name nm)
         gp_ext.gp = &gp;
         spi_gp.set_extension(&gp_ext);
         spi_i->b_transport(spi_gp, t);
+        spi_gp.set_extension<tlm::scc::tlm_payload_extension>(nullptr);
     });
     SC_THREAD(peq_cb);
     sensitive << cmd.event();
