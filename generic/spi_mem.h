@@ -29,12 +29,15 @@ public:
 
     cci::cci_param<std::string> mem_file{"mem_file", "", "Memory content pre-load file"};
 
+    cci::cci_param<int64_t> mem_offset{"mem_offset", 0, "Address offset to be used when loading the mem_file"};
+
     spi_mem(const sc_core::sc_module_name& nm);
 
     virtual ~spi_mem();
 
 private:
     scc::peq<unsigned> cmd;
+    void start_of_simulation() override;
     void cmd_cb();
     scc::memory<256_MB, scc::LT> mem{"mem"};
     tlm::scc::initiator_mixin<tlm::tlm_initiator_socket<scc::LT>> sckt{"sckt"};

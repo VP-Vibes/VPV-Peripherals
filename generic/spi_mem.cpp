@@ -7,9 +7,43 @@
 
 #include "spi_mem.h"
 #include <tlm/scc/tlm_extensions.h>
+#include <elfio/elfio.hpp>
+#include <util/logging.h>
+#include <util/ihex_parser.h>
+#include <limits>
 
 namespace vpvper {
 namespace generic {
+namespace {
+bool read_elf_file(std::string const& name, uint8_t expected_elf_class, std::function<bool(uint64_t, uint64_t, const char*)> wr_func) {
+    // Create elfio reader
+    ELFIO::elfio reader;
+    // Load ELF data
+    if(reader.load(name)) {
+        // check elf properties
+        if(reader.get_class() != expected_elf_class) {
+            CPPLOG(ERR) << "ISA missmatch, selected XLEN does not match supplied file ";
+            return false;
+        }
+        if(reader.get_type() != ELFIO::ET_EXEC)
+            return false;
+        if(reader.get_machine() != ELFIO::EM_RISCV)
+            return false;
+        auto entry_address = reader.get_entry();
+        for(const auto& pseg : reader.segments) {
+            const auto fsize = pseg->get_file_size(); // 0x42c/0x0
+            const auto seg_data = pseg->get_data();
+            const auto type = pseg->get_type();
+            if(type == ELFIO::PT_LOAD && fsize > 0) {
+                if(!wr_func(pseg->get_physical_address(), fsize,  seg_data))
+                    CPPLOG(ERR) << "problem writing " << fsize << "bytes to 0x" << std::hex << pseg->get_physical_address();
+            }
+        }
+        return true;
+    }
+    return false;
+}
+}
 
 spi_mem::spi_mem(sc_core::sc_module_name const& nm) {
     spi_t.register_nb_transport_fw(
@@ -34,6 +68,44 @@ spi_mem::spi_mem(sc_core::sc_module_name const& nm) {
 }
 
 spi_mem::~spi_mem() = default;
+
+void spi_mem::start_of_simulation() {
+    if(mem_file.get_value().length()) {
+        std::ifstream ifs{mem_file.get_value()};
+        if(ifs.is_open()) {
+            auto pos = ifs.tellg();
+            std::array<char, 4> buf;
+            ifs.read(buf.data(), 4 );
+            ifs.seekg(pos);
+            if(buf[0]==0x7f && buf[1]==0x45  && buf[2]==0x4c  && buf[3]==0x46 ){
+                if(!read_elf_file(mem_file.get_value(), ELFIO::ELFCLASS32, [this](uint64_t addr, uint64_t size, const char* data) -> bool{
+                    tlm::tlm_generic_payload gp;
+                    gp.set_command(tlm::TLM_WRITE_COMMAND);
+                    gp.set_address(addr+mem_offset.get_value());
+                    gp.set_data_length(size);
+                    gp.set_data_ptr(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(data)));
+                    gp.set_streaming_width(size);
+                    return sckt->transport_dbg(gp)==size;
+                }))
+                    SCCERR(SCMOD)<<"Could not load ELF file "<<mem_file.get_value();
+            } else if(buf[0]==':') {
+                std::vector<uint8_t> write_data;
+                uint64_t last_addr{std::numeric_limits<uint64_t>::max()};
+                if(!util::ihex_parser::parse(ifs, [this, &write_data, &last_addr](uint64_t addr, uint64_t size, const uint8_t* data) -> bool{
+                    tlm::tlm_generic_payload gp;
+                    gp.set_command(tlm::TLM_WRITE_COMMAND);
+                    gp.set_address(addr+mem_offset.get_value());
+                    gp.set_data_length(size);
+                    gp.set_data_ptr(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(data)));
+                    gp.set_streaming_width(size);
+                    return sckt->transport_dbg(gp)==size;
+                }))
+                    SCCERR(SCMOD)<<"Could not load IHEX file "<<mem_file.get_value();
+            }
+        } else
+            SCCERR(SCMOD)<<"Could not open file "<<mem_file.get_value();
+    }
+}
 
 void spi_mem::cmd_cb() {
     wait(sc_core::SC_ZERO_TIME);

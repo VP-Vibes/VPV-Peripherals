@@ -29,7 +29,12 @@ if(SEASOCKS_LIB)
 	target_compile_definitions(${PROJECT_NAME}_generic PUBLIC HAS_WEB_SOCKETS)
 	target_link_libraries(${PROJECT_NAME}_generic PUBLIC ${SEASOCKS_LIB})
 endif()
+if(TARGET elfio::elfio)
+	target_compile_definitions(${PROJECT_NAME}_generic PUBLIC WITH_ELFIO)
+	target_link_libraries(${PROJECT_NAME}_generic PUBLIC elfio::elfio)
+endif()
 target_link_libraries(${PROJECT_NAME}_generic PUBLIC scc)
+add_library(${PROJECT_NAME}::generic ALIAS ${PROJECT_NAME}_generic)
 
 install(TARGETS ${PROJECT_NAME}_generic COMPONENT ${PROJECT_NAME}_generic
   EXPORT ${PROJECT_NAME}_genericTargets                         # for downstream dependencies
