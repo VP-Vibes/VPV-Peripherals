@@ -9,6 +9,7 @@
 #include <cci_configuration>
 #include <scc/clock_if_mixins.h>
 #include <scc/tlm_target.h>
+#include <scc/peq.h>
 
 namespace vpvper {
 namespace minres {
@@ -37,8 +38,11 @@ public:
 
 protected:
     void reset_cb();
+    void pin_writer();
+    void oe_writer();
     sc_core::sc_time clk_period;
     std::unique_ptr<gpio_regs> regs;
+    scc::peq<uint32_t> pin_peq, oe_peq;
 };
 
 using gpio_tl = scc::tickless_clock<gpio>;

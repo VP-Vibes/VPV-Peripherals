@@ -21,8 +21,15 @@ gpio::gpio(sc_core::sc_module_name nm)
 , NAMEDD(regs, gpio_regs) {
     regs->registerResources(*this);
     SC_METHOD(reset_cb);
-    sensitive << rst_i;
     dont_initialize();
+    sensitive << rst_i;
+    SC_METHOD(pin_writer);
+    dont_initialize();
+    sensitive<<pin_peq.event();
+    SC_METHOD(oe_writer);
+    dont_initialize();
+    sensitive<<oe_peq.event();
+
     regs->value.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
         data = 0;
         for(auto i = 0U; i < 32; ++i) {
@@ -32,13 +39,13 @@ gpio::gpio(sc_core::sc_module_name nm)
         return true;
     });
     regs->write.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
-        for(auto i = 0U; i < 32; ++i)
-            pins_o[i].write(data & (1 << i));
+        pin_peq.notify(data);
+        regs->r_write = data;
         return true;
     });
     regs->writeEnable.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
-        for(auto i = 0U; i < 32; ++i)
-            oe_o[i].write(data & (1 << i));
+        oe_peq.notify(data);
+        regs->r_writeEnable = data;
         return true;
     });
     regs->boot_sel.set_read_cb(
@@ -52,15 +59,29 @@ gpio::gpio(sc_core::sc_module_name nm)
 gpio::~gpio() = default;
 
 void gpio::reset_cb() {
-    if(rst_i.read()) {
+    if(rst_i.read())
         regs->reset_start();
-    } else {
+    else
         regs->reset_stop();
-    }
-    for(auto i = 0U; i < 32; ++i) {
-        pins_o[i].write(false);
-        oe_o[i].write(false);
+    pin_peq.notify(regs->r_write);
+    oe_peq.notify(regs->r_writeEnable);
+}
+
+void gpio::pin_writer() {
+    while(pin_peq.has_next()) {
+        auto data = pin_peq.get();
+        for(auto i = 0U; i < 32; ++i)
+            pins_o[i].write(data & (1 << i));
     }
 }
+
+void gpio::oe_writer() {
+    while(oe_peq.has_next()) {
+        auto data = oe_peq.get();
+        for(auto i = 0U; i < 32; ++i)
+            oe_o[i].write(data & (1 << i));
+    }
+}
+
 } /* namespace minres */
 } /* namespace vpvper */
