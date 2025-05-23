@@ -48,7 +48,6 @@ protected:
     unsigned sel_slv_id{std::numeric_limits<unsigned>::max()};
     scc::peq<unsigned> cmd;
     std::deque<unsigned> rsp;
-    bool pending_read{false};
 };
 
 using qspi_tl = scc::tickless_clock<qspi>;

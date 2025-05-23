@@ -62,12 +62,11 @@ qspi::qspi(sc_core::sc_module_name nm)
     });
     regs->data.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
         if(!this->regs->in_reset()) {
-            if(pending_read && rsp.size()) {
-                regs->r_data = (rsp.size() == 0 ? 0x80000000 : 0) | rsp.front();
+            regs->r_data |=  0x80000000;
+            if(rsp.size()) {
+                regs->r_data = rsp.front();
                 rsp.pop_front();
-                pending_read = false;
-            } else
-                regs->r_data = (rsp.size() == 0 ? 0x80000000 : 0);
+            }
             data = regs->r_data;
             SCCDEBUG(SCMOD) << "read data 0x" << std::hex << data;
         }
@@ -79,11 +78,10 @@ qspi::qspi(sc_core::sc_module_name nm)
                 SCCDEBUG(SCMOD) << "write data 0x" << std::hex << data;
                 switch(data & 0xf00) {
                 case 0x100: // write cmd
-                    cmd.notify(data & 0x3ff);
+                    cmd.notify(data & 0xff);
                     break;
                 case 0x200: // read cmd
                     regs->r_status = (rsp.size() & 0xff) << 16 | (regs->r_status & 0xffff);
-                    pending_read = true;
                     break;
                 case 0x800: // ssgen cmd
                     if(data & 0x80) {
@@ -134,7 +132,7 @@ void qspi::peq_cb() {
     while(true) {
         auto e = cmd.get();
         auto payload = spi::spi_pkt_mm::get().allocate();
-        payload->set_target_id(sel_slv_id - 1);
+        payload->set_target_id(sel_slv_id);
         payload->get_data().push_back(static_cast<uint8_t>(e));
         tlm::tlm_phase ph{tlm::nw::REQUEST};
         sc_core::sc_time t;
