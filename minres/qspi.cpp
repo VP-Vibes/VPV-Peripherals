@@ -50,6 +50,15 @@ qspi::qspi(sc_core::sc_module_name nm)
         spi_i->b_transport(spi_gp, t);
         spi_gp.set_extension<tlm::scc::tlm_payload_extension>(nullptr);
     });
+    xip_sck.register_transport_dbg([this](tlm::tlm_generic_payload& gp) {
+        spi::spi_packet_payload spi_gp;
+        tlm::scc::tlm_payload_extension gp_ext;
+        gp_ext.gp = &gp;
+        spi_gp.set_extension(&gp_ext);
+        auto ret = spi_i->transport_dbg(spi_gp);
+        spi_gp.set_extension<tlm::scc::tlm_payload_extension>(nullptr);
+        return ret;
+    });
     SC_THREAD(peq_cb);
     sensitive << cmd.event();
 
@@ -62,7 +71,7 @@ qspi::qspi(sc_core::sc_module_name nm)
     });
     regs->data.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
         if(!this->regs->in_reset()) {
-            regs->r_data |=  0x80000000;
+            regs->r_data |= 0x80000000;
             if(rsp.size()) {
                 regs->r_data = rsp.front();
                 rsp.pop_front();
