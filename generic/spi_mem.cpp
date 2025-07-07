@@ -23,7 +23,7 @@ bool read_elf_file(std::string const& component_name, std::string const& file_na
     if(reader.load(file_name)) {
         // check elf properties
         if(reader.get_class() != expected_elf_class) {
-            CPPLOG(ERR) << "ISA missmatch, selected XLEN does not match supplied file ";
+            SCCERR(component_name) << "ISA missmatch, selected XLEN does not match supplied file ";
             return false;
         }
         if(reader.get_type() != ELFIO::ET_EXEC)
@@ -37,8 +37,7 @@ bool read_elf_file(std::string const& component_name, std::string const& file_na
             const auto type = pseg->get_type();
             if(type == ELFIO::PT_LOAD && fsize > 0) {
                 if(!wr_func(pseg->get_physical_address(), fsize, seg_data))
-                    SCCERR(component_name)
-                        << "problem writing " << fsize << "bytes to 0x" << std::hex << pseg->get_physical_address();
+                    SCCERR(component_name) << "problem writing " << fsize << "bytes to 0x" << std::hex << pseg->get_physical_address();
             }
         }
         return true;
@@ -48,14 +47,13 @@ bool read_elf_file(std::string const& component_name, std::string const& file_na
 } // namespace
 
 spi_mem::spi_mem(sc_core::sc_module_name const& nm) {
-    spi_t.register_nb_transport_fw(
-        [this](spi::spi_packet_payload& trans, tlm::tlm_phase& ph, sc_core::sc_time& t) -> tlm::tlm_sync_enum {
-            if(ph == tlm::nw::INDICATION) {
-                t += 8 * trans.get_sender_clk_period();
-                cmd.notify(*trans.get_data().data(), sc_core::SC_ZERO_TIME);
-            }
-            return tlm::TLM_ACCEPTED;
-        });
+    spi_t.register_nb_transport_fw([this](spi::spi_packet_payload& trans, tlm::tlm_phase& ph, sc_core::sc_time& t) -> tlm::tlm_sync_enum {
+        if(ph == tlm::nw::INDICATION) {
+            t += 8 * trans.get_sender_clk_period();
+            cmd.notify(*trans.get_data().data(), sc_core::SC_ZERO_TIME);
+        }
+        return tlm::TLM_ACCEPTED;
+    });
     spi_t.register_b_transport([this](spi::spi_packet_payload& gp, sc_core::sc_time& t) {
         auto gp_ext = gp.get_extension<tlm::scc::tlm_payload_extension>();
         if(!gp_ext) {
@@ -94,8 +92,7 @@ void spi_mem::start_of_simulation() {
                                       gp.set_command(tlm::TLM_WRITE_COMMAND);
                                       gp.set_address(addr + mem_offset.get_value());
                                       gp.set_data_length(size);
-                                      gp.set_data_ptr(
-                                          const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(data)));
+                                      gp.set_data_ptr(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(data)));
                                       gp.set_streaming_width(size);
                                       return sckt->transport_dbg(gp) == size;
                                   }))
@@ -103,16 +100,16 @@ void spi_mem::start_of_simulation() {
             } else if(buf[0] == ':') {
                 std::vector<uint8_t> write_data;
                 uint64_t last_addr{std::numeric_limits<uint64_t>::max()};
-                if(!util::ihex_parser::parse(
-                       ifs, [this, &write_data, &last_addr](uint64_t addr, uint64_t size, const uint8_t* data) -> bool {
-                           tlm::tlm_generic_payload gp;
-                           gp.set_command(tlm::TLM_WRITE_COMMAND);
-                           gp.set_address(addr + mem_offset.get_value());
-                           gp.set_data_length(size);
-                           gp.set_data_ptr(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(data)));
-                           gp.set_streaming_width(size);
-                           return sckt->transport_dbg(gp) == size;
-                       }))
+                if(!util::ihex_parser::parse(ifs,
+                                             [this, &write_data, &last_addr](uint64_t addr, uint64_t size, const uint8_t* data) -> bool {
+                                                 tlm::tlm_generic_payload gp;
+                                                 gp.set_command(tlm::TLM_WRITE_COMMAND);
+                                                 gp.set_address(addr + mem_offset.get_value());
+                                                 gp.set_data_length(size);
+                                                 gp.set_data_ptr(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(data)));
+                                                 gp.set_streaming_width(size);
+                                                 return sckt->transport_dbg(gp) == size;
+                                             }))
                     SCCERR(SCMOD) << "Could not load IHEX file " << mem_file.get_value();
             }
         } else
