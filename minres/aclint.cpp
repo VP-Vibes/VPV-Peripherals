@@ -82,7 +82,9 @@ void aclint::update_mtime() {
         uint64_t smallest = std::numeric_limits<uint64_t>::max();
         mtime_int_o.write(mtimecmp <= mtime);
         mtime_evt.cancel();
-        if(mtimecmp > mtime) {
+        if(mtime_o.get_interface()) {
+            mtime_evt.notify(clk_period);
+        } else if(mtimecmp > mtime) {
             sc_time nexttrigger = clk_period * (mtimecmp - mtime);
             mtime_evt.notify(nexttrigger);
         }
