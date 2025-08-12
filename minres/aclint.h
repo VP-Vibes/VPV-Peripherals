@@ -18,6 +18,7 @@ class aclint_regs;
 
 class aclint : public sc_core::sc_module, public scc::tlm_target<> {
 public:
+    sc_core::sc_in<sc_core::sc_time> mtime_clk_i{"mtime_clk_i"};
     sc_core::sc_in<bool> rst_i{"rst_i"};
     sc_core::sc_out<bool> mtime_int_o{"mtime_int_o"};
     sc_core::sc_out<bool> msip_int_o{"msip_int_o"};
@@ -34,7 +35,8 @@ protected:
     void tl_clock_cb();
     void reset_cb();
     void update_mtime();
-    sc_core::sc_time clk_period, last_updt;
+    void update_mtime_clk() { mtime_clk_period = mtime_clk_i->read(); }
+    sc_core::sc_time clk_period, last_updt, mtime_clk_period;
     std::unique_ptr<aclint_regs> regs;
     sc_core::sc_event mtime_evt;
 };

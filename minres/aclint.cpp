@@ -18,12 +18,12 @@ aclint::aclint(sc_module_name nm)
     SC_METHOD(reset_cb);
     sensitive << rst_i;
     regs->mtime_hi.set_read_cb([this](const sc_register<uint32_t>& reg, uint32_t& data, sc_time& d) -> bool {
-        uint64_t elapsed_clks = (sc_time_stamp() + d - last_updt) / clk_period;
+        uint64_t elapsed_clks = mtime_clk_period.value() ? (sc_time_stamp() + d - last_updt) / mtime_clk_period : 0;
         data = regs->in_reset() ? 0 : regs->r_mtime_hi + elapsed_clks;
         return true;
     });
     regs->mtime_lo.set_read_cb([this](const sc_register<uint32_t>& reg, uint32_t& data, sc_time& d) -> bool {
-        uint64_t elapsed_clks = (sc_time_stamp() + d - last_updt) / clk_period;
+        uint64_t elapsed_clks = mtime_clk_period.value() ? (sc_time_stamp() + d - last_updt) / mtime_clk_period : 0;
         data = regs->in_reset() ? 0 : regs->r_mtime_lo + elapsed_clks;
         return true;
     });
@@ -53,6 +53,8 @@ aclint::aclint(sc_module_name nm)
     SC_METHOD(update_mtime);
     sensitive << mtime_evt;
     dont_initialize();
+    SC_METHOD(update_mtime_clk);
+    sensitive << mtime_clk_i;
 }
 void aclint::reset_cb() {
     if(rst_i.read()) {
@@ -64,12 +66,12 @@ void aclint::reset_cb() {
 }
 
 void aclint::update_mtime() {
-    if(clk_period > SC_ZERO_TIME) {
+    if(mtime_clk_period > SC_ZERO_TIME) {
         uint64_t mtime = static_cast<uint64_t>(regs->r_mtime_hi) << 32 | regs->r_mtime_lo;
         uint64_t mtimecmp = static_cast<uint64_t>(regs->r_mtimecmp0hi) << 32 | regs->r_mtimecmp0lo;
         // update mtime register
-        uint64_t elapsed_clks = (sc_time_stamp() - last_updt) / clk_period;
-        last_updt += elapsed_clks * clk_period;
+        uint64_t elapsed_clks = (sc_time_stamp() - last_updt) / mtime_clk_period;
+        last_updt += elapsed_clks * mtime_clk_period;
         if(elapsed_clks) {
             mtime += elapsed_clks;
             regs->mtime_hi = mtime >> 32;
@@ -83,9 +85,9 @@ void aclint::update_mtime() {
         mtime_int_o.write(mtimecmp <= mtime);
         mtime_evt.cancel();
         if(mtime_o.get_interface()) {
-            mtime_evt.notify(clk_period);
+            mtime_evt.notify(mtime_clk_period);
         } else if(mtimecmp > mtime) {
-            sc_time nexttrigger = clk_period * (mtimecmp - mtime);
+            sc_time nexttrigger = mtime_clk_period * (mtimecmp - mtime);
             mtime_evt.notify(nexttrigger);
         }
     } else
