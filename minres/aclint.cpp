@@ -74,6 +74,8 @@ void aclint::update_mtime() {
             mtime += elapsed_clks;
             regs->mtime_hi = mtime >> 32;
             regs->mtime_lo = static_cast<uint32_t>(mtime);
+            if(mtime_o.get_interface())
+                mtime_o->write(mtime);
         }
 
         // check for and handle interrupts
