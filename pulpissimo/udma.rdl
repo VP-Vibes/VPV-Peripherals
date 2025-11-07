@@ -1,0 +1,954 @@
+/*
+ * Copyright (c) 2019 -2022 MINRES Technologies GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+//=============================================================================
+// Pulpissimo uDMA Registers
+//=============================================================================
+regfile udma {
+    //=============================================================================
+    // uDMA Control Registers
+    //=============================================================================
+	reg {
+		name = "CTRL_CFG_CG";
+		desc = "uDMA peripherals clock gate configuration";
+		regwidth=32;
+		field {
+			name="CG_FILTER";
+			desc="Defines uDMA peripherals clock gate configuration for FILTER";
+		} CG_FILTER[7:7];
+		field {
+			name="CG_CAM";
+			desc="Defines uDMA peripherals clock gate configuration for CAM";
+		} CG_CAM[6:6];
+		field {
+			name="CG_I2S";
+			desc="Defines uDMA peripherals clock gate configuration for I2S";
+		} CG_I2S[5:5];
+		field {
+			name="CG_SDIO";
+			desc="Defines uDMA peripherals clock gate configuration for SDIO";
+		} CG_SDIO[4:4];
+		field {
+			name="CG_I2C1";
+			desc="Defines uDMA peripherals clock gate configuration for I2C1";
+		} CG_I2C1[3:3];
+		field {
+			name="CG_I2C0";
+			desc="Defines uDMA peripherals clock gate configuration for I2C0";
+		} CG_I2C0[2:2];
+		field {
+			name="CG_SPIM";
+			desc="Defines uDMA peripherals clock gate configuration for SPIM";
+		} CG_SPIM[1:1];
+		field {
+			name="CG_UART";
+			desc="Defines uDMA peripherals clock gate configuration for UART";
+		} CG_UART[1:1];
+	} CTRL_CFG_CG @0;
+	reg {
+		name = "CTRL_CFG_EVENT";
+		desc = "uDMA peripherals external event configuration";
+		regwidth=32;
+		field {
+			name="CMP_EVT3";
+			fieldwidth=8;
+		} CMP_EVT3[31:24] = 0'h0;
+		field {
+			name="CMP_EVT2";
+			fieldwidth=8;
+		} CMP_EVT2[23:16] = 0'h0;
+		field {
+			name="CMP_EVT1";
+			fieldwidth=8;
+		} CMP_EVT1[15:8] = 0'h0;
+		field {
+			name="CMP_EVT0";
+			fieldwidth=8;
+		} CMP_EVT0[7:0] = 0'h0;
+	} CTRL_CFG_EVENT @0x4;
+	reg {
+		name = "CTRL_CFG_RST";
+		desc = "uDMA peripherals reset trigger (unimplemented)";
+		regwidth=32;
+		field {
+			fieldwidth=32;
+			name="data";
+		} data[31:0] = 0;
+	} CTRL_CFG_RST @0x8;
+    //=============================================================================
+    // uDMA UART Channel Registers
+    //=============================================================================
+    regfile uart_channel  {
+    	reg {
+    		name = "RX_SADDR";
+    		desc = "RX UART buffer base address configuration register.";
+    		regwidth=32;
+    		field {
+    			name="RX_SADDR";
+    			fieldwidth=16;
+    		} RX_SADDR[15:0] = 0'h0;
+    	} RX_SADDR @0x0;
+    	reg {
+    		name = "RX_SIZE";
+    		desc = "RX UART buffer size configuration register.";
+    		regwidth=32;
+    		field {
+    			name="RX_SIZE";
+    			fieldwidth=17;
+    		} RX_SIZE[16:0] = 0'h0;
+    	} RX_SIZE @0x4;
+    	reg {
+    		name = "RX_CFG";
+    		desc = "RX UART stream configuration register.";
+    		regwidth=32;
+    		field {
+    			name="CLR";
+    		} CLR[6:6] = 0'h0;
+    		field {
+    			name="PENDING";
+    		} PENDING[5:5] = 0'h0;
+    		field {
+    			name="EN";
+    		} EN[4:4] = 0'h0;
+    		field {
+    			name="CONTINOUS";
+    		} CONTINOUS[0:0] = 0'h0;
+    	} RX_CFG @0x8;
+    	reg {
+    		name = "TX_SADDR";
+    		desc = "TX UART buffer base address configuration register.";
+    		regwidth=32;
+    		field {
+    			name="TX_SADDR";
+    			fieldwidth=16;
+    		} TX_SADDR[15:0] = 0'h0;
+    	} TX_SADDR @0x10;
+    	reg {
+    		name = "TX_SIZE";
+    		desc = "TX UART buffer size configuration register.";
+    		regwidth=32;
+    		field {
+    			name="TX_SIZE";
+    			fieldwidth=17;
+    		} TX_SIZE[16:0] = 0'h0;
+    	} TX_SIZE @0x14;
+    	reg {
+    		name = "TX_CFG";
+    		desc = "TX UART stream configuration register.";
+    		regwidth=32;
+    		field {
+    			name="CLR";
+    		} CLR[6:6] = 0'h0;
+    		field {
+    			name="PENDING";
+    		} PENDING[5:5] = 0'h0;
+    		field {
+    			name="EN";
+    		} EN[4:4] = 0'h0;
+    		field {
+    			name="CONTINOUS";
+    		} CONTINOUS[0:0] = 0'h0;
+    	} TX_CFG @0x18;
+    	reg {
+    		name = "STATUS";
+    		desc = "UART status register.";
+    		regwidth=32;
+    		field {
+    			name="RX_BUSY";
+    		} RX_BUSY[1:1] = 0'h0;
+    		field {
+    			name="TX_BUSY";
+    		} TX_BUSY[0:0] = 0'h0;
+        	sw=r;
+    	} STATUS @0x20;
+    	reg {
+    		name = "SETUP";
+    		desc = "UART configuration register.";
+    		regwidth=32;
+    		field {
+    			name="CLKDIV";
+    		} CLKDIV[31:16] = 0'h0;
+    		field {
+    			name="RX_ENA";
+    		} RX_ENA[9:9] = 0'h0;
+    		field {
+    			name="TX_ENA";
+    		} TX_ENA[8:8] = 0'h0;
+    		field {
+    			name="CLEAN_FIFO";
+    		} CLEAN_FIFO[5:5] = 0'h0;
+    		field {
+    			name="POLLING_EN";
+    		} POLLING_EN[4:4] = 0'h0;
+    		field {
+    			name="STOP_BITS";
+    		} STOP_BITS[3:3] = 0'h0;
+    		field {
+    			name="BIT_LENGHT";
+    		} BIT_LENGHT[2:1] = 0'h0;
+    		field {
+    			name="PARITY_ENA";
+    		} TX_BUSY[0:0] = 0'h0;
+    	} SETUP @0x24;
+    	reg {
+    		name = "ERROR";
+    		desc = "UART Error status";
+    		regwidth=32;
+    		field {
+    			name="RX_ERR_PARITY";
+    		} RX_ERR_PARITY[1:1] = 0'h0;
+    		field {
+    			name="RX_ERR_OVERFLOW";
+    		} RX_ERR_OVERFLOW[0:0] = 0'h0;
+    	} ERROR @0x28;
+    	reg {
+    		name = "IRQ_EN";
+    		desc = "UART Read or Error interrupt enable register.";
+    		regwidth=32;
+    		field {
+    			name="ERROR";
+    		} ERROR[1:1] = 0'h0;
+    		field {
+    			name="RX";
+    		} RX[0:0] = 0'h0;
+    	} IRQ_EN @0x2C;
+    	reg {
+    		name = "VALID";
+    		desc = "UART Read polling data valid flag register.";
+    		regwidth=32;
+    		field {
+    			name="READY";
+    		} READY[0:0] = 0'h0;
+	        sw=r;
+    	} VALID @0x30;
+    	reg {
+    		name = "DATA";
+    		desc = "UART Read polling data register.";
+    		regwidth=32;
+    		field {
+    			name="DATA";
+    		} READY[7:0] = 0'h0;
+        	sw=r;
+    	} DATA @0x34;
+	} uart @0x80;
+    //=============================================================================
+    // uDMA SPI Channels Registers
+    //=============================================================================
+    regfile spi_channel  {
+        reg {
+            name = "SPIM_RX_SADDR";
+            desc = "RX SPI uDMA transfer address of associated buffer";
+            regwidth=32;
+            field {
+            	name = "RX_SADDR";
+            	fieldwidth = 32;
+            } RX_SADDR =0;
+        } SPIM_RX_SADDR @0x100;
+        reg {
+            name = "SPIM_RX_SIZE";
+            desc = "RX SPI uDMA transfer size of buffer";
+            regwidth=32;
+            field {
+                name = "RX_SIZE";
+                fieldwidth = 32;
+            } RX_SIZE =0;
+        } SPIM_RX_SIZE @0x104;
+        reg {
+            name = "SPIM_RX_CFG";
+            desc = "RX SPI uDMA transfer configuration";
+            regwidth=32;
+            field {
+                name = "CLR";
+            } CLR[6:6] =0;
+            field {
+                name = "PENDING";
+            } PENDING[5:5] =0;
+            field {
+                name = "EN";
+            } EN[4:4] =0;
+            field {
+                name = "DATASIZE";
+            } DATASIZE[2:1] =0;
+            field {
+                name = "CONTINOUS";
+            } CONTINOUS[0:0] =0;
+        } SPIM_RX_CFG @0x108;
+        reg {
+            name = "SPIM_TX_SADDR";
+            desc = "TX SPI uDMA transfer address of associated buffer";
+            regwidth=32;
+            field {
+                name = "TX_SADDR";
+                fieldwidth = 32;
+            } TX_SADDR =0;
+        } SPIM_TX_SADDR @0x110;
+        reg {
+            name = "SPIM_TX_SIZE";
+            desc = "TX SPI uDMA transfer size of buffer";
+            regwidth=32;
+            field {
+                name = "TX_SIZE";
+                fieldwidth = 32;
+            } TX_SIZE =0;
+        } SPIM_TX_SIZE @0x114;
+        reg {
+            name = "SPIM_TX_CFG";
+            desc = "TX SPI uDMA transfer configuration";
+            regwidth=32;
+            field {
+                name = "CLR";
+            } CLR[6:6] =0;
+            field {
+                name = "PENDING";
+            } PENDING[5:5] =0;
+            field {
+                name = "EN";
+            } EN[4:4] =0;
+            field {
+                name = "DATASIZE";
+            } DATASIZE[2:1] =0;
+            field {
+                name = "CONTINOUS";
+            } CONTINOUS[0:0] =0;
+        } SPIM_TX_CFG @0x118;
+        reg {
+            name = "SPIM_CMD_SADDR";
+            desc = "CMD SPI uDMA transfer address of associated buffer";
+            regwidth=32;
+            field {
+                name = "CMD_SADDR";
+                fieldwidth = 32;
+            } CMD_SADDR =0;
+        } SPIM_CMD_SADDR @0x120;
+        reg {
+            name = "SPIM_CMD_SIZE";
+            desc = "CMD SPI uDMA transfer size of buffer";
+            regwidth=32;
+            field {
+                name = "CMD_SIZE";
+                fieldwidth = 32;
+            } CMD_SIZE = 0;
+        } SPIM_CMD_SIZE @0x124;
+        reg {
+            name = "SPIM_CMD_CFG";
+            desc = "CMD SPI uDMA transfer configuration";
+            regwidth=32;
+            field {
+                name = "CLR";
+            } CLR[6:6] =0;
+            field {
+                name = "PENDING";
+            } PENDING[5:5] =0;
+            field {
+                name = "EN";
+            } EN[4:4] =0;
+            field {
+                name = "DATASIZE";
+            } DATASIZE[2:1] =0;
+            field {
+                name = "CONTINOUS";
+            } CONTINOUS[0:0] =0;
+        } SPIM_CMD_CFG @0x128;
+    } spi @0x100;
+    //=============================================================================
+    // uDMA I2C Channel Registers
+    //=============================================================================
+    regfile i2c_channel  {
+        reg {
+            name = "RX_SADDR";
+            desc = "uDMA RX I2C buffer base address configuration register.";
+            regwidth=32;
+             field {
+                name = "RX_SADDR";
+                fieldwidth = 32;
+            } RX_SADDR =0;
+        } RX_SADDR @0x180;
+        reg {
+            name = "RX_SIZE";
+            desc = "uDMA RX I2C buffer size configuration register.";
+            regwidth=32;
+             field {
+                name = "RX_SIZE";
+                fieldwidth = 32;
+            } RX_SIZE =0;
+        } RX_SIZE @0x184;
+        reg {
+            name = "RX_CFG";
+            desc = "uDMA RX I2C stream configuration register.";
+            regwidth=32;
+            field {
+                name = "CLR";
+            } CLR[6:6] =0;
+            field {
+                name = "PENDING";
+            } PENDING[5:5] =0;
+            field {
+                name = "EN";
+            } EN[4:4] =0;
+            field {
+                name = "DATASIZE";
+            } DATASIZE[2:1] =0;
+            field {
+                name = "CONTINOUS";
+            } CONTINOUS[0:0] =0;
+        } RX_CFG @0x188;
+        reg {
+            name = "TX_SADDR";
+            desc = "uDMA TX I2C buffer base address configuration register.";
+            regwidth=32;
+            field {
+                name = "TX_SADDR";
+                fieldwidth = 32;
+            } TX_SADDR =0;
+        } TX_SADDR @0x190;
+        reg {
+            name = "TX_SIZE";
+            desc = "uDMA TX I2C buffer size configuration register.";
+            regwidth=32;
+            field {
+                name = "TX_SIZE";
+                fieldwidth = 32;
+            } TX_SIZE =0;
+        } TX_SIZE @0x194;
+        reg {
+            name = "TX_CFG";
+            desc = "uDMA TX I2C stream configuration register.";
+            regwidth=32;
+            field {
+                name = "CLR";
+            } CLR[6:6] =0;
+            field {
+                name = "PENDING";
+            } PENDING[5:5] =0;
+            field {
+                name = "EN";
+            } EN[4:4] =0;
+            field {
+                name = "DATASIZE";
+            } DATASIZE[2:1] =0;
+            field {
+                name = "CONTINOUS";
+            } CONTINOUS[0:0] =0;
+        } TX_CFG @0x198;
+        reg {
+            name = "CMD_SADDR";
+            desc = "uDMA CMD I2C buffer base address configuration register.";
+            regwidth=32;
+            field {
+                name = "CMD_SADDR";
+                fieldwidth = 32;
+            } CMD_SADDR =0;
+        } CMD_SADDR @0x1A0;
+        reg {
+            name = "CMD_SIZE";
+            desc = "uDMA CMD I2C buffer size configuration register.";
+            regwidth=32;
+            field {
+                name = "CMD_SIZE";
+                fieldwidth = 32;
+            } CMD_SIZE = 0;
+        } CMD_SIZE @0x1A4;
+        reg {
+            name = "CMD_CFG";
+            desc = "uDMA CMD I2C stream configuration register.";
+            regwidth=32;
+            field {
+                name = "CLR";
+            } CLR[6:6] =0;
+            field {
+                name = "PENDING";
+            } PENDING[5:5] =0;
+            field {
+                name = "EN";
+            } EN[4:4] =0;
+            field {
+                name = "DATASIZE";
+            } DATASIZE[2:1] =0;
+            field {
+                name = "CONTINOUS";
+            } CONTINOUS[0:0] =0;
+        } CMD_CFG @0x1A8;
+        reg {
+            name = "STATUS";
+            desc = "uDMA I2C Status register.";
+            regwidth=32;
+            field {
+                name = "ACK";
+            } ACK[2:2] =0;
+            field {
+                name = "ARB_LOST";
+            } ARB_LOST[1:1] =0;
+            field {
+                name = "CONTINOUS";
+            } BUSY[0:0] =0;
+        } STATUS @0x1B0;
+        reg {
+            name = "SETUP";
+            desc = "uDMA I2C Configuration register.";
+            regwidth=32;
+            field {
+                name = "DO_RST";
+            } DO_RST[0:0] =0;
+        } SETUP @0x1B4;
+    } i2c0 @0x180;
+    i2c_channel  i2c1 @0x200;
+    //=============================================================================
+    // uDMA IIS Channel Registers
+    //=============================================================================
+    regfile i2s_channel {
+        reg {
+            name = "I2S_RX_SADDR";
+            desc = "RX Channel 0 I2S uDMA transfer address of associated buffer";
+            regwidth=32;
+            field {
+                name = "RX_SADDR";
+                fieldwidth = 32;
+            } RX_SADDR =0;
+        } I2S_RX_SADDR @0x00;
+        reg {
+            name = "I2S_RX_SIZE";
+            desc = "RX Channel 0 I2S uDMA transfer size of buffer";
+            regwidth=32;
+            field {
+                name = "RX_SIZE";
+                fieldwidth = 32;
+            } RX_SIZE =0;
+        } I2S_RX_SIZE @0x04;
+        reg {
+            name = "I2S_RX_CFG";
+            desc = "RX Channel 0 I2S uDMA transfer configuration";
+            regwidth=32;
+            field {
+                name = "CLR";
+            } CLR[6:6] =0;
+            field {
+                name = "PENDING";
+            } PENDING[5:5] =0;
+            field {
+                name = "EN";
+            } EN[4:4] =0;
+            field {
+                name = "DATASIZE";
+            } DATASIZE[2:1] =0;
+            field {
+                name = "CONTINOUS";
+            } CONTINOUS[0:0] =0;
+        } I2S_RX_CFG @0x08;
+        reg {
+            name = "I2S_TX_SADDR";
+            desc = "TX Channel I2S uDMA transfer address of associated buffer";
+            regwidth=32;
+            field {
+                name = "TX_SADDR";
+                fieldwidth = 32;
+            } TX_SADDR =0;
+        } I2S_TX_SADDR @0x10;
+        reg {
+            name = "I2S_TX_SIZE";
+            desc = "TX Channel I2S uDMA transfer size of buffer";
+            regwidth=32;
+            field {
+                name = "TX_SIZE";
+                fieldwidth = 32;
+            } TX_SIZE =0;
+        } I2S_TX_SIZE @0x14;
+        reg {
+            name = "I2S_TX_CFG";
+            desc = "TX Channel I2S uDMA transfer configuration";
+            regwidth=32;
+            field {
+                name = "CLR";
+            } CLR[6:6] =0;
+            field {
+                name = "PENDING";
+            } PENDING[5:5] =0;
+            field {
+                name = "EN";
+            } EN[4:4] =0;
+            field {
+                name = "DATASIZE";
+            } DATASIZE[2:1] =0;
+            field {
+                name = "CONTINOUS";
+            } CONTINOUS[0:0] =0;
+        } I2S_TX_CFG @0x18;
+        reg {
+            name = "I2S_CLKCFG_SETUP";
+            desc = "Clock configuration for both master, slave and pdm";
+            regwidth=32;
+            field {
+                name = "MASTER_NUM";
+            } MASTER_NUM[31:31] =0;
+            field {
+                name = "MASTER_EXT";
+            } MASTER_EXT[30:30] =0;
+            field {
+                name = "SLAVE_NUM";
+            } SLAVE_NUM[29:29] =0;
+            field {
+                name = "SLAVE_EXT";
+            } SLAVE_EXT[28:28] =0;
+            field {
+                name = "PDM_CLK_EN";
+            } PDM_CLK_EN[26:26] =0;
+            field {
+                name = "MASTER_CLK_EN";
+            } MASTER_CLK_EN[25:25] =0;
+            field {
+                name = "SLAVE_CLK_EN";
+            } SLAVE_CLK_EN[24:24] =0;
+            field {
+                name = "COMMON_CLK_DIV";
+            } COMMON_CLK_DIV[23:16] = 0;
+            field {
+                name = "SLAVE_CLK_DIV";
+            } SLAVE_CLK_DIV[15:8] = 0;
+            field {
+                name = "MASTER_CLK_DIV";
+            } MASTER_CLK_DIV[7:0] = 0;
+        } I2S_CLKCFG_SETUP @0x20;
+        reg {
+            name = "I2S_SLV_SETUP";
+            desc = "Configuration of I2S slave";
+            regwidth=32;
+            field {
+                name = "SLAVE_EN";
+            } SLAVE_EN[31:31] =0;
+            field {
+                name = "SLAVE_2CH";
+            } SLAVE_2CH[17:17] =0;
+            field {
+                name = "SLAVE_LSB";
+            } SLAVE_LSB[16:16] =0;
+            field {
+                name = "SLAVE_BITS";
+            } SLAVE_BITS[12:8] =0;
+            field {
+                name = "SLAVE_WORDS";
+            } SLAVE_WORDS[2:0] =0;
+        } I2S_SLV_SETUP @0x24;
+        reg {
+            name = "I2S_MST_SETUP";
+            desc = "Configuration of I2S master";
+            regwidth=32;
+            field {
+                name = "MASTER_EN";
+            } MASTER_EN[31:31] =0;
+            field {
+                name = "MASTER_2CH";
+            } MASTER_2CH[17:17] =0;
+            field {
+                name = "MASTER_LSB";
+            } MASTER_LSB[16:16] =0;
+            field {
+                name = "MASTER_BITS";
+            } MASTER_BITS[12:8] =0;
+            field {
+                name = "MASTER_WORDS";
+            } MASTER_WORDS[2:0] =0;
+        } I2S_MST_SETUP @0x28;
+        reg {
+            name = "I2S_PDM_SETUP";
+            desc = "Configuration of PDM module";
+            regwidth=32;
+            field {
+                name = "PDM_DECIMATION";
+            } PDM_DECIMATION[12:3] =0;
+            field {
+                name = "PDM_SHIFT";
+            } PDM_SHIFT[2:0] =0;
+        } I2S_PDM_SETUP @0x2C;        
+    } i2s @0x300;
+    //=============================================================================
+    // uDMA CAM Channel Registers
+    //=============================================================================
+    regfile cam_channel {
+        reg {
+            name = "CAM_RX_SADDR";
+            desc = "RX Camera uDMA transfer address of associated buffer register";
+            regwidth=32;
+            field {
+                name = "RX_SADDR";
+                fieldwidth = 32;
+            } RX_SADDR =0;
+        } CAM_RX_SADDR @0x0;
+        reg {
+            name = "CAM_RX_SIZE";
+            desc = "RX Camera uDMA transfer size of buffer register";
+            regwidth=32;
+            field {
+                name = "RX_SIZE";
+                fieldwidth = 32;
+            } RX_SIZE =0;
+        } CAM_RX_SIZE @0x4;
+        reg {
+            name = "CAM_RX_CFG";
+            desc = "RX Camera uDMA transfer configuration register";
+            regwidth=32;
+            field {
+                name = "CLR";
+            } CLR[6:6] =0;
+            field {
+                name = "PENDING";
+            } PENDING[5:5] =0;
+            field {
+                name = "EN";
+            } EN[4:4] =0;
+            field {
+                name = "DATASIZE";
+            } DATASIZE[2:1] =0;
+            field {
+                name = "CONTINOUS";
+            } CONTINOUS[0:0] =0;
+        } CAM_RX_CFG @0x8;
+        reg {
+            name = "CAM_CFG_GLOB";
+            desc = "Global configuration register";
+            regwidth=32;
+            field {
+                name = "EN";
+            } CLR[31:31] =0;
+            field {
+                name = "SHIFT";
+            } SHIFT[14:11] =0;
+            field {
+                name = "FORMAT";
+            } FORMAT[10:8] =0;
+            field {
+                name = "FRAMESLICE_EN";
+            } FRAMESLICE_EN[7:7] =0;
+            field {
+                name = "FRAMEDROP_VAL";
+            } FRAMEDROP_VAL[6:1] =0;
+            field {
+                name = "FRAMEDROP_EN";
+            } FRAMEDROP_EN[0:0] =0;
+        } CAM_CFG_GLOB @0x20;
+        reg {
+            name = "CAM_CFG_LL";
+            desc = "Lower Left corner configuration register";
+            regwidth=32;
+            field {
+                name = "FRAMESLICE_LLY";
+            } FRAMESLICE_LLY[31:16] =0;
+            field {
+                name = "FRAMESLICE_LLX";
+            } FRAMESLICE_LLX[15:0] =0;
+        } CAM_CFG_LL @0x24;
+        reg {
+            name = "CAM_CFG_UR";
+            desc = "Upper Right corner configuration register";
+            regwidth=32;
+            field {
+                name = "FRAMESLICE_URY";
+            } FRAMESLICE_URY[31:16] =0;
+            field {
+                name = "FRAMESLICE_URX";
+            } FRAMESLICE_URX[15:0] =0;
+        } CAM_CFG_UR @0xA8;
+        reg {
+            name = "CAM_CFG_SIZE";
+            desc = "Horizontal Resolution configuration register";
+            regwidth=32;
+            field {
+                name = "ROWLEN";
+            } ROWLEN[31:16] =0;
+        } CAM_CFG_SIZE @0x2C;
+        reg {
+            name = "CAM_CFG_FILTER";
+            desc = "RGB coefficients configuration register";
+            regwidth=32;
+            field {
+                name = "R_COEFF";
+            } R_COEFF[23:16] =0;
+            field {
+                name = "G_COEFF";
+            } G_COEFF[15:8] =0;
+            field {
+                name = "B_COEFF";
+            } B_COEFF[7:0] =0;
+        } CAM_CFG_FILTER @0x30;
+        reg {
+            name = "CAM_VSYNC_POLARITY";
+            desc = "VSYNC Polarity register";
+            regwidth=32;
+            field {
+                name = "VSYNC_POLARITY";
+            } VSYNC_POLARITY[0:0] =0;
+        } CAM_VSYNC_POLARITY @0x34;
+    } cam @0x380;
+    //=============================================================================
+    // uDMA Filter Registers
+    //=============================================================================
+    regfile filter {
+        reg {
+            name = "REG_TX_CH0_ADD";
+            desc = "FILTER tx channel 0 address register";
+            regwidth=32;
+        } REG_TX_CH0_ADD @0x0;
+        reg {
+            name = "REG_TX_CH0_CFG";
+            desc = "FILTER tx channel 0 configuration register";
+            regwidth=32;
+            field {
+                name = "MODE";
+            } MODE[9:8] =0;
+            field {
+                name = "SIZE";
+            } SIZE[1:0] =0;
+        } REG_TX_CH0_CFG @0x4;
+        reg {
+            name = "REG_TX_CH0_LEN0";
+            desc = "FILTER tx channel 0 length0 register";
+            regwidth=32;
+        } REG_TX_CH0_LEN0 @0x8;
+        reg {
+            name = "REG_TX_CH0_LEN1";
+            desc = "FILTER tx channel 0 length1 register";
+            regwidth=32;
+        } REG_TX_CH0_LEN1 @0xC;
+        reg {
+            name = "REG_TX_CH0_LEN2";
+            desc = "FILTER tx channel 0 length2 register";
+            regwidth=32;
+        } REG_TX_CH0_LEN2 @0x10;
+        reg {
+            name = "REG_TX_CH1_ADD";
+            desc = "FILTER tx channel 1 address register";
+            regwidth=32;
+        } REG_TX_CH1_ADD @0x14;
+        reg {
+            name = "REG_TX_CH1_CFG";
+            desc = "FILTER tx channel 1 configuration register";
+            regwidth=32;
+            field {
+                name = "MODE";
+            } MODE[9:8] =0;
+            field {
+                name = "SIZE";
+            } SIZE[1:0] =0;
+        } REG_TX_CH1_CFG @0x18;
+        reg {
+            name = "REG_TX_CH1_LEN0";
+            desc = "FILTER tx channel 1 length0 register";
+            regwidth=32;
+        } REG_TX_CH1_LEN0 @0x1C;
+        reg {
+            name = "REG_TX_CH1_LEN1";
+            desc = "FILTER tx channel 1 length1 register";
+            regwidth=32;
+        } REG_TX_CH1_LEN1 @0x20;
+        reg {
+            name = "REG_TX_CH1_LEN2";
+            desc = "FILTER tx channel 1 length2 register";
+            regwidth=32;
+        } REG_TX_CH1_LEN2 @0x24;
+        reg {
+            name = "REG_RX_CH_ADD";
+            desc = "FILTER RX channel address register";
+            regwidth=32;
+        } REG_RX_CH_ADD @0x28;
+        reg {
+            name = "REG_RX_CH_CFG";
+            desc = "FILTER RX channel configuration register";
+            regwidth=32;
+            field {
+                name = "MODE";
+            } MODE[9:8] =0;
+            field {
+                name = "SIZE";
+            } SIZE[1:0] =0;
+        } REG_RX_CH_CFG @0x2C;
+        reg {
+            name = "REG_RX_CH_LEN0";
+            desc = "FILTER RX channel length0 register";
+            regwidth=32;
+        } REG_RX_CH_LEN0 @0x30;
+        reg {
+            name = "REG_RX_CH_LEN1";
+            desc = "FILTER RX channel length1 register";
+            regwidth=32;
+        } REG_RX_CH_LEN1 @0x34;
+        reg {
+            name = "REG_RX_CH_LEN2";
+            desc = "FILTER RX channel length2 register";
+            regwidth=32;
+        } REG_RX_CH_LEN2 @0x38;
+        reg {
+            name = "REG_AU_CFG";
+            desc = "FILTER arithmetic unit configuration register";
+            regwidth=32;
+            field {
+                name = "SHIFT";
+            } SHIFT[20:16] =0;
+            field {
+                name = "MODE";
+            } MODE[11:8] =0;
+            field {
+                name = "BYPASS";
+            } BYPASS[1:1] =0;
+            field {
+                name = "SIGNED";
+            } SIGNED[0:0] =0;
+        } REG_AU_CFG @0x3C;
+        reg {
+            name = "REG_AU_REG0";
+            desc = "FILTER arithmetic unit 0 register";
+            regwidth=32;
+        } REG_AU_REG0 @0x40;
+        reg {
+            name = "REG_AU_REG1";
+            desc = "FILTER arithmetic unit 1 register";
+            regwidth=32;
+        } REG_AU_REG1 @0x44;
+        reg {
+            name = "REG_BINCU_TH";
+            desc = "FILTER binarization threshold register";
+            regwidth=32;
+        } REG_BINCU_TH @0x48;
+        reg {
+            name = "REG_BINCU_CNT";
+            desc = "FILTER binarization count register";
+            regwidth=32;
+            field {
+                name = "EN";
+            } EN[31:31] =0;
+            field {
+                name = "COUNT";
+            } COUNT[19:0] =0;
+        } REG_BINCU_CNT @0x4C;
+        reg {
+            name = "REG_BINCU_SETUP";
+            desc = "FILTER binarization datasize format register";
+            regwidth=32;
+        } REG_BINCU_SETUP @0x50;
+        reg {
+            name = "REG_BINCU_VAL";
+            desc = "FILTER binarization result count register";
+            regwidth=32;
+        } REG_BINCU_VAL @0x54;
+        reg {
+            name = "REG_FILT";
+            desc = "FILTER control mode register";
+            regwidth=32;
+        } REG_FILT @0x58;
+        reg {
+            name = "REG_FILT_CMD";
+            desc = "FILTER start register";
+            regwidth=32;
+             field {
+                name = "START";
+            } START[0:0] =0;
+        } REG_FILT_CMD @0x5C;
+        reg {
+            name = "REG_STATUS";
+            desc = "FILTER status register";
+            regwidth=32;
+             field {
+                name = "DONE";
+            } DONE[0:0] =0;
+        } REG_STATUS @0x60;
+    } filt @0x400;
+};

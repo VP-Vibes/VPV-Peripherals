@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -8,9 +8,9 @@
 #define _UART_H_
 
 #include <cci_configuration>
+#include <scc/tlm_target.h>
 #include <tlm/scc/signal_initiator_mixin.h>
 #include <tlm/scc/signal_target_mixin.h>
-#include <scc/tlm_target.h>
 #include <tlm/scc/tlm_signal.h>
 
 namespace vpvper {
@@ -38,7 +38,7 @@ protected:
     void clock_cb();
     void reset_cb();
     void transmit_data();
-    void receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay);
+    void receive_data(tlm::scc::tlm_signal_gp<>& gp, sc_core::sc_time& delay);
     void update_irq();
     sc_core::sc_time clk{sc_core::SC_ZERO_TIME}, rx_last_start{sc_core::SC_ZERO_TIME};
     std::unique_ptr<uart_regs> regs;

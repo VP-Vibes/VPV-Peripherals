@@ -1,92 +1,98 @@
 #include "aclint.h"
-#include "aclint_regs.h"
+#include "gen/aclint_regs.h"
+#include <cstdint>
 
 namespace vpvper {
 namespace minres {
 using namespace sc_core;
-const int lfclk_mutiplier = 1;
+using namespace scc;
+const int lfclk_mutiplier = 10; // hardcoded for unit test
 
-aclint::aclint(sc_core::sc_module_name nm)
-: sc_core::sc_module(nm)
-, NAMEDD(regs, aclint_regs<>)
-{
-     SC_HAS_PROCESS(aclint);
-    regs->registerResources(*mtime_target, device_type::MTIME);
-    regs->registerResources(*msip_target, device_type::MSIP);
-    regs->registerResources(*sswi_target, device_type::SSWI);
-    SC_METHOD(clock_cb);
-    sensitive << lfclk_i;
+aclint::aclint(sc_module_name nm)
+: sc_module(nm)
+, tlm_target<>(clk_period)
+, regs(make_unique<aclint_regs>("regs")) {
+    SC_HAS_PROCESS(aclint);
+    regs->registerResources(*this);
+
     SC_METHOD(reset_cb);
     sensitive << rst_i;
-    dont_initialize();
-
-    regs->mtime.set_write_cb([this](scc::sc_register<uint64_t> &reg, uint64_t data, sc_core::sc_time& d) -> bool{
-        return false;
-    });
-    regs->mtime.set_read_cb([this](const scc::sc_register<uint64_t> &reg, uint64_t data, sc_core::sc_time& d) -> bool{ 
-        uint64_t elapsed_clks = (sc_time_stamp() + d - last_updt)/clk;
-        data = regs->r_mtime + elapsed_clks;
+    regs->mtime_hi.set_read_cb([this](const sc_register<uint32_t>& reg, uint32_t& data, sc_time& d) -> bool {
+        uint64_t elapsed_clks = mtime_clk_period.value() ? (sc_time_stamp() + d - last_updt) / mtime_clk_period : 0;
+        data = regs->in_reset() ? 0 : regs->r_mtime_hi + elapsed_clks;
         return true;
     });
-    regs->mtimecmp.set_write_cb([this](size_t idx, scc::sc_register<uint64_t> &reg, uint64_t data, sc_core::sc_time& d) -> bool{
-        if(d.value()) wait(d);
-        if (!regs->in_reset()) {
+    regs->mtime_lo.set_read_cb([this](const sc_register<uint32_t>& reg, uint32_t& data, sc_time& d) -> bool {
+        uint64_t elapsed_clks = mtime_clk_period.value() ? (sc_time_stamp() + d - last_updt) / mtime_clk_period : 0;
+        data = regs->in_reset() ? 0 : regs->r_mtime_lo + elapsed_clks;
+        return true;
+    });
+    auto write_cb = [this](const sc_register<uint32_t>& reg, const uint32_t data, sc_time& d) -> bool {
+        if(!regs->in_reset()) {
             reg.put(data);
             this->update_mtime();
+            return true;
         }
-        return true;
-    });
-    regs->msip.set_write_cb([this](size_t idx, scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time& d) -> bool{
-        if(d.value()) wait(d);
-        reg.put(data);
-        msip_int_o.write(regs->r_msip[idx]);
-        return true;
-    });
-    regs->sswi.set_write_cb([this](size_t idx, scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time& d) -> bool{
-        if(d.value()) wait(d);        
-        reg.put(data);
-        sswi_int_o.write(regs->r_sswi[idx]);
-        return true;
-    });
+        return false;
+    };
+    regs->mtime_hi.set_write_cb(write_cb);
+    regs->mtime_lo.set_write_cb(write_cb);
+    auto write_cb_with_wait = [this](const sc_register<uint32_t>& reg, const uint32_t data, sc_time& d) -> bool {
+        if(d.value())
+            wait(d);
+        if(!regs->in_reset()) {
+            reg.put(data);
+            this->update_mtime();
+            return true;
+        }
+        return false;
+    };
+    regs->mtimecmp0hi.set_write_cb(write_cb_with_wait);
+    regs->mtimecmp0lo.set_write_cb(write_cb_with_wait);
+    regs->msip0.set_write_cb(write_cb_with_wait);
     SC_METHOD(update_mtime);
     sensitive << mtime_evt;
-    dont_initialize(); 
+    dont_initialize();
+    SC_METHOD(update_mtime_clk);
+    sensitive << mtime_clk_i;
 }
-void aclint::reset_cb(){
-    if (rst_i.read()) {
+void aclint::reset_cb() {
+    if(rst_i.read()) {
         regs->reset_start();
-        msip_int_o.write(false);
-        mtime_int_o.write(false);
-    } else
+    } else if(rst_i.event()) {
         regs->reset_stop();
-}
-void aclint::clock_cb(){
-    update_mtime();
-    clk = lfclk_i.read();
+    }
     update_mtime();
 }
-void aclint::update_mtime(){
-    if(clk > SC_ZERO_TIME){
 
-        //update mtime register
-        uint64_t elapsed_clks = (sc_time_stamp() - last_updt)/clk;
-        last_updt += elapsed_clks * clk;
-        if(elapsed_clks) regs->r_mtime += elapsed_clks;
+void aclint::update_mtime() {
+    if(mtime_clk_period > SC_ZERO_TIME) {
+        uint64_t mtime = static_cast<uint64_t>(regs->r_mtime_hi) << 32 | regs->r_mtime_lo;
+        uint64_t mtimecmp = static_cast<uint64_t>(regs->r_mtimecmp0hi) << 32 | regs->r_mtimecmp0lo;
+        // update mtime register
+        uint64_t elapsed_clks = (sc_time_stamp() - last_updt) / mtime_clk_period;
+        last_updt += elapsed_clks * mtime_clk_period;
+        if(elapsed_clks) {
+            mtime += elapsed_clks;
+            regs->mtime_hi = mtime >> 32;
+            regs->mtime_lo = static_cast<uint32_t>(mtime);
+            if(mtime_o.get_interface())
+                mtime_o->write(mtime);
+        }
 
-        //check for and handle interrupts
+        // check for and handle interrupts
+        uint64_t smallest = std::numeric_limits<uint64_t>::max();
+        mtime_int_o.write(mtimecmp <= mtime);
         mtime_evt.cancel();
-        uint64_t smallest = 0;
-        if(std::all_of(regs->r_mtimecmp.begin(), regs->r_mtimecmp.end(), [this, &smallest](uint64_t value){if(value <= smallest) smallest = value; return value > regs->r_mtime;})){
-            mtime_int_o.write(false);
-            sc_time nexttrigger = lfclk_i * lfclk_mutiplier * (smallest-regs->r_mtime);
+        if(mtime_o.get_interface()) {
+            mtime_evt.notify(mtime_clk_period);
+        } else if(mtimecmp > mtime) {
+            sc_time nexttrigger = mtime_clk_period * (mtimecmp - mtime);
             mtime_evt.notify(nexttrigger);
         }
-        else{
-            mtime_int_o.write(true);
-        }
-
-    }
-    else last_updt = sc_time_stamp();
+    } else
+        last_updt = sc_time_stamp();
 }
-} /* namespace sifive */
+aclint::~aclint() = default;
+} // namespace minres
 } /* namespace vpvper */

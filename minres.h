@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
 #pragma once
 
+#include "minres/aclint.h"
 #include "minres/gpio.h"
 #include "minres/presc.h"
 #include "minres/tim.h"

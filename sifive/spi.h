@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -7,11 +7,11 @@
 #ifndef _SPI_H_
 #define _SPI_H_
 
+#include "gen/spi_regs.h"
 #include <sysc/utils/sc_vector.h>
-#include <tlm/scc/tlm_signal.h>
 #include <tlm/scc/signal_initiator_mixin.h>
 #include <tlm/scc/signal_target_mixin.h>
-#include "gen/spi_regs.h"
+#include <tlm/scc/tlm_signal.h>
 
 namespace vpvper {
 namespace sifive {
@@ -36,27 +36,25 @@ public:
 
     ~spi() override = default;
 
-    spi(spi &other) = delete;
+    spi(spi& other) = delete;
 
-    spi(spi &&other) = delete;
+    spi(spi&& other) = delete;
 
-    spi &operator=(spi &other) = delete;
+    spi& operator=(spi& other) = delete;
 
-    spi &operator=(spi &&other) = delete;
+    spi& operator=(spi&& other) = delete;
 
 private:
     void clock_cb();
     void reset_cb();
     void transmit_data();
-    void receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay);
+    void receive_data(tlm::scc::tlm_signal_gp<>& gp, sc_core::sc_time& delay);
     void update_irq();
     sc_core::sc_event update_irq_evt;
     sc_core::sc_time clk;
     std::unique_ptr<spi_regs> regs;
     sc_core::sc_fifo<uint8_t> rx_fifo, tx_fifo;
-
 };
-
 
 } /* namespace sifive */
 } /* namespace vpvper */

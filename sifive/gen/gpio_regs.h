@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -73,8 +73,8 @@ public:
 
     gpio_regs(sc_core::sc_module_name nm);
 
-    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
-    void trace(sc_core::sc_trace_file *tf) const override;
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target);
+    void trace(sc_core::sc_trace_file* tf) const override;
 };
 } /* namespace sifive */
 } /* namespace vpvper */
@@ -103,7 +103,8 @@ inline vpvper::sifive::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
 , NAMED(iof_sel, r_iof_sel, 0, *this)
 , NAMED(out_xor, r_out_xor, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void vpvper::sifive::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH>
+inline void vpvper::sifive::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(value, 0x0UL);
     target.addResource(input_en, 0x4UL);
     target.addResource(output_en, 0x8UL);
@@ -123,7 +124,7 @@ template <unsigned BUSWIDTH> inline void vpvper::sifive::gpio_regs::registerReso
     target.addResource(out_xor, 0x40UL);
 }
 
-inline void vpvper::sifive::gpio_regs::trace(sc_core::sc_trace_file *tf) const {
+inline void vpvper::sifive::gpio_regs::trace(sc_core::sc_trace_file* tf) const {
     value.trace(tf);
     input_en.trace(tf);
     output_en.trace(tf);

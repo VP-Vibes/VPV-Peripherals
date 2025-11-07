@@ -1,0 +1,213 @@
+/*
+ * Copyright (c) 2019 -2021 Chair of Electronic Design Automation, Technical University of Munich
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "external_uart_device.h"
+
+#include <fcntl.h>
+#include <poll.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <iostream>
+#include <sstream>
+
+namespace vpvper {
+namespace pulpino {
+
+////////////////////////////////////////////////////////////////////////////////
+/// base (=stdio)
+ExternalUARTDevice::ExternalUARTDevice(sc_core::sc_module_name name, sc_core::sc_time scan_period)
+: sc_core::sc_module{name}
+, scan_period_(scan_period) {
+    sock_t_.register_b_transport(this, &ExternalUARTDevice::b_transport);
+
+    SC_THREAD(sense_input);
+}
+
+void ExternalUARTDevice::b_transport(tlm::tlm_generic_payload& gp, sc_core::sc_time& delay) {
+    unsigned char* ptr = gp.get_data_ptr();
+
+    if(gp.get_command() == tlm::TLM_WRITE_COMMAND) {
+        if(write(ptr) != 0) {
+            gp.set_response_status(tlm::TLM_GENERIC_ERROR_RESPONSE);
+        } else {
+            gp.set_response_status(tlm::TLM_OK_RESPONSE);
+        }
+    } else {
+        if(read(ptr) != 0) {
+            gp.set_response_status(tlm::TLM_GENERIC_ERROR_RESPONSE);
+        } else {
+            gp.set_response_status(tlm::TLM_OK_RESPONSE);
+        }
+    }
+}
+
+int ExternalUARTDevice::read(unsigned char* ptr) {
+    return (-1); // not supported in simple UART device
+}
+
+int ExternalUARTDevice::write(unsigned char* ptr) {
+    std::cout << ptr[0];
+    return (0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// named pipe based
+ExternalUARTDeviceFileStream::ExternalUARTDeviceFileStream(sc_core::sc_module_name name, sc_core::sc_time scan_period,
+                                                           const std::string& out_fpath, const std::string& in_fpath,
+                                                           bool is_named_pipe)
+: ExternalUARTDevice(name, scan_period)
+, out_fpath_(out_fpath)
+, in_fpath_(in_fpath)
+, is_named_pipe_(is_named_pipe) {
+    namespace io = boost::iostreams;
+    using src = boost::iostreams::file_descriptor_source;
+    using sink = boost::iostreams::file_descriptor_sink;
+    int fd_in, fd_out;
+
+    if(is_named_pipe_) {
+        struct stat attribut;
+        // open output named pipe, if pipe is already created this is not an error - use it
+        if((mkfifo(out_fpath_.c_str(), S_IRUSR | S_IWUSR)) == -1) {
+            if(errno != EEXIST) {
+                std::stringstream x;
+                x << "failed to create output named pipeline \"" << out_fpath_ << "\"";
+                SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
+            }
+        }
+        if(stat(out_fpath_.c_str(), &attribut) == -1) {
+            std::stringstream x;
+            x << "failed to create output named pipeline \"" << out_fpath_ << "\"";
+            SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
+        }
+        fd_out = open(out_fpath_.c_str(), O_RDWR);
+        if(fd_out < 0) {
+            std::stringstream x;
+            x << "failed to open output named pipeline \"" << out_fpath_ << "\": E" << errno;
+            SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
+        }
+        // open input named pipe, if pipe is already created this is not an error - use it
+        if((mkfifo(in_fpath_.c_str(), S_IRUSR | S_IWUSR)) == -1) {
+            if(errno != EEXIST) {
+                std::stringstream x;
+                x << "failed to open input named pipeline \"" << in_fpath_ << "\"";
+                SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
+            }
+        }
+        if(stat(in_fpath_.c_str(), &attribut) == -1) {
+            std::stringstream x;
+            x << "failed to open input named pipeline \"" << in_fpath_ << "\"";
+            SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
+        }
+        fd_in = open(in_fpath_.c_str(), O_RDWR);
+        if(fd_in < 0) {
+            std::stringstream x;
+            x << "failed to open input named pipeline \"" << out_fpath_ << "\": E" << errno;
+            SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
+        }
+    } else {
+        fd_out = open(out_fpath_.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+        if(fd_out < 0) {
+            std::stringstream x;
+            x << "failed to open output file \"" << out_fpath_ << "\": E" << errno;
+            SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
+        }
+        fd_in = open(in_fpath_.c_str(), O_RDWR);
+        if(fd_in < 0) {
+            std::stringstream x;
+            x << "failed to open input file \"" << in_fpath_ << "\": E" << errno;
+            SC_REPORT_WARNING(ID_UARTDEV, x.str().c_str());
+        }
+    }
+
+    // connect a stream handle to the "output file": everything is a file.
+    h_stream_out_ = std::make_shared<io::stream<sink>>(sink(fd_out, io::file_descriptor_flags::close_handle));
+    // connect a stream handle to the "input file"
+    h_stream_in_ = std::make_shared<io::stream_buffer<src>>(src(fd_in, io::file_descriptor_flags::close_handle));
+}
+
+int ExternalUARTDeviceFileStream::read(unsigned char* ptr) {
+    static unsigned char last = ' ';
+    static unsigned char event = 0;
+    sc_core::sc_time delay{sc_core::SC_ZERO_TIME};
+    static tlm::tlm_generic_payload gp{};
+    gp.set_data_ptr(&event);
+    gp.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+    gp.set_data_length(1);
+
+    if(!inbuf_.empty()) {
+        *ptr = inbuf_[0];
+        inbuf_.erase(inbuf_.begin());
+        last = *ptr;
+        if(inbuf_.empty()) {
+            event = 0;
+            sock_i_->b_transport(gp, delay);
+        }
+    } else {
+        last = *ptr;
+    }
+    return 0;
+}
+
+int ExternalUARTDeviceFileStream::write(unsigned char* ptr) {
+    if(h_stream_out_->is_open()) {
+        h_stream_out_->put(ptr[0]);
+        h_stream_out_->flush();
+    }
+    return 0;
+}
+
+void ExternalUARTDeviceFileStream::sense_input(void) {
+    namespace io = boost::iostreams;
+
+    std::istream in(h_stream_in_.get());
+    unsigned char event = 1;
+    tlm::tlm_generic_payload gp{};
+    gp.set_data_ptr(&event);
+    gp.set_data_length(1);
+    gp.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+    sc_core::sc_time delay{sc_core::SC_ZERO_TIME};
+
+    auto can_read = [this](void) {
+        struct pollfd fds {
+            .fd = (*h_stream_in_)->handle(), .events = POLLIN
+        };
+        int res = poll(&fds, 1, 0);
+        if(res < 0 || fds.revents & (POLLERR | POLLNVAL)) {
+            std::stringstream x;
+            x << "failed to poll named pipe \"" << in_fpath_ << "\"";
+            SC_REPORT_FATAL(ID_UARTDEV, x.str().c_str());
+        }
+        return (fds.revents & POLLIN);
+    };
+
+    while(1) {
+        sc_core::wait(scan_period_);
+        if(can_read()) {
+            std::string line;
+            std::getline(in, line);
+            if(line != "") {
+                vec_in_stream_ << line << std::flush;
+                sock_i_->b_transport(gp, delay);
+            }
+        }
+    }
+}
+
+ExternalUARTDeviceFileStream::~ExternalUARTDeviceFileStream(void) {
+    if(h_stream_out_->is_open()) {
+        h_stream_out_->close();
+    }
+    if(h_stream_in_->is_open()) {
+        h_stream_in_->close();
+    }
+}
+
+} // namespace pulpino
+} // namespace vpvper

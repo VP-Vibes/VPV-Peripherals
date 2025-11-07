@@ -1,14 +1,16 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
 #include "plic.h"
 #include "gen/plic_regs.h"
+#include "tlm/scc/tlm_signal_gp.h"
 
 #include <scc/report.h>
 #include <scc/utilities.h>
+#include <tlm_core/tlm_2/tlm_generic_payload/tlm_phase.h>
 
 namespace vpvper {
 namespace sifive {
@@ -16,16 +18,12 @@ namespace sifive {
 plic::plic(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
 , tlm_target<>(clk)
-, NAMED(clk_i)
-, NAMED(rst_i)
-, NAMED(global_interrupts_i, 256)
-, NAMED(core_interrupt_o)
 , NAMEDD(regs, plic_regs)
 
 {
     regs->registerResources(*this);
     // register callbacks
-    regs->claim_complete.set_write_cb([this](scc::sc_register<uint32_t> reg, uint32_t v, sc_core::sc_time d) -> bool {
+    regs->claim_complete.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t v, sc_core::sc_time d) -> bool {
         reg.put(v);
         reset_pending_int(v);
         // std::cout << "Value of register: 0x" << std::hex << reg << std::endl;
@@ -35,9 +33,8 @@ plic::plic(sc_core::sc_module_name nm)
 
     // port callbacks
     SC_METHOD(global_int_port_cb);
-    for (uint8_t i = 0; i < 255; i++) {
-        sensitive << global_interrupts_i[i].pos();
-    }
+    for(auto& irq : global_interrupts_i)
+        sensitive << irq.pos();
     dont_initialize();
 
     // register event callbacks
@@ -48,12 +45,12 @@ plic::plic(sc_core::sc_module_name nm)
     dont_initialize();
 }
 
-plic::~plic() {}// NOLINT
+plic::~plic() {} // NOLINT
 
 void plic::clock_cb() { this->clk = clk_i.read(); }
 
 void plic::reset_cb() {
-    if (rst_i.read())
+    if(rst_i.read())
         regs->reset_start();
     else
         regs->reset_stop();
@@ -78,19 +75,20 @@ void plic::reset_cb() {
 void plic::global_int_port_cb() {
     auto handle_pending = false;
     // set related pending bit if enable is set for incoming global_interrupt
-    for (uint32_t i = 1; i < 256; i++) {
+    for(uint32_t i = 1; i < 256; i++) {
         auto reg_idx = i >> 5;
         auto bit_ofs = i & 0x1F;
         bool enable = regs->r_enabled[reg_idx] & (0x1 << bit_ofs); // read enable bit
 
-        if (enable && global_interrupts_i[i].read() == 1) {
+        if(enable && global_interrupts_i[i].read() == 1) {
             regs->r_pending[reg_idx] = regs->r_pending[reg_idx] | (0x1 << bit_ofs);
             handle_pending = true;
             SCCDEBUG(this->name()) << "pending interrupt identified: " << i;
         }
     }
 
-    if (handle_pending) handle_pending_int();
+    if(handle_pending)
+        handle_pending_int();
 }
 
 void plic::handle_pending_int() {
@@ -100,16 +98,16 @@ void plic::handle_pending_int() {
     auto raise_int = false;
     auto thold = regs->r_threshold.threshold; // threshold value
 
-    for (size_t i = 1; i < 255; i++) {
+    for(size_t i = 1; i < 255; i++) {
         auto reg_idx = i >> 5;
         auto bit_ofs = i & 0x1F;
         bool pending = (regs->r_pending[reg_idx] & (0x1 << bit_ofs)) ? true : false;
         auto prio = regs->r_priority[i].priority; // read priority value
 
-        if (pending && thold < prio) {
+        if(pending && thold < prio) {
             // below condition ensures implicitly that lowest id is selected in case of multiple identical
             // priority-interrupts
-            if (prio > claim_prio) {
+            if(prio > claim_prio) {
                 claim_prio = prio;
                 claim_int = i;
                 raise_int = true;
@@ -118,9 +116,9 @@ void plic::handle_pending_int() {
         }
     }
 
-    if (raise_int) {
+    if(raise_int) {
         regs->r_claim_complete = claim_int;
-        core_interrupt_o.write(true);
+        write_irq(true);
         // todo: evluate clock period
     } else {
         regs->r_claim_complete = 0;
@@ -136,11 +134,21 @@ void plic::reset_pending_int(uint32_t irq) {
     auto reg_idx = irq >> 5;
     auto bit_ofs = irq & 0x1F;
     regs->r_pending[reg_idx] &= ~(0x1 << bit_ofs);
-    core_interrupt_o.write(false);
-
+    write_irq(false);
     // evaluate next pending interrupt
     handle_pending_int();
 }
 
+void plic::write_irq(bool irq) {
+#ifdef SC_SIGNAL_IF
+    core_interrupt_o.write(irq);
+#else
+    sc_core::sc_time t;
+    tlm::tlm_phase p{tlm::BEGIN_REQ};
+    tlm::scc::tlm_signal_gp<bool> gp;
+    gp.set_value(irq);
+    core_interrupt_o->nb_transport_fw(gp, p, t);
+#endif
+}
 } /* namespace sifive */
 } /* namespace vpvper */

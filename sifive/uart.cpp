@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -17,7 +17,7 @@ namespace vpvper {
 namespace sifive {
 using namespace sc_core;
 
-SC_HAS_PROCESS(uart);// NOLINT
+SC_HAS_PROCESS(uart); // NOLINT
 
 uart::uart(sc_core::sc_module_name const& nm)
 : sc_core::sc_module(nm)
@@ -38,16 +38,16 @@ uart::uart(sc_core::sc_module_name const& nm)
     sensitive << rst_i;
     dont_initialize();
     SC_THREAD(transmit_data);
-    rx_i.register_nb_transport(
-        [this](tlm::scc::tlm_signal_gp<bool> &gp, tlm::tlm_phase &phase, sc_core::sc_time &delay) -> tlm::tlm_sync_enum {
-            this->receive_data(gp, delay);
-            return tlm::TLM_COMPLETED;
-        });
-    regs->txdata.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
-        if (!this->regs->in_reset()) {
+    rx_i.register_nb_transport([this](tlm::scc::tlm_signal_gp<bool>& gp, tlm::tlm_phase& phase,
+                                      sc_core::sc_time& delay) -> tlm::tlm_sync_enum {
+        this->receive_data(gp, delay);
+        return tlm::TLM_COMPLETED;
+    });
+    regs->txdata.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
+        if(!this->regs->in_reset()) {
             if(d.value()) {
                 wait(d);
-                d=SC_ZERO_TIME;
+                d = SC_ZERO_TIME;
             }
             reg.put(data);
             tx_fifo.nb_write(static_cast<uint8_t>(regs->r_txdata.data));
@@ -57,16 +57,16 @@ uart::uart(sc_core::sc_module_name const& nm)
         }
         return true;
     });
-    regs->rxdata.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data, sc_core::sc_time d) -> bool {
-        if (!this->regs->in_reset()) {
+    regs->rxdata.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
+        if(!this->regs->in_reset()) {
             uint8_t val;
             if(d.value()) {
                 wait(d);
-                d=SC_ZERO_TIME;
+                d = SC_ZERO_TIME;
             }
-            if (rx_fifo.nb_read(val)) {
+            if(rx_fifo.nb_read(val)) {
                 regs->r_rxdata.data = val;
-                if (regs->r_rxctrl.rxcnt <= rx_fifo.num_available()) {
+                if(regs->r_rxctrl.rxcnt <= rx_fifo.num_available()) {
                     regs->r_ip.rxwm = 1;
                     update_irq();
                 }
@@ -75,11 +75,11 @@ uart::uart(sc_core::sc_module_name const& nm)
         }
         return true;
     });
-    regs->ie.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+    regs->ie.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         update_irq();
         return true;
     });
-    regs->ip.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+    regs->ip.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         update_irq();
         return true;
     });
@@ -94,7 +94,7 @@ void uart::update_irq() {
 void uart::clock_cb() { this->clk = clk_i.read(); }
 
 void uart::reset_cb() {
-    if (rst_i.read())
+    if(rst_i.read())
         regs->reset_start();
     else
         regs->reset_stop();
@@ -108,8 +108,8 @@ void uart::transmit_data() {
     sc_core::sc_time start_time;
 
     auto set_bit = [&](bool val) {
-        auto *gp = tlm::scc::tlm_signal_gp<>::create();
-        auto *ext = new sysc::tlm_signal_uart_extension();
+        auto* gp = tlm::scc::tlm_signal_gp<>::create();
+        auto* ext = new vpvper::generic::tlm_signal_uart_extension();
         ext->tx.data_bits = 8;
         ext->tx.parity = false;
         ext->start_time = start_time;
@@ -124,21 +124,24 @@ void uart::transmit_data() {
         delay = SC_ZERO_TIME;
         tx_o->nb_transport_fw(*gp, phase, delay);
         gp->release();
-        if (delay < bit_duration) wait(bit_duration - delay);
+        if(delay < bit_duration)
+            wait(bit_duration - delay);
     };
     wait(delay);
-    while (true) {
+    while(true) {
         set_bit(true);
         wait(tx_fifo.data_written_event());
-        while (tx_fifo.nb_read(txdata)) {
+        while(tx_fifo.nb_read(txdata)) {
             regs->r_txdata.full = tx_fifo.num_free() == 0;
             regs->r_ip.txwm = regs->r_txctrl.txcnt <= (7 - tx_fifo.num_free()) ? 1 : 0;
             bit_duration = (regs->r_div.div + 1) * clk;
             start_time = sc_core::sc_time_stamp();
             set_bit(false); // start bit
-            if (bit_true_transfer.get_value()) {
-                for (int i = 8; i > 0; --i) set_bit(txdata & (1 << (i - 1))); // 8 data bits, MSB first
-                if (regs->r_txctrl.nstop) set_bit(true);                      // stop bit 1
+            if(bit_true_transfer.get_value()) {
+                for(int i = 8; i > 0; --i)
+                    set_bit(txdata & (1 << (i - 1))); // 8 data bits, MSB first
+                if(regs->r_txctrl.nstop)
+                    set_bit(true); // stop bit 1
             } else
                 wait(8 * bit_duration);
             set_bit(true); // stop bit 1/2
@@ -146,14 +149,15 @@ void uart::transmit_data() {
     }
 }
 
-void uart::receive_data(tlm::scc::tlm_signal_gp<> &gp, sc_core::sc_time &delay) {
-    sysc::tlm_signal_uart_extension *ext{nullptr};
+void uart::receive_data(tlm::scc::tlm_signal_gp<>& gp, sc_core::sc_time& delay) {
+    vpvper::generic::tlm_signal_uart_extension* ext{nullptr};
     gp.get_extension(ext);
-    if (ext && ext->start_time != rx_last_start) {
+    if(ext && ext->start_time != rx_last_start) {
         auto data = static_cast<uint8_t>(ext->tx.data);
-        if (ext->tx.parity || ext->tx.data_bits != 8) data = rand(); // random value if wrong config
+        if(ext->tx.parity || ext->tx.data_bits != 8)
+            data = rand(); // random value if wrong config
         rx_fifo.write(data);
-        if (regs->r_rxctrl.rxcnt <= rx_fifo.num_available()) {
+        if(regs->r_rxctrl.rxcnt <= rx_fifo.num_available()) {
             regs->r_ip.rxwm = 1;
             update_irq();
         }

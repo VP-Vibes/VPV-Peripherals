@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -9,7 +9,8 @@
 
 #include "tlm/scc/tlm_extensions.h"
 
-namespace sysc {
+namespace vpvper {
+namespace generic {
 struct tlm_signal_uart_extension : public tlm::scc::tlm_unmanaged_extension<tlm_signal_uart_extension> {
 
     struct uart_tx {
@@ -33,12 +34,12 @@ struct tlm_signal_spi_extension : public tlm::scc::tlm_unmanaged_extension<tlm_s
     } tx;
     sc_core::sc_time start_time;
 
-    void copy_from(tlm_extension_base const &other) override {
-        auto &o = static_cast<const type &>(other);
+    void copy_from(tlm_extension_base const& other) override {
+        auto& o = static_cast<const type&>(other);
         this->tx = o.tx;
         this->start_time = o.start_time;
     }
 };
-}
-
+} // namespace generic
+} // namespace vpvper
 #endif /* _SYSC_TLM_EXTENSIONS_H_ */

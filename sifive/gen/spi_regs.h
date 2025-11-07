@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -115,7 +115,7 @@ public:
 
     spi_regs(sc_core::sc_module_name nm);
 
-    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH> &target);
+    template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target);
 };
 } /* namespace sifive */
 } /* namespace vpvper */
@@ -143,7 +143,8 @@ inline vpvper::sifive::spi_regs::spi_regs(sc_core::sc_module_name nm)
 , NAMED(ie, r_ie, 0, *this)
 , NAMED(ip, r_ip, 0, *this) {}
 
-template <unsigned BUSWIDTH> inline void vpvper::sifive::spi_regs::registerResources(scc::tlm_target<BUSWIDTH> &target) {
+template <unsigned BUSWIDTH>
+inline void vpvper::sifive::spi_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(sckdiv, 0x0UL);
     target.addResource(sckmode, 0x4UL);
     target.addResource(csid, 0x10UL);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -26,22 +26,24 @@ pwm::pwm(sc_core::sc_module_name nm)
     regs->registerResources(*this);
 
     regs->pwmcfg.set_write_cb(
-        [this](const scc::sc_register<uint32_t> &reg, const uint32_t &data, sc_core::sc_time d) -> bool {
-            if (d.value()) wait(d);
+        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+            if(d.value())
+                wait(d);
             reg.put(data);
             update_counter();
             return true;
         });
     regs->pwmcount.set_write_cb(
-        [this](const scc::sc_register<uint32_t> &reg, const uint32_t &data, sc_core::sc_time d) -> bool {
-            if (d.value()) wait(d);
+        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+            if(d.value())
+                wait(d);
             reg.put(data);
             update_counter();
             current_cnt = data;
             clk_remainder = 0.;
             return true;
         });
-    regs->pwmcount.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data,
+    regs->pwmcount.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data,
                                       sc_core::sc_time d) -> bool {
         auto offset = regs->r_pwmcfg.pwmenalways || regs->r_pwmcfg.pwmenoneshot ? static_cast<int>(get_pulses(d)) : 0;
         data = current_cnt + offset;
@@ -49,8 +51,8 @@ pwm::pwm(sc_core::sc_module_name nm)
         return true;
     });
     regs->pwms.set_write_cb(
-        [this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool { return false; });
-    regs->pwms.set_read_cb([this](const scc::sc_register<uint32_t> &reg, uint32_t &data, sc_core::sc_time d) -> bool {
+        [this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool { return false; });
+    regs->pwms.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
         auto offset = regs->r_pwmcfg.pwmenalways || regs->r_pwmcfg.pwmenoneshot ? static_cast<int>(get_pulses(d)) : 0;
         auto cnt = current_cnt + offset;
         data = (cnt >> regs->r_pwmcfg.pwmscale) & 0xffff;
@@ -58,25 +60,25 @@ pwm::pwm(sc_core::sc_module_name nm)
         return true;
     });
     regs->pwmcmp0.set_write_cb(
-        [this](const scc::sc_register<uint32_t> &reg, const uint32_t &data, sc_core::sc_time d) -> bool {
+        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
             reg.put(data);
             update_counter();
             return true;
         });
     regs->pwmcmp1.set_write_cb(
-        [this](const scc::sc_register<uint32_t> &reg, const uint32_t &data, sc_core::sc_time d) -> bool {
+        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
             reg.put(data);
             update_counter();
             return true;
         });
     regs->pwmcmp2.set_write_cb(
-        [this](const scc::sc_register<uint32_t> &reg, const uint32_t &data, sc_core::sc_time d) -> bool {
+        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
             reg.put(data);
             update_counter();
             return true;
         });
     regs->pwmcmp3.set_write_cb(
-        [this](const scc::sc_register<uint32_t> &reg, const uint32_t &data, sc_core::sc_time d) -> bool {
+        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
             reg.put(data);
             update_counter();
             return true;
@@ -99,7 +101,7 @@ void pwm::clock_cb() {
 pwm::~pwm() = default;
 
 void pwm::reset_cb() {
-    if (rst_i.read()) {
+    if(rst_i.read()) {
         regs->reset_start();
     } else {
         regs->reset_stop();
@@ -108,35 +110,36 @@ void pwm::reset_cb() {
 
 void pwm::update_counter() {
     auto now = sc_time_stamp();
-    if (now == SC_ZERO_TIME) return;
+    if(now == SC_ZERO_TIME)
+        return;
     update_counter_evt.cancel();
-    if (regs->r_pwmcfg.pwmenalways || regs->r_pwmcfg.pwmenoneshot) {
+    if(regs->r_pwmcfg.pwmenalways || regs->r_pwmcfg.pwmenoneshot) {
         std::array<bool, 4> pwmcmp_new_ip{false, false, false, false};
         auto dpulses = get_pulses(SC_ZERO_TIME);
         auto pulses = static_cast<int>(dpulses);
         clk_remainder += dpulses - pulses;
-        if (clk_remainder > 1) {
+        if(clk_remainder > 1) {
             pulses++;
             clk_remainder -= 1.0;
         }
-        if (reset_cnt) {
+        if(reset_cnt) {
             current_cnt = 0;
             reset_cnt = false;
-        } else if (last_enable)
+        } else if(last_enable)
             current_cnt += pulses;
         auto pwms = (current_cnt >> regs->r_pwmcfg.pwmscale) & 0xffff;
         auto next_trigger_time =
             (0xffff - pwms) * (1 << regs->r_pwmcfg.pwmscale) * clk; // next trigger based on wrap around
-        if (pwms == 0xffff) {                                       // wrap around calculation
+        if(pwms == 0xffff) {                                        // wrap around calculation
             reset_cnt = true;
             next_trigger_time = clk;
             regs->r_pwmcfg.pwmenoneshot = 0;
         }
         auto pwms0 = (regs->r_pwmcfg.pwmcmp0center && (pwms & 0x8000) == 1) ? pwms ^ 0xffff : pwms;
-        if (pwms0 >= regs->r_pwmcmp0.pwmcmp0) {
+        if(pwms0 >= regs->r_pwmcmp0.pwmcmp0) {
             pwmcmp_new_ip[0] = true;
             regs->r_pwmcfg.pwmenoneshot = 0;
-            if (regs->r_pwmcfg.pwmzerocmp) {
+            if(regs->r_pwmcfg.pwmzerocmp) {
                 reset_cnt = true;
                 next_trigger_time = clk;
             }
@@ -147,7 +150,7 @@ void pwm::update_counter() {
             next_trigger_time = nt < next_trigger_time ? nt : next_trigger_time;
         }
         auto pwms1 = (regs->r_pwmcfg.pwmcmp0center && (pwms & 0x8000) == 1) ? pwms ^ 0xffff : pwms;
-        if (pwms1 >= regs->r_pwmcmp1.pwmcmp0) {
+        if(pwms1 >= regs->r_pwmcmp1.pwmcmp0) {
             pwmcmp_new_ip[1] = true;
         } else {
             pwmcmp_new_ip[1] = false;
@@ -156,7 +159,7 @@ void pwm::update_counter() {
             next_trigger_time = nt < next_trigger_time ? nt : next_trigger_time;
         }
         auto pwms2 = (regs->r_pwmcfg.pwmcmp0center && (pwms & 0x8000) == 1) ? pwms ^ 0xffff : pwms;
-        if (pwms2 >= regs->r_pwmcmp2.pwmcmp0) {
+        if(pwms2 >= regs->r_pwmcmp2.pwmcmp0) {
             pwmcmp_new_ip[2] = true;
         } else {
             pwmcmp_new_ip[2] = false;
@@ -165,7 +168,7 @@ void pwm::update_counter() {
             next_trigger_time = nt < next_trigger_time ? nt : next_trigger_time;
         }
         auto pwms3 = (regs->r_pwmcfg.pwmcmp0center && (pwms & 0x8000) == 1) ? pwms ^ 0xffff : pwms;
-        if (pwms3 >= regs->r_pwmcmp3.pwmcmp0) {
+        if(pwms3 >= regs->r_pwmcmp3.pwmcmp0) {
             pwmcmp_new_ip[3] = true;
         } else {
             pwmcmp_new_ip[3] = false;
@@ -173,14 +176,15 @@ void pwm::update_counter() {
             auto nt = (regs->r_pwmcmp0.pwmcmp0 - pwms0) * (1 << regs->r_pwmcfg.pwmscale) * clk;
             next_trigger_time = nt < next_trigger_time ? nt : next_trigger_time;
         }
-        for (size_t i = 0; i < 4; ++i) {
+        for(size_t i = 0; i < 4; ++i) {
             // write gpio bits depending of gang bit
-            if (regs->r_pwmcfg & (1 < (24 + i)))
+            if(regs->r_pwmcfg & (1 < (24 + i)))
                 write_cmpgpio(i, pwmcmp_new_ip[i] && !pwmcmp_new_ip[(i + 1) % 4]);
             else
                 write_cmpgpio(i, pwmcmp_new_ip[i]);
             // detect rising edge and set ip bit if found
-            if (!pwmcmp_ip[i] && pwmcmp_new_ip[i]) regs->r_pwmcfg |= 1 << (28 + i);
+            if(!pwmcmp_ip[i] && pwmcmp_new_ip[i])
+                regs->r_pwmcfg |= 1 << (28 + i);
             pwmcmp_ip[i] = pwmcmp_new_ip[i];
         }
         last_enable = true;
@@ -196,7 +200,7 @@ void pwm::update_counter() {
 }
 
 void pwm::write_cmpgpio(size_t index, bool val) {
-    if (cmpgpio_o[index].get_interface()) {
+    if(cmpgpio_o[index].get_interface()) {
         tlm::tlm_phase phase(tlm::BEGIN_REQ);
         tlm::scc::tlm_signal_gp<> gp;
         sc_core::sc_time delay(SC_ZERO_TIME);

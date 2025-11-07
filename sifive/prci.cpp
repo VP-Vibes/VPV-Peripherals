@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 -2021 MINRES Technolgies GmbH
+ * Copyright (c) 2019 -2021 MINRES Technologies GmbH
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -27,34 +27,34 @@ prci::prci(sc_core::sc_module_name nm)
     sensitive << hfrosc_en_evt;
     dont_initialize();
 
-    regs->hfxosccfg.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+    regs->hfxosccfg.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         reg.put(data);
-        if (this->regs->r_hfxosccfg.hfxoscen == 1) { // check rosc_en
+        if(this->regs->r_hfxosccfg.hfxoscen == 1) { // check rosc_en
             this->hfxosc_en_evt.notify(1, sc_core::SC_US);
         } else {
             this->hfxosc_en_evt.notify(SC_ZERO_TIME);
         }
         return true;
     });
-    regs->hfrosccfg.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+    regs->hfrosccfg.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         reg.put(data);
-        if (this->regs->r_hfrosccfg.hfroscen == 1) { // check rosc_en
+        if(this->regs->r_hfrosccfg.hfroscen == 1) { // check rosc_en
             this->hfrosc_en_evt.notify(1, sc_core::SC_US);
         } else {
             this->hfrosc_en_evt.notify(SC_ZERO_TIME);
         }
         return true;
     });
-    regs->pllcfg.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+    regs->pllcfg.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         reg.put(data);
-        auto &pllcfg = this->regs->r_pllcfg;
-        if (pllcfg.pllbypass == 0 && pllcfg.pllq != 0) { // set pll_lock if pll is selected
+        auto& pllcfg = this->regs->r_pllcfg;
+        if(pllcfg.pllbypass == 0 && pllcfg.pllq != 0) { // set pll_lock if pll is selected
             pllcfg.plllock = 1;
         }
         update_hfclk();
         return true;
     });
-    regs->plloutdiv.set_write_cb([this](scc::sc_register<uint32_t> &reg, uint32_t data, sc_core::sc_time d) -> bool {
+    regs->plloutdiv.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         reg.put(data);
         update_hfclk();
         return true;
@@ -65,7 +65,7 @@ prci::prci(sc_core::sc_module_name nm)
 prci::~prci() = default;
 
 void prci::reset_cb() {
-    if (rst_i.read())
+    if(rst_i.read())
         regs->reset_start();
     else {
         regs->reset_stop();
@@ -80,7 +80,7 @@ void prci::hfxosc_cb() {
 
 void prci::hfxosc_en_cb() {
     update_hfclk();
-    if (regs->r_hfxosccfg.hfxoscen == 1) // set rosc_rdy
+    if(regs->r_hfxosccfg.hfxoscen == 1) // set rosc_rdy
         regs->r_hfxosccfg.hfxoscrdy = 1;
     else
         regs->r_hfxosccfg.hfxoscrdy = 0;
@@ -88,8 +88,8 @@ void prci::hfxosc_en_cb() {
 
 void prci::hfrosc_en_cb() {
     update_hfclk();
-    auto &hfrosccfg = regs->r_hfrosccfg;
-    if (regs->r_hfrosccfg.hfroscen == 1) { // set rosc_rdy
+    auto& hfrosccfg = regs->r_hfrosccfg;
+    if(regs->r_hfrosccfg.hfroscen == 1) { // set rosc_rdy
         regs->r_hfrosccfg.hfroscrdy = 1;
     } else {
         regs->r_hfrosccfg.hfroscrdy = 0;
@@ -97,9 +97,9 @@ void prci::hfrosc_en_cb() {
 }
 
 void prci::update_hfclk() {
-    auto &hfrosccfg = regs->r_hfrosccfg;
-    auto &pllcfg = regs->r_pllcfg;
-    auto &plldiv = regs->r_plloutdiv;
+    auto& hfrosccfg = regs->r_hfrosccfg;
+    auto& pllcfg = regs->r_pllcfg;
+    auto& plldiv = regs->r_plloutdiv;
     uint32_t trim = hfrosccfg.hfrosctrim;
     uint32_t div = hfrosccfg.hfroscdiv;
     hfrosc_clk = sc_core::sc_time(((div + 1) * 1.0) / (70000000 + 12000.0 * trim), sc_core::SC_SEC);

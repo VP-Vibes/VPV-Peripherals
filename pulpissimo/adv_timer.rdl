@@ -1,0 +1,184 @@
+/*
+ * Copyright (c) 2019 -2022 MINRES Technologies GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+//=============================================================================
+// Pulpissimo APB Advanced Timer Registers
+//=============================================================================
+regfile adv_timer {
+    reg {
+        name = "T0_CMD";
+        desc = "ADV_TIMER0 command register.";
+        regwidth=32;
+    } T0_CMD @0x0;
+    reg {
+        name = "T0_CONFIG";
+        desc = "ADV_TIMER0 configuration register.";
+        regwidth=32;
+    } T0_CONFIG @0x4;
+    reg {
+        name = "T0_THRESHOLD";
+        desc = "ADV_TIMER0 threshold configuration register.";
+        regwidth=32;
+    } T0_THRESHOLD @0x8;
+    reg {
+        name = "T0_TH_CHANNEL0";
+        desc = "ADV_TIMER0 channel 0 threshold configuration register.";
+        regwidth=32;
+    } T0_TH_CHANNEL0 @0xC;
+    reg {
+        name = "T0_TH_CHANNEL1";
+        desc = "ADV_TIMER0 channel 1 threshold configuration register.";
+        regwidth=32;
+    } T0_TH_CHANNEL1 @0x10;
+    reg {
+        name = "T0_TH_CHANNEL2";
+        desc = "ADV_TIMER0 channel 2 threshold configuration register.";
+        regwidth=32;
+    } T0_TH_CHANNEL2 @0x14;
+    reg {
+        name = "T0_TH_CHANNEL3";
+        desc = "ADV_TIMER0channel 3 threshold configuration register.";
+        regwidth=32;
+    } T0_TH_CHANNEL3 @0x18;
+    reg {
+        name = "T0_COUNTER";
+        desc = "ADV_TIMER0 counter register.";
+        regwidth=32;
+        sw=r;
+    } T0_COUNTER @0x2C;
+    reg {
+        name = "T1_CMD";
+        desc = "ADV_TIMER1 command register.";
+        regwidth=32;
+    } T1_CMD @0x40;
+    reg {
+        name = "T1_CONFIG";
+        desc = "ADV_TIMER1 configuration register.";
+        regwidth=32;
+    } T1_CONFIG @0x44;
+    reg {
+        name = "T1_THRESHOLD";
+        desc = "ADV_TIMER1 threshold configuration register.";
+        regwidth=32;
+    } T1_THRESHOLD @0x48;
+    reg {
+        name = "T1_TH_CHANNEL0";
+        desc = "ADV_TIMER1 channel 0 threshold configuration register.";
+        regwidth=32;
+    } T1_TH_CHANNEL0 @0x4C;
+    reg {
+        name = "T1_TH_CHANNEL1";
+        desc = "ADV_TIMER1 channel 1 threshold configuration register.";
+        regwidth=32;
+    } T1_TH_CHANNEL1 @0x50;
+    reg {
+        name = "T1_TH_CHANNEL2";
+        desc = "ADV_TIMER1 channel 2 threshold configuration register.";
+        regwidth=32;
+    } T1_TH_CHANNEL2 @0x54;
+    reg {
+        name = "T1_TH_CHANNEL3";
+        desc = "ADV_TIMER1 channel 3 threshold configuration register.";
+        regwidth=32;
+    } T1_TH_CHANNEL3 @0x58;
+    reg {
+        name = "T1_COUNTER";
+        desc = "ADV_TIMER1 counter register.";
+        regwidth=32;
+        sw=r;
+    } T1_COUNTER @0x6C;
+    reg {
+        name = "T2_CMD";
+        desc = "ADV_TIMER2 command register.";
+        regwidth=32;
+    } T2_CMD @0x80;
+    reg {
+        name = "T2_CONFIG";
+        desc = "ADV_TIMER2 configuration register.";
+        regwidth=32;
+    } T2_CONFIG @0x84;
+    reg {
+        name = "T2_THRESHOLD";
+        desc = "ADV_TIMER2 threshold configuration register.";
+        regwidth=32;
+    } T2_THRESHOLD @0x88;
+    reg {
+        name = "T2_TH_CHANNEL0";
+        desc = "ADV_TIMER2 channel 0 threshold configuration register.";
+        regwidth=32;
+    } T2_TH_CHANNEL0 @0x8C;
+    reg {
+        name = "T2_TH_CHANNEL1";
+        desc = "ADV_TIMER2 channel 1 threshold configuration register.";
+        regwidth=32;
+    } T2_TH_CHANNEL1 @0x90;
+    reg {
+        name = "T2_TH_CHANNEL2";
+        desc = "ADV_TIMER2 channel 2 threshold configuration register.";
+        regwidth=32;
+    } T2_TH_CHANNEL2 @0x94;
+    reg {
+        name = "T2_TH_CHANNEL3";
+        desc = "ADV_TIMER2 channel 3 threshold configuration register.";
+        regwidth=32;
+    } T2_TH_CHANNEL3 @0x98;
+    reg {
+        name = "T2_COUNTER";
+        desc = "ADV_TIMER2 counter register.";
+        regwidth=32;
+        sw=r;
+    } T2_COUNTER @0xAC;
+    reg {
+        name = "T3_CMD";
+        desc = "ADV_TIMER3 command register.";
+        regwidth=32;
+    } T3_CMD @0xC0;
+    reg {
+        name = "T3_CONFIG";
+        desc = "ADV_TIMER3 configuration register.";
+        regwidth=32;
+    } T3_CONFIG @0xC4;
+    reg {
+        name = "T3_THRESHOLD";
+        desc = "ADV_TIMER3 threshold configuration register.";
+        regwidth=32;
+    } T3_THRESHOLD @0xC8;
+    reg {
+        name = "T3_TH_CHANNEL0";
+        desc = "ADV_TIMER3 channel 0 threshold configuration register.";
+        regwidth=32;
+    } T3_TH_CHANNEL0 @0xCC;
+    reg {
+        name = "T3_TH_CHANNEL1";
+        desc = "ADV_TIMER3 channel 1 threshold configuration register.";
+        regwidth=32;
+    } T3_TH_CHANNEL1 @0xD0;
+    reg {
+        name = "T3_TH_CHANNEL2";
+        desc = "ADV_TIMER3 channel 2 threshold configuration register.";
+        regwidth=32;
+    } T3_TH_CHANNEL2 @0xD4;
+    reg {
+        name = "T3_TH_CHANNEL3";
+        desc = "ADV_TIMER3 channel 3 threshold configuration register.";
+        regwidth=32;
+    } T3_TH_CHANNEL3 @0xD8;
+    reg {
+        name = "T3_COUNTER";
+        desc = "ADV_TIMER3 counter register.";
+        regwidth=32;
+        sw=r;
+    } T3_COUNTER @0xEC;
+    reg {
+        name = "EVENT_CFG";
+        desc = "ADV_TIMERS events configuration register.";
+        regwidth=32;
+    } EVENT_CFG @0x100;
+    reg {
+        name = "CG";
+        desc = "ADV_TIMERS channels clock gating configuration register.";
+        regwidth=32;
+    } CG @0x104;    
+};

@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2019 -2022 MINRES Technologies GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+//=============================================================================
+// Pulpissimo SoC Event Registers
+//=============================================================================
+regfile soc_event {
+	reg {
+		name = "SW_EVENT";
+		desc = "SoC software events trigger register";
+		regwidth=32;
+		field {
+			name="EVENT";
+		} EVENT [7:0];
+        sw=w;
+	} SW_EVENT @0x00;
+	reg {
+		name = "FC_MASK";
+		desc = "Events 0-31 dispatch mask to FC";
+		regwidth=32;
+	} FC_MASK[0:7] @0x04;
+	reg {
+		name = "PR_MASK";
+		desc = "Events 0-31 dispatch mask to peripherals";
+		regwidth=32;
+	} PR_MASK[0:7] @0x44;
+	reg {
+		name = "ERR";
+		desc = "Events 0-31 event queue overﬂow";
+		regwidth=32;
+		sw=r;
+	} ERR[0:7] @0x64;
+	reg {
+		name = "TIMER_LO";
+		desc = "Trigger Timer LO of APB Timer with event";
+		regwidth=32;
+		field {
+			name="TIMER_LO_EVENT";
+		} TIMER_LO_EVENT [7:0];
+	} TIMER_LO @0x84;
+	reg {
+		name = "TIMER_HI";
+		desc = "Trigger Timer HI of APB Timer with event";
+		regwidth=32;
+		field {
+			name="TIMER_HI_EVENT";
+		} TIMER_HI_EVENT [7:0];
+	} TIMER_HI @0x88;	
+};

@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2019 -2022 MINRES Technologies GmbH
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+`include "udma.rdl"
+`include "timer.rdl"
+`include "gpio.rdl"
+`include "interrupt.rdl"
+`include "adv_timer.rdl"
+`include "fll.rdl"
+`include "soc_ctrl.rdl"
+`include "soc_event.rdl"
+
+addrmap  {
+    name = "pulpissimo";
+    desc = "The address map of the pulpissimo peripherals";
+    fll       fll       @0x1A100000;
+    gpio      gpio      @0x1A101000;
+    udma      udma      @0x1A102000;
+    soc_ctrl  soc_ctrl  @0x1A104000;
+    adv_timer adv_timer @0x1A105000;
+    soc_event soc_event @0x1A106000;
+    interrupt interrupt @0x1A109000;
+    timer     timer     @0x1A10B000;    
+} pulpissimo;
