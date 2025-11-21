@@ -19,7 +19,7 @@ aclint::aclint(sc_module_name nm)
     sensitive << rst_i;
     regs->mtime_hi.set_read_cb([this](const sc_register<uint32_t>& reg, uint32_t& data, sc_time& d) -> bool {
         uint64_t elapsed_clks = mtime_clk_period.value() ? (sc_time_stamp() + d - last_updt) / mtime_clk_period : 0;
-        data = regs->in_reset() ? 0 : regs->r_mtime_hi + elapsed_clks;
+        data = regs->in_reset() ? 0 : regs->r_mtime_hi + (elapsed_clks >> 32);
         return true;
     });
     regs->mtime_lo.set_read_cb([this](const sc_register<uint32_t>& reg, uint32_t& data, sc_time& d) -> bool {
