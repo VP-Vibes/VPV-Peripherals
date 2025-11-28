@@ -1,6 +1,7 @@
 #include "aclint.h"
 #include "gen/aclint_regs.h"
 #include <cstdint>
+#include <limits>
 
 namespace vpvper {
 namespace minres {
@@ -8,10 +9,12 @@ using namespace sc_core;
 using namespace scc;
 const int lfclk_mutiplier = 10; // hardcoded for unit test
 
-aclint::aclint(sc_module_name nm)
+aclint::aclint(sc_module_name nm, size_t num_cpus)
 : sc_module(nm)
 , tlm_target<>(clk_period)
-, regs(make_unique<aclint_regs>("regs")) {
+, mtime_int_o{"mtime_int_o", num_cpus}
+, msip_int_o{"msip_int_o", num_cpus}
+, regs(make_unique<aclint_regs>("regs", num_cpus)) {
     SC_HAS_PROCESS(aclint);
     regs->registerResources(*this);
 
@@ -47,9 +50,11 @@ aclint::aclint(sc_module_name nm)
         }
         return false;
     };
-    regs->mtimecmp0hi.set_write_cb(write_cb_with_wait);
-    regs->mtimecmp0lo.set_write_cb(write_cb_with_wait);
-    regs->msip0.set_write_cb(write_cb_with_wait);
+    for(auto i = 0u; i < regs->mtimecmphi.size(); ++i) {
+        regs->mtimecmphi[i].set_write_cb(write_cb_with_wait);
+        regs->mtimecmplo[i].set_write_cb(write_cb_with_wait);
+        regs->msip[i].set_write_cb(write_cb_with_wait);
+    }
     SC_METHOD(update_mtime);
     sensitive << mtime_evt;
     dont_initialize();
@@ -68,7 +73,6 @@ void aclint::reset_cb() {
 void aclint::update_mtime() {
     if(mtime_clk_period > SC_ZERO_TIME) {
         uint64_t mtime = static_cast<uint64_t>(regs->r_mtime_hi) << 32 | regs->r_mtime_lo;
-        uint64_t mtimecmp = static_cast<uint64_t>(regs->r_mtimecmp0hi) << 32 | regs->r_mtimecmp0lo;
         // update mtime register
         uint64_t elapsed_clks = (sc_time_stamp() - last_updt) / mtime_clk_period;
         last_updt += elapsed_clks * mtime_clk_period;
@@ -79,19 +83,25 @@ void aclint::update_mtime() {
             if(mtime_o.get_interface())
                 mtime_o->write(mtime);
         }
-
-        // check for and handle interrupts
-        uint64_t smallest = std::numeric_limits<uint64_t>::max();
-        mtime_int_o.write(mtimecmp <= mtime);
+        // check all mtimecmp register if there is an interrupt
+        uint64_t mtimecmp_min = std::numeric_limits<uint64_t>::max();
+        for(auto i = 0u; i < regs->mtimecmphi.size(); ++i) {
+            uint64_t mtimecmp = static_cast<uint64_t>(regs->r_mtimecmphi[i]) << 32 | regs->r_mtimecmplo[i];
+            // check for and handle interrupts
+            uint64_t smallest = std::numeric_limits<uint64_t>::max();
+            mtime_int_o[i].write(mtimecmp <= mtime);
+            mtimecmp_min = std::min(mtimecmp_min, mtimecmp);
+        }
+        // calculate next invocation
         mtime_evt.cancel();
         if(mtime_o.get_interface()) {
             mtime_evt.notify(mtime_clk_period);
-        } else if(mtimecmp > mtime) {
-            sc_time nexttrigger = mtime_clk_period * (mtimecmp - mtime);
+        } else if(mtimecmp_min > mtime) {
+            sc_time nexttrigger = mtime_clk_period * (mtimecmp_min - mtime);
             mtime_evt.notify(nexttrigger);
         }
-    } else
-        last_updt = sc_time_stamp();
+    }
+    last_updt = sc_time_stamp();
 }
 aclint::~aclint() = default;
 } // namespace minres
