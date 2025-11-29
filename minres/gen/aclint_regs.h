@@ -58,10 +58,13 @@ public:
 
 inline aclint_regs::aclint_regs(sc_core::sc_module_name nm, size_t num_cpus)
 : sc_core::sc_module(nm)
-, msip("msip0", num_cpus, [this](char const* name, int idx) { return new scc::sc_register<msip0_t>(name, r_msip[idx], 0, *this); })
-, mtimecmplo("msip0", num_cpus,
+, r_msip(num_cpus)
+, r_mtimecmplo(num_cpus)
+, r_mtimecmphi(num_cpus)
+, msip("msip", num_cpus, [this](char const* name, int idx) { return new scc::sc_register<msip0_t>(name, r_msip[idx], 0, *this); })
+, mtimecmplo("mtimecmplo", num_cpus,
              [this](char const* name, int idx) { return new scc::sc_register<msip0_t>(name, r_mtimecmplo[idx], 0, *this); })
-, mtimecmphi("msip0", num_cpus,
+, mtimecmphi("mtimecmphi", num_cpus,
              [this](char const* name, int idx) { return new scc::sc_register<msip0_t>(name, r_mtimecmphi[idx], 0, *this); })
 , NAMED(mtime_lo, r_mtime_lo, 0, *this)
 , NAMED(mtime_hi, r_mtime_hi, 0, *this) {}
