@@ -10,6 +10,7 @@
 #ifndef _ACLINT_H_
 #define _ACLINT_H_
 
+#include <limits>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 #include <scc/utilities.h>
@@ -63,9 +64,13 @@ inline aclint_regs::aclint_regs(sc_core::sc_module_name nm, size_t num_cpus)
 , r_mtimecmphi(num_cpus)
 , msip("msip", num_cpus, [this](char const* name, int idx) { return new scc::sc_register<msip0_t>(name, r_msip[idx], 0, *this); })
 , mtimecmplo("mtimecmplo", num_cpus,
-             [this](char const* name, int idx) { return new scc::sc_register<msip0_t>(name, r_mtimecmplo[idx], 0, *this); })
+             [this](char const* name, int idx) {
+                 return new scc::sc_register<msip0_t>(name, r_mtimecmplo[idx], std::numeric_limits<uint32_t>::max(), *this);
+             })
 , mtimecmphi("mtimecmphi", num_cpus,
-             [this](char const* name, int idx) { return new scc::sc_register<msip0_t>(name, r_mtimecmphi[idx], 0, *this); })
+             [this](char const* name, int idx) {
+                 return new scc::sc_register<msip0_t>(name, r_mtimecmphi[idx], std::numeric_limits<uint32_t>::max(), *this);
+             })
 , NAMED(mtime_lo, r_mtime_lo, 0, *this)
 , NAMED(mtime_hi, r_mtime_hi, 0, *this) {}
 
