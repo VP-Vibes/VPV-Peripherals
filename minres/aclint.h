@@ -23,7 +23,7 @@ public:
     sc_core::sc_vector<sc_core::sc_out<bool>> mtime_int_o;
     sc_core::sc_vector<sc_core::sc_out<bool>> msip_int_o;
     scc::sc_out_opt<uint64_t> mtime_o;
-    aclint(sc_core::sc_module_name nm, size_t num_cpus);
+    aclint(sc_core::sc_module_name nm, size_t num_cpus = 1);
     virtual ~aclint();
     void set_clock_period(sc_core::sc_time period) {
         update_mtime();
