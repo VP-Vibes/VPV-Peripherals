@@ -30,23 +30,17 @@ public:
     END_BF_DECL();
     std::vector<msip0_t> r_msip;
 
-    std::vector<uint32_t> r_mtimecmplo;
+    std::vector<uint64_t> r_mtimecmp;
 
-    std::vector<uint32_t> r_mtimecmphi;
-
-    uint32_t r_mtime_lo;
-
-    uint32_t r_mtime_hi;
+    uint64_t r_mtime;
 
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
 
     sc_core::sc_vector<scc::sc_register<msip0_t>> msip;
-    sc_core::sc_vector<scc::sc_register<uint32_t>> mtimecmplo;
-    sc_core::sc_vector<scc::sc_register<uint32_t>> mtimecmphi;
-    scc::sc_register<uint32_t> mtime_lo;
-    scc::sc_register<uint32_t> mtime_hi;
+    sc_core::sc_vector<scc::sc_register<uint64_t>> mtimecmp;
+    scc::sc_register<uint64_t> mtime;
 
     aclint_regs(sc_core::sc_module_name nm, size_t num_cpus);
 
@@ -60,31 +54,22 @@ public:
 inline aclint_regs::aclint_regs(sc_core::sc_module_name nm, size_t num_cpus)
 : sc_core::sc_module(nm)
 , r_msip(num_cpus)
-, r_mtimecmplo(num_cpus)
-, r_mtimecmphi(num_cpus)
+, r_mtimecmp(num_cpus)
 , msip("msip", num_cpus, [this](char const* name, int idx) { return new scc::sc_register<msip0_t>(name, r_msip[idx], 0, *this); })
-, mtimecmplo("mtimecmplo", num_cpus,
-             [this](char const* name, int idx) {
-                 return new scc::sc_register<msip0_t>(name, r_mtimecmplo[idx], std::numeric_limits<uint32_t>::max(), *this);
-             })
-, mtimecmphi("mtimecmphi", num_cpus,
-             [this](char const* name, int idx) {
-                 return new scc::sc_register<msip0_t>(name, r_mtimecmphi[idx], std::numeric_limits<uint32_t>::max(), *this);
-             })
-, NAMED(mtime_lo, r_mtime_lo, 0, *this)
-, NAMED(mtime_hi, r_mtime_hi, 0, *this) {}
+, mtimecmp("mtimecmp", num_cpus,
+           [this](char const* name, int idx) {
+               return new scc::sc_register<uint64_t>(name, r_mtimecmp[idx], std::numeric_limits<uint64_t>::max(), *this);
+           })
+, NAMED(mtime, r_mtime, 0, *this) {}
 
 template <unsigned BUSWIDTH> inline void aclint_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
-    const size_t msie_sz = sizeof(decltype(r_msip)::value_type::backing);
-    const size_t mtimecmplo_sz = sizeof(decltype(r_mtimecmplo)::value_type);
-    const size_t mtimecmphi_sz = sizeof(decltype(r_mtimecmphi)::value_type);
-    for(auto i = 0u; i < mtimecmplo.size(); ++i) {
+    constexpr size_t msie_sz = sizeof(decltype(r_msip)::value_type::backing);
+    constexpr size_t mtimecmp_sz = sizeof(decltype(r_mtimecmp)::value_type);
+    for(auto i = 0u; i < mtimecmp.size(); ++i) {
         target.addResource(msip[i], 0x0UL + msie_sz * i);
-        target.addResource(mtimecmplo[i], 0x4000UL + (mtimecmplo_sz + mtimecmphi_sz) * i);
-        target.addResource(mtimecmphi[i], 0x4000UL + mtimecmplo_sz + (mtimecmplo_sz + mtimecmphi_sz) * i);
+        target.addResource(mtimecmp[i], 0x4000UL + mtimecmp_sz * i);
     }
-    target.addResource(mtime_lo, 0xbff8UL);
-    target.addResource(mtime_hi, 0xbffcUL);
+    target.addResource(mtime, 0xbff8UL);
 }
 } // namespace minres
 } // namespace vpvper
