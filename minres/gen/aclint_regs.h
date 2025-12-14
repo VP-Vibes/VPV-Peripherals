@@ -25,10 +25,10 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
-    BEGIN_BF_DECL(msip0_t, uint32_t);
+    BEGIN_BF_DECL(msip_t, uint32_t);
     BF_FIELD(msip, 0, 1);
     END_BF_DECL();
-    std::vector<msip0_t> r_msip;
+    std::vector<msip_t> r_msip;
 
     std::vector<uint64_t> r_mtimecmp;
 
@@ -38,7 +38,7 @@ public:
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
 
-    sc_core::sc_vector<scc::sc_register<msip0_t>> msip;
+    sc_core::sc_vector<scc::sc_register<msip_t>> msip;
     sc_core::sc_vector<scc::sc_register<uint64_t>> mtimecmp;
     scc::sc_register<uint64_t> mtime;
 
@@ -55,7 +55,7 @@ inline aclint_regs::aclint_regs(sc_core::sc_module_name nm, size_t num_cpus)
 : sc_core::sc_module(nm)
 , r_msip(num_cpus)
 , r_mtimecmp(num_cpus)
-, msip("msip", num_cpus, [this](char const* name, int idx) { return new scc::sc_register<msip0_t>(name, r_msip[idx], 0, *this); })
+, msip("msip", num_cpus, [this](char const* name, int idx) { return new scc::sc_register<msip_t>(name, r_msip[idx], 0, *this); })
 , mtimecmp("mtimecmp", num_cpus,
            [this](char const* name, int idx) {
                return new scc::sc_register<uint64_t>(name, r_mtimecmp[idx], std::numeric_limits<uint64_t>::max(), *this);

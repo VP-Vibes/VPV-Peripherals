@@ -2,6 +2,7 @@
 #include "gen/aclint_regs.h"
 #include <cstdint>
 #include <limits>
+#include <sysc/kernel/sc_time.h>
 
 namespace vpvper {
 namespace minres {
@@ -33,17 +34,7 @@ aclint::aclint(sc_module_name nm, size_t num_cpus)
         }
         return false;
     });
-    auto write32_cb_with_wait = [this](const sc_register<uint32_t>& reg, const uint32_t data, sc_time& d) -> bool {
-        if(d.value())
-            wait(d);
-        if(!regs->in_reset()) {
-            reg.put(data);
-            this->update_mtime();
-            return true;
-        }
-        return false;
-    };
-    auto write64_cb_with_wait = [this](const sc_register<uint64_t>& reg, const uint64_t data, sc_time& d) -> bool {
+    auto mtime_write_cb_with_wait = [this](const sc_register<uint64_t>& reg, const uint64_t data, sc_time& d) -> bool {
         if(d.value())
             wait(d);
         if(!regs->in_reset()) {
@@ -54,8 +45,18 @@ aclint::aclint(sc_module_name nm, size_t num_cpus)
         return false;
     };
     for(auto i = 0u; i < regs->mtimecmp.size(); ++i) {
-        regs->mtimecmp[i].set_write_cb(write64_cb_with_wait);
-        regs->msip[i].set_write_cb(write32_cb_with_wait);
+        regs->mtimecmp[i].set_write_cb(mtime_write_cb_with_wait);
+        regs->msip[i].set_write_cb([this, i](const sc_register<uint32_t>& reg, const uint32_t data, sc_time& d) -> bool {
+            if(d.value())
+                wait(d);
+            if(!regs->in_reset()) {
+                reg.put(data);
+                if(i < this->msip_int_o.size())
+                    this->msip_int_o[i].write(reg.get() & 0x1);
+                return true;
+            }
+            return false;
+        });
     }
     SC_METHOD(update_mtime);
     sensitive << mtime_evt;
@@ -73,7 +74,7 @@ void aclint::reset_cb() {
 }
 
 void aclint::update_mtime() {
-    if(mtime_clk_period > SC_ZERO_TIME) {
+    if(sc_core::sc_time_stamp() > SC_ZERO_TIME && mtime_clk_period > SC_ZERO_TIME) {
         // update mtime register
         uint64_t elapsed_clks = (sc_time_stamp() - last_updt) / mtime_clk_period;
         last_updt += elapsed_clks * mtime_clk_period;
