@@ -6,6 +6,7 @@
 
 #include "uart.h"
 #include "gen/uart_regs.h"
+#include "tlm/scc/tlm_id.h"
 
 #include <scc/report.h>
 #include <scc/utilities.h>
@@ -33,27 +34,28 @@ uart::uart(sc_core::sc_module_name nm)
     regs->rx_tx_reg.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         if(!this->regs->in_reset()) {
             reg.put(data);
-            tx_fifo.nb_write(static_cast<uint8_t>(regs->r_rx_tx_reg.data));
+            auto ext = this->get_payload_extension<tlm::scc::initiator_id_extension>();
+            auto id = ext ? ext->id : 0ull;
+            tx_fifo.nb_write((id << 8) + static_cast<uint8_t>(regs->r_rx_tx_reg.data));
             update_irq();
         }
         return true;
     });
-    regs->rx_tx_reg.set_read_cb(
-        [this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
-            if(!this->regs->in_reset()) {
-                uint8_t val;
-                if(rx_fifo.nb_read(val)) {
-                    regs->r_rx_tx_reg.data = val;
-                    regs->r_rx_tx_reg.rx_avail = 1;
-                    update_irq();
-                } else
-                    regs->r_rx_tx_reg.rx_avail = 0;
-                regs->r_rx_tx_reg.tx_free = tx_fifo.num_free() != 0;
-                regs->r_rx_tx_reg.tx_empty = tx_fifo.num_available() == 0;
-                data = reg.get() & reg.rdmask;
-            }
-            return true;
-        });
+    regs->rx_tx_reg.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
+        if(!this->regs->in_reset()) {
+            uint8_t val;
+            if(rx_fifo.nb_read(val)) {
+                regs->r_rx_tx_reg.data = val;
+                regs->r_rx_tx_reg.rx_avail = 1;
+                update_irq();
+            } else
+                regs->r_rx_tx_reg.rx_avail = 0;
+            regs->r_rx_tx_reg.tx_free = tx_fifo.num_free() != 0;
+            regs->r_rx_tx_reg.tx_empty = tx_fifo.num_available() == 0;
+            data = reg.get() & reg.rdmask;
+        }
+        return true;
+    });
     regs->int_ctrl_reg.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         update_irq();
         return true;
@@ -77,13 +79,15 @@ void uart::reset_cb() {
 }
 
 void uart::transmit_data() {
-    uint8_t txdata;
+    uint64_t data;
     sc_core::sc_time bit_duration(SC_ZERO_TIME);
     while(true) {
         if(bit_true_transfer.get_value())
             tx_o.write(true);
         wait(tx_fifo.data_written_event());
-        while(tx_fifo.nb_read(txdata)) {
+        while(tx_fifo.nb_read(data)) {
+            uint8_t txdata = static_cast<uint8_t>(data);
+            auto id = data >> 8;
             update_irq();
             bit_duration = (regs->r_clk_divider_reg.clock_divider + 1) * clk_period;
             if(bit_true_transfer.get_value()) {
@@ -110,11 +114,14 @@ void uart::transmit_data() {
                 tx_o.write(true); // stop bit 1/2
                 wait(bit_duration);
             }
+            if(queues.size() <= id)
+                queues.resize(id + 1);
+            auto& queue = queues[id];
             if(txdata != '\r')
                 queue.push_back(txdata);
             if(queue.size() && (txdata == '\n' || txdata == 0)) {
                 std::string msg(queue.begin(), queue.end() - 1);
-                SCCINFO(SCMOD) << "rx: '" << msg << "'";
+                SCCINFO(SCMOD) << "tx" << id << ": '" << msg << "'";
                 queue.clear();
             }
         }

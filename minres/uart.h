@@ -43,8 +43,9 @@ protected:
     void update_irq();
     sc_core::sc_time clk_period;
     std::unique_ptr<uart_regs> regs;
-    sc_core::sc_fifo<uint8_t> rx_fifo{"rx_fifo", 8}, tx_fifo{"tx_fifo", 8};
-    std::vector<uint8_t> queue;
+    sc_core::sc_fifo<uint8_t> rx_fifo{"rx_fifo", 8};
+    sc_core::sc_fifo<uint64_t> tx_fifo{"tx_fifo", 8};
+    std::vector<std::vector<uint8_t>> queues;
 };
 
 using uart_tc = scc::ticking_clock<uart>;
