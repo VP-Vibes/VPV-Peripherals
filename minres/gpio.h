@@ -8,8 +8,8 @@
 
 #include <cci_configuration>
 #include <scc/clock_if_mixins.h>
-#include <scc/tlm_target.h>
 #include <scc/peq.h>
+#include <scc/tlm_target.h>
 
 namespace vpvper {
 namespace minres {

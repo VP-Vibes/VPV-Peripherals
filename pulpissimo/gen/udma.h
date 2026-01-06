@@ -92,8 +92,7 @@ inline pulpissimo::gen::udma_regs::udma_regs(sc_core::sc_module_name nm)
 // , NAMED(filt, i_filt, 0, *this)
 {}
 
-template <unsigned BUSWIDTH>
-inline void pulpissimo::gen::udma_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+template <unsigned BUSWIDTH> inline void pulpissimo::gen::udma_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(CTRL_CFG_CG, 0UL);
     target.addResource(CTRL_CFG_EVENT, 0x4UL);
     target.addResource(CTRL_CFG_RST, 0x8UL);

@@ -26,8 +26,8 @@ namespace pulpino {
 class PlicRegs : public scc::tlm_target_bfs_register_base<PlicRegs> {
 public:
     std::array<scc::bitfield_register<uint32_t>, 32 + 1 + 3 * 4> registers{{
-        {"PRIO_SOURCE0", 0x0000}, // RESERVED, i.e. Priority interrupt source 0 does not exist. No source, or source 0
-                                  // ID, means no interrupt
+        {"PRIO_SOURCE0", 0x0000},        // RESERVED, i.e. Priority interrupt source 0 does not exist. No source, or source 0
+                                         // ID, means no interrupt
         {"PRIO_SOURCE1", 0x0000 + 0x04}, // Priority Interrupt source 1
         {"PRIO_SOURCE2", 0x0000 + 0x08}, // Priority Interrupt source 2
         {"PRIO_SOURCE3", 0x0000 + 0x0C}, // Priority Interrupt source 3
@@ -277,8 +277,7 @@ public:
 // Plic<> methods definition:
 
 template <typename owner_t, size_t N_TARGET, size_t N_SOURCE, uint32_t LE_SRC_MASK, size_t N_LINEREGS>
-inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core::sc_module_name name,
-                                                                        scc::tlm_target_bfs_params&& params,
+inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core::sc_module_name name, scc::tlm_target_bfs_params&& params,
                                                                         owner_t* owner)
 : bfs_t(name, std::move(params), owner) {
     reset();
@@ -291,11 +290,9 @@ inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core:
     }
 
     for(size_t i = 0; i < N_LINEREGS; ++i) {
-        std::string _regname =
-            (std::string("IP_SOURCE")) + std::to_string(i * 32 + 31) + std::string("-") + std::to_string(i * 32);
+        std::string _regname = (std::string("IP_SOURCE")) + std::to_string(i * 32 + 31) + std::string("-") + std::to_string(i * 32);
         // std::string _name 		= (std::string("PRIO")) + std::to_string(i);
-        std::string _urid =
-            (std::string("plic.ip")) + std::to_string(i * 32 + 31) + std::string("-") + std::to_string(i * 32);
+        std::string _urid = (std::string("plic.ip")) + std::to_string(i * 32 + 31) + std::string("-") + std::to_string(i * 32);
         ips_[i] = &(bfs_t::regs->getBitfield(_regname, _regname, _urid));
     }
     for(size_t i = 1; i < N_SOURCE; ++i) {
@@ -344,8 +341,7 @@ inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core:
     // -------------------------------------------------------------------------------
     for(size_t i = 0; i < N_TARGET; ++i) {
         ies_[i]->setWriteCallback([this, i](auto&&, uint32_t& valueToWrite) {
-            static std::string MSG =
-                (std::string("Plic:ctx") + std::to_string(i) + std::string(" interrupt enable config"));
+            static std::string MSG = (std::string("Plic:ctx") + std::to_string(i) + std::string(" interrupt enable config"));
             *(ies_[i]) = valueToWrite;
             SC_REPORT_INFO(ID_PLIC, MSG.c_str());
         });
@@ -354,8 +350,7 @@ inline Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic(sc_core:
     // -------------------------------------------------------------------------------
     for(size_t i = 0; i < N_TARGET; ++i) {
         pths_[i]->setWriteCallback([this, i](auto&&, uint32_t& valueToWrite) {
-            static std::string MSG =
-                (std::string("Plic:ctx") + std::to_string(i) + std::string(" priority threshold config"));
+            static std::string MSG = (std::string("Plic:ctx") + std::to_string(i) + std::string(" priority threshold config"));
             *(pths_[i]) = valueToWrite;
             SC_REPORT_INFO(ID_PLIC, MSG.c_str());
         });
@@ -394,22 +389,19 @@ void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::scan_int_lines(
     for(size_t i = 0; i < N_SOURCE; ++i)
         std::cout << irq_srcs_i_[i].read();
 
-    std::cout << "\n(0)" << std::hex << "set:" << gw_->set_ << "|ia:" << gw_->ia_ << "|ip:" << gw_->ip_.get()
-              << std::endl;
+    std::cout << "\n(0)" << std::hex << "set:" << gw_->set_ << "|ia:" << gw_->ia_ << "|ip:" << gw_->ip_.get() << std::endl;
 #endif
 
     /* scan input lines */
     gw_->source(irq_srcs_i_);
 #ifdef DEBUG_BUILD
-    std::cout << "(1)" << std::hex << "set:" << gw_->set_ << "|ia:" << gw_->ia_ << "|ip:" << gw_->ip_.get()
-              << std::endl;
+    std::cout << "(1)" << std::hex << "set:" << gw_->set_ << "|ia:" << gw_->ia_ << "|ip:" << gw_->ip_.get() << std::endl;
 #endif
 
     /* make an empty claim: this calculates pending interrupts */
     gw_->claim(0);
 #ifdef DEBUG_BUILD
-    std::cout << "(2)" << std::hex << "set:" << gw_->set_ << "|ia:" << gw_->ia_ << "|ip:" << gw_->ip_.get()
-              << std::endl;
+    std::cout << "(2)" << std::hex << "set:" << gw_->set_ << "|ia:" << gw_->ia_ << "|ip:" << gw_->ip_.get() << std::endl;
 #endif
 
     for(size_t i = 0; i < N_TARGET; ++i) {
@@ -423,8 +415,7 @@ void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::scan_int_lines(
     /* make an empty complete: this sets active interrupts, thus blocks unclaimed pending interrupts to be fired again*/
     gw_->complete(0);
 #ifdef DEBUG_BUILD
-    std::cout << "(3)" << std::hex << "set:" << gw_->set_ << "|ia:" << gw_->ia_ << "|ip:" << gw_->ip_.get()
-              << std::endl;
+    std::cout << "(3)" << std::hex << "set:" << gw_->set_ << "|ia:" << gw_->ia_ << "|ip:" << gw_->ip_.get() << std::endl;
 #endif
 }
 
@@ -460,8 +451,7 @@ void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gateway::s
 }
 
 template <typename owner_t, size_t N_TARGET, size_t N_SOURCE, uint32_t LE_SRC_MASK, size_t N_LINEREGS>
-void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gateway::source(
-    std::array<sc_core::sc_in<bool>, N_SOURCE>& srcs_i) {
+void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gateway::source(std::array<sc_core::sc_in<bool>, N_SOURCE>& srcs_i) {
     uint32_t _srcs_flags = 0;
     for(auto i = 0; i < srcs_i.size(); ++i) {
         _srcs_flags |= ((srcs_i[i].read() & 0x1) << i);
@@ -470,8 +460,7 @@ void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gateway::s
 }
 
 template <typename owner_t, size_t N_TARGET, size_t N_SOURCE, uint32_t LE_SRC_MASK, size_t N_LINEREGS>
-inline void
-Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gateway::claim(const uint32_t claim_flags) {
+inline void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gateway::claim(const uint32_t claim_flags) {
     // Verilog: ip <= (ip | (set & ~ia & ~ip)) & (~claim);
     uint32_t _ip = ip_;
     _ip = (_ip | (set_ & ~ia_ & ~_ip)) & (~claim_flags);
@@ -479,8 +468,7 @@ Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gateway::claim(
 }
 
 template <typename owner_t, size_t N_TARGET, size_t N_SOURCE, uint32_t LE_SRC_MASK, size_t N_LINEREGS>
-inline void
-Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gateway::complete(const uint32_t complete_flags) {
+inline void Plic<owner_t, N_TARGET, N_SOURCE, LE_SRC_MASK, N_LINEREGS>::Plic_gateway::complete(const uint32_t complete_flags) {
     // Verilog: ia <= (ia | (set & ~ia)) & (~complete);
     uint32_t _ia = ia_;
     _ia = (_ia | (set_ & ~_ia)) & (~complete_flags);

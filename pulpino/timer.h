@@ -60,8 +60,7 @@ template <typename owner_t> class Timer : public scc::tlm_target_bfs<TimerRegs, 
 public:
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor
-    Timer(sc_core::sc_module_name, scc::tlm_target_bfs_params&&, owner_t* owner = nullptr,
-          uint64_t cpu_period_ps = 1000000 /*f~1MHz*/);
+    Timer(sc_core::sc_module_name, scc::tlm_target_bfs_params&&, owner_t* owner = nullptr, uint64_t cpu_period_ps = 1000000 /*f~1MHz*/);
 
 protected:
     uint64_t cpu_period_ps_;
@@ -107,8 +106,7 @@ private:
 // Timer<> methods definition:
 
 template <class owner_t>
-inline Timer<owner_t>::Timer(sc_core::sc_module_name name, scc::tlm_target_bfs_params&& params, owner_t* owner,
-                             uint64_t cpu_period_ps)
+inline Timer<owner_t>::Timer(sc_core::sc_module_name name, scc::tlm_target_bfs_params&& params, owner_t* owner, uint64_t cpu_period_ps)
 : bfs_t(name, std::move(params), owner)
 , cpu_period_ps_(cpu_period_ps) {
     reset();
@@ -181,8 +179,7 @@ template <class owner_t> void Timer<owner_t>::timer_a_process(void) {
     auto base_clk_period = sc_core::sc_time(static_cast<double>(cpu_period_ps_), sc_core::SC_PS);
 
     static const uint32_t _OVERFLOW_ = 0xFFFFFFFF;
-    sc_core::sc_time _sc_time_wait =
-        pre_a_.read() ? 0xFFFFFFFF * base_clk_period * (pre_a_ ? pre_a_ : 1) : 0xFFFFFFFF * base_clk_period;
+    sc_core::sc_time _sc_time_wait = pre_a_.read() ? 0xFFFFFFFF * base_clk_period * (pre_a_ ? pre_a_ : 1) : 0xFFFFFFFF * base_clk_period;
 
     while(true) {
         sct_wait_entry_a_ = sc_core::sc_time_stamp();
@@ -240,8 +237,7 @@ template <class owner_t> void Timer<owner_t>::timer_b_process(void) {
     auto base_clk_period = sc_core::sc_time(static_cast<double>(cpu_period_ps_), sc_core::SC_PS);
 
     static const uint32_t _OVERFLOW_ = 0xFFFFFFFF;
-    sc_core::sc_time _sc_time_wait =
-        pre_b_.read() ? 0xFFFFFFFF * base_clk_period * (pre_b_ ? pre_b_ : 1) : 0xFFFFFFFF * base_clk_period;
+    sc_core::sc_time _sc_time_wait = pre_b_.read() ? 0xFFFFFFFF * base_clk_period * (pre_b_ ? pre_b_ : 1) : 0xFFFFFFFF * base_clk_period;
 
     while(true) {
         sct_wait_entry_b_ = sc_core::sc_time_stamp();
@@ -315,8 +311,7 @@ template <class owner_t> void Timer<owner_t>::reset(void) {
     }
 }
 
-template <class owner_t>
-sc_core::sc_time Timer<owner_t>::prescale_clk(scc::bitfield<uint32_t>& pre, sc_core::sc_time& clk_period) {
+template <class owner_t> sc_core::sc_time Timer<owner_t>::prescale_clk(scc::bitfield<uint32_t>& pre, sc_core::sc_time& clk_period) {
     if(pre) {
         return clk_period * pre;
     } else {

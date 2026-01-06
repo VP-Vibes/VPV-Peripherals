@@ -44,25 +44,24 @@ uart_terminal::uart_terminal(sc_core::sc_module_name nm)
         }
         return true;
     });
-    regs->rxdata.set_read_cb(
-        [this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time& d) -> bool {
-            if(!this->regs->in_reset()) {
-                if(d.value()) {
-                    wait(d);
-                    d = SC_ZERO_TIME;
-                }
-                uint8_t val;
-                if(rx_fifo.nb_read(val)) {
-                    regs->r_rxdata.data = val;
-                    if(regs->r_rxctrl.rxcnt <= rx_fifo.num_available()) {
-                        regs->r_ip.rxwm = 1;
-                        update_irq();
-                    }
-                }
-                data = reg.get() & reg.rdmask;
+    regs->rxdata.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time& d) -> bool {
+        if(!this->regs->in_reset()) {
+            if(d.value()) {
+                wait(d);
+                d = SC_ZERO_TIME;
             }
-            return true;
-        });
+            uint8_t val;
+            if(rx_fifo.nb_read(val)) {
+                regs->r_rxdata.data = val;
+                if(regs->r_rxctrl.rxcnt <= rx_fifo.num_available()) {
+                    regs->r_ip.rxwm = 1;
+                    update_irq();
+                }
+            }
+            data = reg.get() & reg.rdmask;
+        }
+        return true;
+    });
     regs->ie.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         update_irq();
         return true;

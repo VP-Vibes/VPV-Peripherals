@@ -24,13 +24,12 @@ fll::fll(sc_core::sc_module_name nm)
 
     auto ro_wr_cb = [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; };
     regs->STATUS.set_write_cb(ro_wr_cb);
-    regs->STATUS.set_read_cb(
-        [this](scc::sc_register<gen::fll_regs::STATUS_t> const& reg, uint32_t& v, sc_core::sc_time t) -> bool {
-            gen::fll_regs::STATUS_t st = reg.get();
-            st.MF = regs->r_CFG1.MFN;
-            regs->r_STATUS = st;
-            return false;
-        });
+    regs->STATUS.set_read_cb([this](scc::sc_register<gen::fll_regs::STATUS_t> const& reg, uint32_t& v, sc_core::sc_time t) -> bool {
+        gen::fll_regs::STATUS_t st = reg.get();
+        st.MF = regs->r_CFG1.MFN;
+        regs->r_STATUS = st;
+        return false;
+    });
 }
 
 fll::~fll() {} // NOLINT

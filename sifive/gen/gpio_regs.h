@@ -103,8 +103,7 @@ inline vpvper::sifive::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
 , NAMED(iof_sel, r_iof_sel, 0, *this)
 , NAMED(out_xor, r_out_xor, 0, *this) {}
 
-template <unsigned BUSWIDTH>
-inline void vpvper::sifive::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(value, 0x0UL);
     target.addResource(input_en, 0x4UL);
     target.addResource(output_en, 0x8UL);

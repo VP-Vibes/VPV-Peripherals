@@ -122,8 +122,7 @@ inline vpvper::sifive::aon_regs::aon_regs(sc_core::sc_module_name nm)
 , NAMED(pmusleep, r_pmusleep, 0, *this)
 , NAMED(pmukey, r_pmukey, 0, *this) {}
 
-template <unsigned BUSWIDTH>
-inline void vpvper::sifive::aon_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::aon_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(wdogcfg, 0x0UL);
     target.addResource(wdogcount, 0x8UL);
     target.addResource(wdogs, 0x10UL);

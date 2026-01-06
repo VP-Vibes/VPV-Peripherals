@@ -79,10 +79,9 @@ void clint::reset_cb() {
 
 void clint::update_mtime() {
     if(clk > SC_ZERO_TIME) {
-        uint64_t elapsed_clks =
-            (sc_time_stamp() - last_updt) / clk; // get the number of clock periods since last invocation
-        last_updt += elapsed_clks * clk;         // increment the last_updt timestamp by the number of clocks
-        regs->r_mtime += elapsed_clks;           // update mtime reg
+        uint64_t elapsed_clks = (sc_time_stamp() - last_updt) / clk; // get the number of clock periods since last invocation
+        last_updt += elapsed_clks * clk;                             // increment the last_updt timestamp by the number of clocks
+        regs->r_mtime += elapsed_clks;                               // update mtime reg
         write_mtime_irq(regs->r_mtimecmp <= regs->r_mtime);
         mtime_evt.cancel();
         if(regs->r_mtimecmp > regs->r_mtime) {

@@ -143,8 +143,7 @@ inline vpvper::sifive::spi_regs::spi_regs(sc_core::sc_module_name nm)
 , NAMED(ie, r_ie, 0, *this)
 , NAMED(ip, r_ip, 0, *this) {}
 
-template <unsigned BUSWIDTH>
-inline void vpvper::sifive::spi_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::spi_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(sckdiv, 0x0UL);
     target.addResource(sckmode, 0x4UL);
     target.addResource(csid, 0x10UL);

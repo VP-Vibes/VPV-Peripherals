@@ -20,54 +20,47 @@ timer::timer(sc_core::sc_module_name nm)
     using this_class = timer;
     SC_HAS_PROCESS(this_class);
     regs->registerResources(*this);
-    regs->t0_overflow.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
-            if(d.value())
-                wait(d);
-            reg.put(data & (1ULL << COUNTER_WIDTH) - 1);
-            update_counter_evts[0].notify(sc_core::SC_ZERO_TIME);
-            return true;
-        });
-    regs->t1_overflow.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
-            if(d.value())
-                wait(d);
-            reg.put(data & (1ULL << COUNTER_WIDTH) - 1);
-            update_counter_evts[1].notify(sc_core::SC_ZERO_TIME);
-            return true;
-        });
-    regs->t0_counter.set_read_cb(
-        [this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
-            data = counters[0] & ((1ULL << COUNTER_WIDTH) - 1);
-            return true;
-        });
-    regs->t1_counter.set_read_cb(
-        [this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
-            data = counters[1] & ((1ULL << COUNTER_WIDTH) - 1);
-            return true;
-        });
-    regs->t0_ctrl.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
-            if(d.value())
-                wait(d);
-            reg.put(data);
-            update_counter_evts[0].notify(sc_core::SC_ZERO_TIME);
-            return true;
-        });
-    regs->t1_ctrl.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
-            if(d.value())
-                wait(d);
-            reg.put(data);
-            update_counter_evts[1].notify(sc_core::SC_ZERO_TIME);
-            return true;
-        });
-    regs->prescaler.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
-            reg.put(data);
-            update_prescaler_evt.notify(sc_core::SC_ZERO_TIME);
-            return true;
-        });
+    regs->t0_overflow.set_write_cb([this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+        if(d.value())
+            wait(d);
+        reg.put(data & (1ULL << COUNTER_WIDTH) - 1);
+        update_counter_evts[0].notify(sc_core::SC_ZERO_TIME);
+        return true;
+    });
+    regs->t1_overflow.set_write_cb([this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+        if(d.value())
+            wait(d);
+        reg.put(data & (1ULL << COUNTER_WIDTH) - 1);
+        update_counter_evts[1].notify(sc_core::SC_ZERO_TIME);
+        return true;
+    });
+    regs->t0_counter.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
+        data = counters[0] & ((1ULL << COUNTER_WIDTH) - 1);
+        return true;
+    });
+    regs->t1_counter.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
+        data = counters[1] & ((1ULL << COUNTER_WIDTH) - 1);
+        return true;
+    });
+    regs->t0_ctrl.set_write_cb([this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+        if(d.value())
+            wait(d);
+        reg.put(data);
+        update_counter_evts[0].notify(sc_core::SC_ZERO_TIME);
+        return true;
+    });
+    regs->t1_ctrl.set_write_cb([this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+        if(d.value())
+            wait(d);
+        reg.put(data);
+        update_counter_evts[1].notify(sc_core::SC_ZERO_TIME);
+        return true;
+    });
+    regs->prescaler.set_write_cb([this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+        reg.put(data);
+        update_prescaler_evt.notify(sc_core::SC_ZERO_TIME);
+        return true;
+    });
 
     SC_METHOD(update_prescaler);
     sensitive << update_prescaler_evt;
@@ -120,8 +113,7 @@ void timer::update_prescaler() {
         } else if(last_enable)
             presc_counter += pulses;
 
-        auto next_trigger_time =
-            (regs->r_prescaler.limit - presc_counter) * clk_period; // next trigger based on wrap around
+        auto next_trigger_time = (regs->r_prescaler.limit - presc_counter) * clk_period; // next trigger based on wrap around
         if(presc_counter == regs->r_prescaler.limit) {
             // wrap around calculation
             reset_cnt = true;

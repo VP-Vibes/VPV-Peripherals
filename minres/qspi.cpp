@@ -26,22 +26,21 @@ qspi::qspi(sc_core::sc_module_name nm)
     sensitive << rst_i;
     dont_initialize();
 
-    spi_i.register_nb_transport_bw(
-        [this](spi::spi_packet_payload& trans, tlm::tlm_phase& ph, sc_core::sc_time& t) -> tlm::tlm_sync_enum {
-            if(ph == tlm::nw::CONFIRM) {
-                switch(trans.get_data().size()) {
-                case 1:
-                    rsp.push_back(*trans.get_data().data());
-                    break;
-                case 2:
-                case 4:
-                default:
-                    SCCWARN(SCMOD) << "Unsupported data width: " << trans.get_data().size();
-                }
-                ph = tlm::nw::RESPONSE;
+    spi_i.register_nb_transport_bw([this](spi::spi_packet_payload& trans, tlm::tlm_phase& ph, sc_core::sc_time& t) -> tlm::tlm_sync_enum {
+        if(ph == tlm::nw::CONFIRM) {
+            switch(trans.get_data().size()) {
+            case 1:
+                rsp.push_back(*trans.get_data().data());
+                break;
+            case 2:
+            case 4:
+            default:
+                SCCWARN(SCMOD) << "Unsupported data width: " << trans.get_data().size();
             }
-            return tlm::TLM_ACCEPTED;
-        });
+            ph = tlm::nw::RESPONSE;
+        }
+        return tlm::TLM_ACCEPTED;
+    });
     xip_sck.register_b_transport([this](tlm::tlm_generic_payload& gp, sc_core::sc_time& t) {
         spi::spi_packet_payload spi_gp;
         tlm::scc::tlm_payload_extension gp_ext;
@@ -81,49 +80,45 @@ qspi::qspi(sc_core::sc_module_name nm)
         }
         return true;
     });
-    regs->data.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, uint32_t const& data, sc_core::sc_time d) -> bool {
-            if(!this->regs->in_reset()) {
-                SCCDEBUG(SCMOD) << "write data 0x" << std::hex << data;
-                switch(data & 0xf00) {
-                case 0x100: // write cmd
-                    cmd.notify(data & 0xff);
-                    break;
-                case 0x200: // read cmd
-                    regs->r_status = (rsp.size() & 0xff) << 16 | (regs->r_status & 0xffff);
-                    break;
-                case 0x800: // ssgen cmd
-                    if(data & 0x80) {
-                        sel_slv_id = data & 0x7f;
-                    } else {
-                        sel_slv_id = std::numeric_limits<unsigned>::max();
-                    }
-                    break;
+    regs->data.set_write_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t const& data, sc_core::sc_time d) -> bool {
+        if(!this->regs->in_reset()) {
+            SCCDEBUG(SCMOD) << "write data 0x" << std::hex << data;
+            switch(data & 0xf00) {
+            case 0x100: // write cmd
+                cmd.notify(data & 0xff);
+                break;
+            case 0x200: // read cmd
+                regs->r_status = (rsp.size() & 0xff) << 16 | (regs->r_status & 0xffff);
+                break;
+            case 0x800: // ssgen cmd
+                if(data & 0x80) {
+                    sel_slv_id = data & 0x7f;
+                } else {
+                    sel_slv_id = std::numeric_limits<unsigned>::max();
                 }
+                break;
             }
-            return true;
-        });
-    regs->xip_write.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, uint32_t const& data, sc_core::sc_time d) -> bool {
-            if(!this->regs->in_reset()) {
-                SCCDEBUG(SCMOD) << "write xip_write 0x" << std::hex << data;
-            }
-            return true;
-        });
-    regs->xip_read_write.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, uint32_t const& data, sc_core::sc_time d) -> bool {
-            if(!this->regs->in_reset()) {
-                SCCDEBUG(SCMOD) << "write xip_read_write 0x" << std::hex << data;
-            }
-            return true;
-        });
-    regs->xip_read.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, uint32_t const& data, sc_core::sc_time d) -> bool {
-            if(!this->regs->in_reset()) {
-                SCCDEBUG(SCMOD) << "write xip_read 0x" << std::hex << data;
-            }
-            return true;
-        });
+        }
+        return true;
+    });
+    regs->xip_write.set_write_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t const& data, sc_core::sc_time d) -> bool {
+        if(!this->regs->in_reset()) {
+            SCCDEBUG(SCMOD) << "write xip_write 0x" << std::hex << data;
+        }
+        return true;
+    });
+    regs->xip_read_write.set_write_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t const& data, sc_core::sc_time d) -> bool {
+        if(!this->regs->in_reset()) {
+            SCCDEBUG(SCMOD) << "write xip_read_write 0x" << std::hex << data;
+        }
+        return true;
+    });
+    regs->xip_read.set_write_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t const& data, sc_core::sc_time d) -> bool {
+        if(!this->regs->in_reset()) {
+            SCCDEBUG(SCMOD) << "write xip_read 0x" << std::hex << data;
+        }
+        return true;
+    });
 }
 
 qspi::~qspi() = default;

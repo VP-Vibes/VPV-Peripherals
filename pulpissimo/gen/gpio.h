@@ -125,8 +125,7 @@ inline pulpissimo::gen::gpio_regs::gpio_regs(sc_core::sc_module_name nm)
 , NAMED(PADCFG_48_55, r_PADCFG_48_55, 0, *this)
 , NAMED(PADCFG_56_63, r_PADCFG_56_63, 0, *this) {}
 
-template <unsigned BUSWIDTH>
-inline void pulpissimo::gen::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+template <unsigned BUSWIDTH> inline void pulpissimo::gen::gpio_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(PADDIR_00_31, 0x0UL);
     target.addResource(GPIOEN_00_31, 0x4UL);
     target.addResource(PADIN_00_31, 0x8UL);

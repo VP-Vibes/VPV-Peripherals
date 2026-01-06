@@ -17,14 +17,13 @@ namespace pulpino {
 /// \class GPIORegs
 class GPIORegs : public scc::tlm_target_bfs_register_base<GPIORegs> {
 public:
-    std::array<scc::bitfield_register<uint32_t>, 6 + 8> registers{
-        {{"PADDIR", 0x00},
-         {"PADIN", 0x04},
-         {"PADOUT", 0x08},
-         {"INTEN", 0x0c},
-         {"INTTYPE", 0x10},
-         {"INTSTATUS", 0x18, 0, 0},
-         REGISTER_ARRAY("PADCFG_reg", 0x20, 4, 8)}}; ///< GPIO registers
+    std::array<scc::bitfield_register<uint32_t>, 6 + 8> registers{{{"PADDIR", 0x00},
+                                                                   {"PADIN", 0x04},
+                                                                   {"PADOUT", 0x08},
+                                                                   {"INTEN", 0x0c},
+                                                                   {"INTTYPE", 0x10},
+                                                                   {"INTSTATUS", 0x18, 0, 0},
+                                                                   REGISTER_ARRAY("PADCFG_reg", 0x20, 4, 8)}}; ///< GPIO registers
     std::array<scc::bitfield<uint32_t>, 6 * 32 + 1> bitfields{
         {BITFIELD_ARRAY_POSTFIX("PADDIR", , 0, 1, "gpio.pads_", ".dir", 32),
          BITFIELD_ARRAY_POSTFIX("PADIN", , 0, 1, "gpio.pads_", ".in", 32),
@@ -152,8 +151,7 @@ template <class owner_t> void GPIO<owner_t>::setupIntstatus(void) {
     for(size_t i = 0; i < 32; i++) {
         inten[i] = &bfs_t::regs->getBitfield("INTEN", std::to_string(i), "gpio.pads_" + std::to_string(i) + ".intEn");
         inten[i]->setWriteCallback([this](auto&, auto) { intChanged.notify(); });
-        inttype[i] =
-            &bfs_t::regs->getBitfield("INTTYPE", std::to_string(i), "gpio.pads_" + std::to_string(i) + ".intType");
+        inttype[i] = &bfs_t::regs->getBitfield("INTTYPE", std::to_string(i), "gpio.pads_" + std::to_string(i) + ".intType");
         inttype[i]->setWriteCallback([this](auto&, auto) { intChanged.notify(); });
     }
 

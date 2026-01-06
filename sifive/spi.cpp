@@ -34,11 +34,11 @@ spi::spi(sc_core::sc_module_name nm)
     sensitive << rst_i;
     dont_initialize();
     SC_THREAD(transmit_data);
-    miso_i.register_nb_transport([this](tlm::scc::tlm_signal_gp<bool>& gp, tlm::tlm_phase& phase,
-                                        sc_core::sc_time& delay) -> tlm::tlm_sync_enum {
-        this->receive_data(gp, delay);
-        return tlm::TLM_COMPLETED;
-    });
+    miso_i.register_nb_transport(
+        [this](tlm::scc::tlm_signal_gp<bool>& gp, tlm::tlm_phase& phase, sc_core::sc_time& delay) -> tlm::tlm_sync_enum {
+            this->receive_data(gp, delay);
+            return tlm::TLM_COMPLETED;
+        });
     regs->txdata.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         if(!this->regs->in_reset()) {
             reg.put(data);
@@ -62,46 +62,43 @@ spi::spi(sc_core::sc_module_name nm)
         }
         return true;
     });
-    regs->csmode.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
-            if(regs->r_csmode.mode == 2 && regs->r_csmode.mode != bit_sub<0, 2>(data) && regs->r_csid < 4) {
-                tlm::tlm_phase phase(tlm::BEGIN_REQ);
-                sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
-                tlm::scc::tlm_signal_gp<> gp;
-                gp.set_command(tlm::TLM_WRITE_COMMAND);
-                gp.set_value(true);
-                scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
-            }
-            reg.put(data);
-            return true;
-        });
-    regs->csid.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
-            if(regs->r_csmode.mode == 2 && regs->csid != data && regs->r_csid < 4) {
-                tlm::tlm_phase phase(tlm::BEGIN_REQ);
-                sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
-                tlm::scc::tlm_signal_gp<> gp;
-                gp.set_command(tlm::TLM_WRITE_COMMAND);
-                gp.set_value(true);
-                scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
-            }
-            reg.put(data);
-            return true;
-        });
-    regs->csdef.set_write_cb(
-        [this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
-            auto diff = regs->csdef ^ data;
-            if(regs->r_csmode.mode == 2 && diff != 0 && (regs->r_csid < 4) && (diff & (1 << regs->r_csid)) != 0) {
-                tlm::tlm_phase phase(tlm::BEGIN_REQ);
-                sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
-                tlm::scc::tlm_signal_gp<> gp;
-                gp.set_command(tlm::TLM_WRITE_COMMAND);
-                gp.set_value(true);
-                scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
-            }
-            reg.put(data);
-            return true;
-        });
+    regs->csmode.set_write_cb([this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+        if(regs->r_csmode.mode == 2 && regs->r_csmode.mode != bit_sub<0, 2>(data) && regs->r_csid < 4) {
+            tlm::tlm_phase phase(tlm::BEGIN_REQ);
+            sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
+            tlm::scc::tlm_signal_gp<> gp;
+            gp.set_command(tlm::TLM_WRITE_COMMAND);
+            gp.set_value(true);
+            scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
+        }
+        reg.put(data);
+        return true;
+    });
+    regs->csid.set_write_cb([this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+        if(regs->r_csmode.mode == 2 && regs->csid != data && regs->r_csid < 4) {
+            tlm::tlm_phase phase(tlm::BEGIN_REQ);
+            sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
+            tlm::scc::tlm_signal_gp<> gp;
+            gp.set_command(tlm::TLM_WRITE_COMMAND);
+            gp.set_value(true);
+            scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
+        }
+        reg.put(data);
+        return true;
+    });
+    regs->csdef.set_write_cb([this](const scc::sc_register<uint32_t>& reg, const uint32_t& data, sc_core::sc_time d) -> bool {
+        auto diff = regs->csdef ^ data;
+        if(regs->r_csmode.mode == 2 && diff != 0 && (regs->r_csid < 4) && (diff & (1 << regs->r_csid)) != 0) {
+            tlm::tlm_phase phase(tlm::BEGIN_REQ);
+            sc_core::sc_time delay(sc_core::SC_ZERO_TIME);
+            tlm::scc::tlm_signal_gp<> gp;
+            gp.set_command(tlm::TLM_WRITE_COMMAND);
+            gp.set_value(true);
+            scs_o[regs->r_csid]->nb_transport_fw(gp, phase, delay);
+        }
+        reg.put(data);
+        return true;
+    });
     regs->ie.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         reg.put(data);
         update_irq_evt.notify();
@@ -114,8 +111,8 @@ spi::spi(sc_core::sc_module_name nm)
     });
 
     SC_METHOD(update_irq);
-    sensitive << update_irq_evt << rx_fifo.data_written_event() << rx_fifo.data_read_event()
-              << tx_fifo.data_written_event() << tx_fifo.data_read_event();
+    sensitive << update_irq_evt << rx_fifo.data_written_event() << rx_fifo.data_read_event() << tx_fifo.data_written_event()
+              << tx_fifo.data_read_event();
 }
 
 void spi::clock_cb() { this->clk = clk_i.read(); }
@@ -134,8 +131,7 @@ void spi::transmit_data() {
     sc_core::sc_time bit_duration(sc_core::SC_ZERO_TIME);
     sc_core::sc_time start_time;
 
-    auto set_bit = [&](bool val, tlm::scc::tlm_signal_bool_opt_out& socket,
-                       bool data_valid = false) -> std::pair<bool, uint32_t> {
+    auto set_bit = [&](bool val, tlm::scc::tlm_signal_bool_opt_out& socket, bool data_valid = false) -> std::pair<bool, uint32_t> {
         if(socket.get_interface() == nullptr)
             return std::pair<bool, uint32_t>{false, 0};
         auto* gp = tlm::scc::tlm_signal_gp<>::create();

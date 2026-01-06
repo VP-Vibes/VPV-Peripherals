@@ -93,8 +93,7 @@ inline vpvper::sifive::pwm_regs::pwm_regs(sc_core::sc_module_name nm)
 , NAMED(pwmcmp2, r_pwmcmp2, 0, *this)
 , NAMED(pwmcmp3, r_pwmcmp3, 0, *this) {}
 
-template <unsigned BUSWIDTH>
-inline void vpvper::sifive::pwm_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::pwm_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(pwmcfg, 0x0UL);
     target.addResource(pwmcount, 0x8UL);
     target.addResource(pwms, 0x10UL);

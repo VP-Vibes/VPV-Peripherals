@@ -21,8 +21,7 @@ interrupt::interrupt(sc_core::sc_module_name nm)
     sensitive << clk_i;
     SC_METHOD(reset_cb);
     sensitive << rst_i;
-    regs->FIFO_DATA.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time t) -> bool { return true; });
+    regs->FIFO_DATA.set_write_cb([this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time t) -> bool { return true; });
 }
 
 interrupt::~interrupt() {} // NOLINT
