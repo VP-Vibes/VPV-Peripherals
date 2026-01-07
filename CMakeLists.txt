@@ -99,8 +99,9 @@ if(TARGET scc)
 	add_subdirectory(minres)
 	add_subdirectory(pulpino)
 	add_subdirectory(pulpissimo)
+	add_subdirectory(rvi)
 	add_library(${PROJECT_NAME} INTERFACE)
-	target_link_libraries(${PROJECT_NAME} INTERFACE ${PROJECT_NAME}_generic ${PROJECT_NAME}_minres ${PROJECT_NAME}_sifive ${PROJECT_NAME}_pulpino  ${PROJECT_NAME}_pulpissimo)	
+	target_link_libraries(${PROJECT_NAME} INTERFACE ${PROJECT_NAME}_generic ${PROJECT_NAME}_minres ${PROJECT_NAME}_sifive ${PROJECT_NAME}_pulpino  ${PROJECT_NAME}_pulpissimo ${PROJECT_NAME}_rvi)	
 	
 	install(TARGETS ${PROJECT_NAME}
 	        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
