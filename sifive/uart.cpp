@@ -38,11 +38,11 @@ uart::uart(sc_core::sc_module_name const& nm)
     sensitive << rst_i;
     dont_initialize();
     SC_THREAD(transmit_data);
-    rx_i.register_nb_transport([this](tlm::scc::tlm_signal_gp<bool>& gp, tlm::tlm_phase& phase,
-                                      sc_core::sc_time& delay) -> tlm::tlm_sync_enum {
-        this->receive_data(gp, delay);
-        return tlm::TLM_COMPLETED;
-    });
+    rx_i.register_nb_transport(
+        [this](tlm::scc::tlm_signal_gp<bool>& gp, tlm::tlm_phase& phase, sc_core::sc_time& delay) -> tlm::tlm_sync_enum {
+            this->receive_data(gp, delay);
+            return tlm::TLM_COMPLETED;
+        });
     regs->txdata.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
         if(!this->regs->in_reset()) {
             if(d.value()) {
@@ -87,9 +87,7 @@ uart::uart(sc_core::sc_module_name const& nm)
 
 uart::~uart() = default;
 
-void uart::update_irq() {
-    irq_o = (regs->r_ip.rxwm == 1 && regs->r_ie.rxwm == 1) || (regs->r_ip.txwm == 1 && regs->r_ie.txwm == 1);
-}
+void uart::update_irq() { irq_o = (regs->r_ip.rxwm == 1 && regs->r_ie.rxwm == 1) || (regs->r_ip.txwm == 1 && regs->r_ie.txwm == 1); }
 
 void uart::clock_cb() { this->clk = clk_i.read(); }
 

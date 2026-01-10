@@ -93,8 +93,7 @@ private:
 // Clint<> methods definition:
 
 template <class owner_t>
-inline Clint<owner_t>::Clint(sc_core::sc_module_name name, scc::tlm_target_bfs_params&& params, owner_t* owner,
-                             uint64_t rtcPeriod_ps)
+inline Clint<owner_t>::Clint(sc_core::sc_module_name name, scc::tlm_target_bfs_params&& params, owner_t* owner, uint64_t rtcPeriod_ps)
 : bfs_t(name, std::move(params), owner)
 , rtcPeriod_ps_(sc_core::sc_time(rtcPeriod_ps, sc_core::SC_PS)) {
     reset();

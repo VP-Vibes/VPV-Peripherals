@@ -21,22 +21,18 @@ soc_ctrl::soc_ctrl(sc_core::sc_module_name nm)
     sensitive << clk_i;
     SC_METHOD(reset_cb);
     sensitive << rst_i;
-    regs->INFO.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
-    regs->FETCH_ENABLE.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
-    regs->CORE_STATUS.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
+    regs->INFO.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
+    regs->FETCH_ENABLE.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
+    regs->CORE_STATUS.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
     regs->FLL_CLOCK_SELECT.set_write_cb(
         [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time t) -> bool { return true; });
-    regs->INFO.set_read_cb(
-        [this](scc::sc_register<gen::soc_ctrl_regs::INFO_t> const& reg, uint32_t& v, sc_core::sc_time t) -> bool {
-            gen::soc_ctrl_regs::INFO_t st = reg.get();
-            st.NumOfCores = 1;
-            st.NumOfCluster = 1;
-            regs->INFO = st;
-            return false;
-        });
+    regs->INFO.set_read_cb([this](scc::sc_register<gen::soc_ctrl_regs::INFO_t> const& reg, uint32_t& v, sc_core::sc_time t) -> bool {
+        gen::soc_ctrl_regs::INFO_t st = reg.get();
+        st.NumOfCores = 1;
+        st.NumOfCluster = 1;
+        regs->INFO = st;
+        return false;
+    });
 }
 
 soc_ctrl::~soc_ctrl() {} // NOLINT

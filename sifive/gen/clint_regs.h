@@ -48,8 +48,7 @@ inline vpvper::sifive::clint_regs::clint_regs(sc_core::sc_module_name nm)
 , NAMED(mtimecmp, r_mtimecmp, 0, *this)
 , NAMED(mtime, r_mtime, 0, *this) {}
 
-template <unsigned BUSWIDTH>
-inline void vpvper::sifive::clint_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::clint_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(msip, 0x0UL);
     target.addResource(mtimecmp, 0x4000UL);
     target.addResource(mtime, 0xbff8UL);

@@ -25,10 +25,10 @@ gpio::gpio(sc_core::sc_module_name nm)
     sensitive << rst_i;
     SC_METHOD(pin_writer);
     dont_initialize();
-    sensitive<<pin_peq.event();
+    sensitive << pin_peq.event();
     SC_METHOD(oe_writer);
     dont_initialize();
-    sensitive<<oe_peq.event();
+    sensitive << oe_peq.event();
 
     regs->value.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
         data = 0;
@@ -48,12 +48,11 @@ gpio::gpio(sc_core::sc_module_name nm)
         regs->r_writeEnable = data;
         return true;
     });
-    regs->boot_sel.set_read_cb(
-        [this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
-            regs->r_boot_sel.bootSel = boot_sel.get_value();
-            data = regs->r_boot_sel;
-            return true;
-        });
+    regs->boot_sel.set_read_cb([this](const scc::sc_register<uint32_t>& reg, uint32_t& data, sc_core::sc_time d) -> bool {
+        regs->r_boot_sel.bootSel = boot_sel.get_value();
+        data = regs->r_boot_sel;
+        return true;
+    });
 }
 
 gpio::~gpio() = default;

@@ -82,8 +82,7 @@ inline vpvper::sifive::uart_regs::uart_regs(sc_core::sc_module_name nm)
 , NAMED(ip, r_ip, 0, *this)
 , NAMED(div, r_div, 0, *this) {}
 
-template <unsigned BUSWIDTH>
-inline void vpvper::sifive::uart_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::uart_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(txdata, 0x0UL);
     target.addResource(rxdata, 0x4UL);
     target.addResource(txctrl, 0x8UL);

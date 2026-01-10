@@ -334,10 +334,8 @@ inline SPIMaster<owner_t>::SPIMaster(sc_core::sc_module_name name, scc::tlm_targ
         }
     });
 
-    sock_i_ =
-        std::make_unique<tlm_utils::simple_initiator_socket<SPIMaster, 32, SPIMasterProtocolTypes>>("initiator_socket");
-    sock_t_ext_ =
-        std::make_unique<tlm_utils::passthrough_target_socket<SPIMaster, 32, SPIMasterProtocolTypes>>("target_socket");
+    sock_i_ = std::make_unique<tlm_utils::simple_initiator_socket<SPIMaster, 32, SPIMasterProtocolTypes>>("initiator_socket");
+    sock_t_ext_ = std::make_unique<tlm_utils::passthrough_target_socket<SPIMaster, 32, SPIMasterProtocolTypes>>("target_socket");
 
     SC_THREAD(control_thread);
 }
@@ -499,8 +497,7 @@ template <class owner_t> void SPIMaster<owner_t>::sendBit(uint32_t data_, uint8_
     (*sock_i_)->b_transport(payload, delay);
 }
 
-template <class owner_t>
-void SPIMaster<owner_t>::quad_sendBit(uint32_t data_, uint8_t bit_offset, sc_core::sc_time& delay) {
+template <class owner_t> void SPIMaster<owner_t>::quad_sendBit(uint32_t data_, uint8_t bit_offset, sc_core::sc_time& delay) {
     SPIMasterPayload payload{};
     payload.command_ = SPIMasterPayload::Q_WRITE_COMMAND;
     bit_send = _QUAD_ & (data_ << bit_offset);

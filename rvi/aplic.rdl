@@ -1,0 +1,84 @@
+addrmap aplic_block {
+    name = "Aplic Project";
+    regfile aplic {
+        reg {
+            name = "domaincfg";
+            desc = "Domain Configuration Register";
+            field {} deliverymode[2:2];
+            field {} interruptenable[8:8];
+        } domaincfg @0;
+        reg {
+            name = "sourcecfg";
+            desc = "Source Configuration Register";
+            field {} sourcemode[2:0];
+        } sourcecfg[1023] @0x4;
+        reg {
+            name = "setip";
+            desc = "Set Interrupt Pending Register";
+            field {} pending[31:0];
+        } setip[32] @0x1C00;
+        reg {
+            name = "setipnum";
+            desc = "Set Interrupt Pending by Number Register";
+            field {} pendingnum[31:0];
+        } setipnum @0x1CDC;
+        reg {
+            name = "in_clrip";
+            desc = "Clear Interrupt Pending Register";
+            field {} clrpending[31:0];
+        } in_clrip[32] @0x1D00;
+        reg {
+            name = "clripnum";
+            desc = "Clear Interrupt Pending by Number Register";
+            field {} clripnum[31:0];
+        } clripnum @0x1DDC;
+        reg {
+            name = "setie";
+            desc = "Set Interrupt Enable Register";
+            field {} enabled[31:0];
+        } setie[32] @0x1E00;
+        reg {
+            name = "setienum";
+            desc = "Set Interrupt Enable by Number Register";
+            field {} enablednum[31:0];
+        } setienum @0x1EDC;
+        reg {
+            name = "clrie";
+            desc = "Clear Interrupt Enable Register";
+            field {} clrenabled[31:0];
+        } clrie[32] @0x1F00;
+        reg {
+            name = "clrienum";
+            desc = "Clear Interrupt Enable by Number Register";
+            field {} clrenablednum[31:0];
+        } clrienum @0x1FDC;
+        reg {
+            name = "target";
+            desc = " Target Register";
+            field {} interruptpriority[7:0];
+        } target[1023] @0x3004;
+        reg {
+            name = "delivery";
+            desc = "Interrupt delivery enable ";
+            field {} delivery[31:0];
+        } idelivery @0x4000;
+        reg {
+            name = "threshold";
+            desc = "Interrupt enable threshold";
+            field {} threshold[31:0];
+        } ithreshold @0x4008;
+        reg {
+            name = "top";
+            desc = "Top interrupt";
+            field {} interruptpriority[7:0];
+            field {} interruptidentity[25:16];
+        } topi @0x4018;
+        reg {
+            name = "claim";
+            desc = "Claim top interrupt";
+            field {} interruptpriority[7:0];
+            field {} interruptidentity[25:16];
+        } claimi @0x401C;
+    };
+    aplic regs @ 0x000;
+};

@@ -60,8 +60,7 @@ int ExternalUARTDevice::write(unsigned char* ptr) {
 ////////////////////////////////////////////////////////////////////////////////
 /// named pipe based
 ExternalUARTDeviceFileStream::ExternalUARTDeviceFileStream(sc_core::sc_module_name name, sc_core::sc_time scan_period,
-                                                           const std::string& out_fpath, const std::string& in_fpath,
-                                                           bool is_named_pipe)
+                                                           const std::string& out_fpath, const std::string& in_fpath, bool is_named_pipe)
 : ExternalUARTDevice(name, scan_period)
 , out_fpath_(out_fpath)
 , in_fpath_(in_fpath)

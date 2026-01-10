@@ -72,8 +72,7 @@ inline pulpissimo::gen::fll_regs::fll_regs(sc_core::sc_module_name nm)
 , NAMED(CFG2, r_CFG2, 0, *this)
 , NAMED(INTEG, r_INTEG, 0, *this) {}
 
-template <unsigned BUSWIDTH>
-inline void pulpissimo::gen::fll_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
+template <unsigned BUSWIDTH> inline void pulpissimo::gen::fll_regs::registerResources(scc::tlm_target<BUSWIDTH>& target, uint64_t offset) {
     target.addResource(STATUS, 0x0UL);
     target.addResource(CFG1, 0x4UL);
     target.addResource(CFG2, 0x8UL);

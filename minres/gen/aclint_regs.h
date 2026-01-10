@@ -10,9 +10,11 @@
 #ifndef _ACLINT_H_
 #define _ACLINT_H_
 
+#include <limits>
 #include <scc/register.h>
 #include <scc/tlm_target.h>
 #include <scc/utilities.h>
+#include <sysc/utils/sc_vector.h>
 #include <util/bit_field.h>
 
 namespace vpvper {
@@ -23,29 +25,24 @@ public:
     //////////////////////////////////////////////////////////////////////////////
     // storage declarations
     //////////////////////////////////////////////////////////////////////////////
-    BEGIN_BF_DECL(msip0_t, uint32_t);
+    BEGIN_BF_DECL(msip_t, uint32_t);
     BF_FIELD(msip, 0, 1);
-    END_BF_DECL() r_msip0;
+    END_BF_DECL();
+    std::vector<msip_t> r_msip;
 
-    uint32_t r_mtimecmp0lo;
+    std::vector<uint64_t> r_mtimecmp;
 
-    uint32_t r_mtimecmp0hi;
-
-    uint32_t r_mtime_lo;
-
-    uint32_t r_mtime_hi;
+    uint64_t r_mtime;
 
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
 
-    scc::sc_register<msip0_t> msip0;
-    scc::sc_register<uint32_t> mtimecmp0lo;
-    scc::sc_register<uint32_t> mtimecmp0hi;
-    scc::sc_register<uint32_t> mtime_lo;
-    scc::sc_register<uint32_t> mtime_hi;
+    sc_core::sc_vector<scc::sc_register<msip_t>> msip;
+    sc_core::sc_vector<scc::sc_register<uint64_t>> mtimecmp;
+    scc::sc_register<uint64_t> mtime;
 
-    aclint_regs(sc_core::sc_module_name nm);
+    aclint_regs(sc_core::sc_module_name nm, size_t num_cpus);
 
     template <unsigned BUSWIDTH = 32> void registerResources(scc::tlm_target<BUSWIDTH>& target);
 };
@@ -54,20 +51,25 @@ public:
 // member functions
 //////////////////////////////////////////////////////////////////////////////
 
-inline aclint_regs::aclint_regs(sc_core::sc_module_name nm)
+inline aclint_regs::aclint_regs(sc_core::sc_module_name nm, size_t num_cpus)
 : sc_core::sc_module(nm)
-, NAMED(msip0, r_msip0, 0, *this)
-, NAMED(mtimecmp0lo, r_mtimecmp0lo, 0, *this)
-, NAMED(mtimecmp0hi, r_mtimecmp0hi, 0, *this)
-, NAMED(mtime_lo, r_mtime_lo, 0, *this)
-, NAMED(mtime_hi, r_mtime_hi, 0, *this) {}
+, r_msip(num_cpus)
+, r_mtimecmp(num_cpus)
+, msip("msip", num_cpus, [this](char const* name, int idx) { return new scc::sc_register<msip_t>(name, r_msip[idx], 0, *this); })
+, mtimecmp("mtimecmp", num_cpus,
+           [this](char const* name, int idx) {
+               return new scc::sc_register<uint64_t>(name, r_mtimecmp[idx], std::numeric_limits<uint64_t>::max(), *this);
+           })
+, NAMED(mtime, r_mtime, 0, *this) {}
 
 template <unsigned BUSWIDTH> inline void aclint_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
-    target.addResource(msip0, 0x0UL);
-    target.addResource(mtimecmp0lo, 0x4000UL);
-    target.addResource(mtimecmp0hi, 0x4004UL);
-    target.addResource(mtime_lo, 0xbff8UL);
-    target.addResource(mtime_hi, 0xbffcUL);
+    constexpr size_t msie_sz = sizeof(decltype(r_msip)::value_type::backing);
+    constexpr size_t mtimecmp_sz = sizeof(decltype(r_mtimecmp)::value_type);
+    for(auto i = 0u; i < mtimecmp.size(); ++i) {
+        target.addResource(msip[i], 0x0UL + msie_sz * i);
+        target.addResource(mtimecmp[i], 0x4000UL + mtimecmp_sz * i);
+    }
+    target.addResource(mtime, 0xbff8UL);
 }
 } // namespace minres
 } // namespace vpvper

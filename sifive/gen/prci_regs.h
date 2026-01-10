@@ -70,8 +70,7 @@ inline vpvper::sifive::prci_regs::prci_regs(sc_core::sc_module_name nm)
 , NAMED(plloutdiv, r_plloutdiv, 0, *this)
 , NAMED(coreclkcfg, r_coreclkcfg, 0, *this) {}
 
-template <unsigned BUSWIDTH>
-inline void vpvper::sifive::prci_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
+template <unsigned BUSWIDTH> inline void vpvper::sifive::prci_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(hfrosccfg, 0x0UL);
     target.addResource(hfxosccfg, 0x4UL);
     target.addResource(pllcfg, 0x8UL);

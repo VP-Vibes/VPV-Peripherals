@@ -25,11 +25,11 @@ terminal::terminal(const sc_core::sc_module_name& nm)
 , NAMED(tx_o)
 , NAMED(rx_i)
 , NAMED(write_to_ws, false) {
-    rx_i.register_nb_transport([this](tlm::scc::tlm_signal_gp<sc_dt::sc_logic>& gp, tlm::tlm_phase& phase,
-                                      sc_core::sc_time& delay) -> tlm::tlm_sync_enum {
-        this->receive(gp, delay);
-        return tlm::TLM_COMPLETED;
-    });
+    rx_i.register_nb_transport(
+        [this](tlm::scc::tlm_signal_gp<sc_dt::sc_logic>& gp, tlm::tlm_phase& phase, sc_core::sc_time& delay) -> tlm::tlm_sync_enum {
+            this->receive(gp, delay);
+            return tlm::TLM_COMPLETED;
+        });
 }
 
 terminal::~terminal() = default;

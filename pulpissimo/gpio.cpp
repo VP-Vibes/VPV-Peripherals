@@ -53,46 +53,42 @@ gpio::gpio(sc_core::sc_module_name nm)
             out[i + 32].write(v & m);
         return false;
     });
-    regs->PADOUTSET_00_31.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time) -> bool {
-            for(auto i = 0u, m = 1u; i < 32; ++i, m <<= 1) {
-                if(v & m) {
-                    out[i].write(true);
-                    regs->r_PADOUT_00_31 |= m;
-                }
+    regs->PADOUTSET_00_31.set_write_cb([this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time) -> bool {
+        for(auto i = 0u, m = 1u; i < 32; ++i, m <<= 1) {
+            if(v & m) {
+                out[i].write(true);
+                regs->r_PADOUT_00_31 |= m;
             }
-            return true;
-        });
-    regs->PADOUTSET_32_63.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time) -> bool {
-            for(auto i = 0u, m = 1u; i < 32; ++i, m <<= 1) {
-                if(v & m) {
-                    out[i + 32].write(true);
-                    regs->r_PADOUT_32_63 |= m;
-                }
+        }
+        return true;
+    });
+    regs->PADOUTSET_32_63.set_write_cb([this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time) -> bool {
+        for(auto i = 0u, m = 1u; i < 32; ++i, m <<= 1) {
+            if(v & m) {
+                out[i + 32].write(true);
+                regs->r_PADOUT_32_63 |= m;
             }
-            return true;
-        });
-    regs->PADOUTCLR_00_31.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time) -> bool {
-            for(auto i = 0u, m = 1u; i < 32; ++i, m <<= 1) {
-                if(v & m) {
-                    out[i].write(false);
-                    regs->r_PADOUT_00_31 &= ~m;
-                }
+        }
+        return true;
+    });
+    regs->PADOUTCLR_00_31.set_write_cb([this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time) -> bool {
+        for(auto i = 0u, m = 1u; i < 32; ++i, m <<= 1) {
+            if(v & m) {
+                out[i].write(false);
+                regs->r_PADOUT_00_31 &= ~m;
             }
-            return true;
-        });
-    regs->PADOUTCLR_32_63.set_write_cb(
-        [this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time) -> bool {
-            for(auto i = 0u, m = 1u; i < 32; ++i, m <<= 1) {
-                if(v & m) {
-                    out[i + 32].write(false);
-                    regs->r_PADOUT_32_63 &= ~m;
-                }
+        }
+        return true;
+    });
+    regs->PADOUTCLR_32_63.set_write_cb([this](scc::sc_register<uint32_t>&, const uint32_t& v, sc_core::sc_time) -> bool {
+        for(auto i = 0u, m = 1u; i < 32; ++i, m <<= 1) {
+            if(v & m) {
+                out[i + 32].write(false);
+                regs->r_PADOUT_32_63 &= ~m;
             }
-            return true;
-        });
+        }
+        return true;
+    });
     regs->INTSTATUS_00_31.set_write_cb(ro_wr_cb);
     regs->INTSTATUS_00_31.set_read_cb([this](scc::sc_register<uint32_t> const&, uint32_t& v, sc_core::sc_time) -> bool {
         v = regs->r_INTSTATUS_00_31;
