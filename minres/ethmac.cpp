@@ -53,7 +53,6 @@ public:
     , snaplen_(snaplen) {
         if(!f_)
             throw std::runtime_error("failed to open pcap file");
-
         // Global header (pcap, little-endian, microsecond timestamps)
         write_u32_le(f_, 0xa1b2c3d4); // magic
         write_u16_le(f_, 2);          // version_major
@@ -70,24 +69,21 @@ public:
     }
 
     pcap_writer(const pcap_writer&) = delete;
+
     pcap_writer& operator=(const pcap_writer&) = delete;
 
     void write_frame(nonstd::span<const std::uint8_t> frame, std::uint64_t ts_us = now_us()) {
         if(!f_)
             throw std::runtime_error("pcap not open");
-
         const std::uint32_t orig_len = static_cast<std::uint32_t>(frame.size());
         const std::uint32_t incl_len = (frame.size() > snaplen_) ? snaplen_ : static_cast<std::uint32_t>(frame.size());
-
         const std::uint32_t ts_sec = static_cast<std::uint32_t>(ts_us / 1'000'000ULL);
         const std::uint32_t ts_usec = static_cast<std::uint32_t>(ts_us % 1'000'000ULL);
-
         // Per-packet record header (16 bytes)
         write_u32_le(f_, ts_sec);
         write_u32_le(f_, ts_usec);
         write_u32_le(f_, incl_len);
         write_u32_le(f_, orig_len);
-
         // Packet bytes
         if(incl_len != 0) {
             if(std::fwrite(frame.data(), 1, incl_len, f_) != incl_len)
@@ -103,6 +99,7 @@ private:
 #if SYSTEMC_VERSION < 20241015
 SC_HAS_PROCESS(ethmac); // NOLINT
 #endif
+
 using namespace eth;
 
 ethmac::ethmac(sc_core::sc_module_name nm)
@@ -110,7 +107,7 @@ ethmac::ethmac(sc_core::sc_module_name nm)
 , scc::tlm_target<>(clk)
 , NAMEDD(regs, gen::ethmac_regs) {
     regs->registerResources(*this);
-    // TODO: loop back
+    // eth rx socket callback
     eth_rx.register_b_transport([this](eth_packet_types::tlm_payload_type& ethp, sc_core::sc_time&) {
         if(rx_buffer.full())
             wait(rx_empty_evt);
@@ -130,7 +127,6 @@ ethmac::ethmac(sc_core::sc_module_name nm)
             update_irq();
         }
     });
-
     // callback functions to enable readonly/writeonly functionality
     regs->tx_data.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool {
         if(!regs->in_reset() && !regs->r_mac_ctrl.tx_flush) {
@@ -201,7 +197,7 @@ ethmac::ethmac(sc_core::sc_module_name nm)
         }
         return true;
     });
-
+    // methods & threads
     SC_METHOD(reset_cb);
     dont_initialize();
     sensitive << rst_i;
@@ -222,6 +218,7 @@ void ethmac::reset_cb() {
         regs->reset_stop();
     }
 }
+
 void ethmac::start_of_simulation() {
     if(generate_pcap_file.get_value())
         pcap = std::make_unique<pcap_writer>(fmt::format("capture_{}.pcap", basename()));
