@@ -32,34 +32,34 @@ public:
     BF_FIELD(rx_aligner_enable, 6, 1);
     END_BF_DECL() r_mac_ctrl;
 
-    uint32_t r_tx_data_reg;
+    uint32_t r_tx_data;
 
-    BEGIN_BF_DECL(tx_avail_reg_t, uint32_t);
-    BF_FIELD(tx_availibility, 0, 9);
-    END_BF_DECL() r_tx_avail_reg;
+    BEGIN_BF_DECL(tx_avail_t, uint32_t);
+    BF_FIELD(tx_availibility, 0, 10);
+    END_BF_DECL() r_tx_avail;
 
-    uint32_t r_rx_data_reg;
+    uint32_t r_rx_data;
 
-    BEGIN_BF_DECL(rx_stat_reg_t, uint32_t);
+    BEGIN_BF_DECL(rx_stat_t, uint32_t);
     BF_FIELD(rx_errors, 0, 8);
     BF_FIELD(rx_drops, 8, 8);
-    END_BF_DECL() r_rx_stat_reg;
+    END_BF_DECL() r_rx_stat;
 
-    BEGIN_BF_DECL(int_ctrl_reg_t, uint32_t);
+    BEGIN_BF_DECL(mac_intr_t, uint32_t);
     BF_FIELD(tx_free_intr_enable, 0, 1);
     BF_FIELD(rx_data_avail_intr_enable, 1, 1);
-    END_BF_DECL() r_int_ctrl_reg;
+    END_BF_DECL() r_mac_intr;
 
     //////////////////////////////////////////////////////////////////////////////
     // register declarations
     //////////////////////////////////////////////////////////////////////////////
 
     scc::sc_register<mac_ctrl_t> mac_ctrl;
-    scc::sc_register<uint32_t> tx_data_reg;
-    scc::sc_register<tx_avail_reg_t> tx_avail_reg;
-    scc::sc_register<uint32_t> rx_data_reg;
-    scc::sc_register<rx_stat_reg_t> rx_stat_reg;
-    scc::sc_register<int_ctrl_reg_t> int_ctrl_reg;
+    scc::sc_register<uint32_t> tx_data;
+    scc::sc_register<tx_avail_t> tx_avail;
+    scc::sc_register<uint32_t> rx_data;
+    scc::sc_register<rx_stat_t> rx_stat;
+    scc::sc_register<mac_intr_t> mac_intr;
 
     ethmac_regs(sc_core::sc_module_name nm);
 
@@ -72,20 +72,20 @@ public:
 
 inline ethmac_regs::ethmac_regs(sc_core::sc_module_name nm)
 : sc_core::sc_module(nm)
-, NAMED(mac_ctrl, r_mac_ctrl, 0, *this)
-, NAMED(tx_data_reg, r_tx_data_reg, 0, *this)
-, NAMED(tx_avail_reg, r_tx_avail_reg, 0, *this)
-, NAMED(rx_data_reg, r_rx_data_reg, 0, *this)
-, NAMED(rx_stat_reg, r_rx_stat_reg, 0, *this)
-, NAMED(int_ctrl_reg, r_int_ctrl_reg, 0, *this) {}
+, NAMED(mac_ctrl, r_mac_ctrl, 0x13, *this)
+, NAMED(tx_data, r_tx_data, 0, *this)
+, NAMED(tx_avail, r_tx_avail, 0x101, *this)
+, NAMED(rx_data, r_rx_data, 0, *this)
+, NAMED(rx_stat, r_rx_stat, 0, *this)
+, NAMED(mac_intr, r_mac_intr, 0, *this) {}
 
 template <unsigned BUSWIDTH> inline void ethmac_regs::registerResources(scc::tlm_target<BUSWIDTH>& target) {
     target.addResource(mac_ctrl, 0x0UL);
-    target.addResource(tx_data_reg, 0x10UL);
-    target.addResource(tx_avail_reg, 0x14UL);
-    target.addResource(rx_data_reg, 0x20UL);
-    target.addResource(rx_stat_reg, 0x2cUL);
-    target.addResource(int_ctrl_reg, 0x30UL);
+    target.addResource(tx_data, 0x10UL);
+    target.addResource(tx_avail, 0x14UL);
+    target.addResource(rx_data, 0x20UL);
+    target.addResource(rx_stat, 0x2cUL);
+    target.addResource(mac_intr, 0x30UL);
 }
 } // namespace gen
 } // namespace minres
