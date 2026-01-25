@@ -8,9 +8,11 @@
 #define _MINRES_UART_H_
 
 #include "minres/gen/uart_regs.h"
+#include "scc/signal_opt_ports.h"
 #include <cci_configuration>
 #include <scc/clock_if_mixins.h>
 #include <scc/tlm_target.h>
+#include <sysc/datatypes/bit/sc_bv.h>
 
 namespace vpvper {
 namespace minres {
@@ -26,6 +28,8 @@ public:
     sc_core::sc_in<bool> rx_i{"rx_i"};
 
     sc_core::sc_out<bool> irq_o{"irq_o"};
+
+    scc::sc_out_opt<sc_dt::sc_bv<2>> events_o{"events_o"};
 
     uart(sc_core::sc_module_name nm);
 
