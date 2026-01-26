@@ -123,12 +123,12 @@ ethmac::ethmac(sc_core::sc_module_name nm)
             rx_buffer.push_back((size >> 24) & 0xff);
             for(auto c : rx_data)
                 rx_buffer.push_back(c);
-            regs->r_mac_ctrl.rx_data_avail = !rx_buffer.empty();
+            regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
             update_irq();
         }
     });
     // callback functions to enable readonly/writeonly functionality
-    regs->tx_data.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool {
+    regs->mac_tx.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool {
         if(!regs->in_reset() && !regs->r_mac_ctrl.tx_flush) {
             if(tx_state == tx_states::LENGTH) {
                 tx_expected_bytes = (v + 7) / 8;
@@ -156,32 +156,33 @@ ethmac::ethmac(sc_core::sc_module_name nm)
                     tx_state = tx_states::LENGTH;
                 }
             }
-            regs->r_tx_avail.tx_availibility = (tx_buffer.capacity() - std::max(tx_buffer.size(), 1ul)) / sizeof(uint32_t);
-            regs->r_mac_ctrl.tx_space_avail = !tx_buffer.full();
+            regs->r_mac_tx_availability.words_avail = (tx_buffer.capacity() - std::max(tx_buffer.size(), 1ul)) / sizeof(uint32_t);
+            regs->r_mac_ctrl.tx_ready = !tx_buffer.full();
             update_irq();
         }
         return true;
     });
-    regs->tx_avail.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool { return true; });
-    regs->rx_data.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool { return true; });
-    regs->rx_data.set_read_cb([this](scc::sc_register<uint32_t> const&, uint32_t& v, sc_core::sc_time& t) -> bool {
+    regs->mac_tx_availability.set_write_cb(
+        [this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool { return true; });
+    regs->mac_rx.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool { return true; });
+    regs->mac_rx.set_read_cb([this](scc::sc_register<uint32_t> const&, uint32_t& v, sc_core::sc_time& t) -> bool {
         v = 0;
         if(!regs->in_reset() && !regs->r_mac_ctrl.rx_flush) {
             for(auto i = 0; i < 4 && !rx_buffer.empty(); ++i) {
                 v |= rx_buffer.front() << (i * 8);
                 rx_buffer.pop_front();
             }
-            regs->r_mac_ctrl.rx_data_avail = !rx_buffer.empty();
+            regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
             update_irq();
         }
         return true;
     });
-    regs->rx_stat.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool { return true; });
+    regs->mac_rx_stats.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool { return true; });
     regs->mac_ctrl.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool {
         if(!regs->in_reset()) {
             regs->r_mac_ctrl = v;
-            regs->r_mac_ctrl.tx_space_avail = !tx_buffer.full();
-            regs->r_mac_ctrl.rx_data_avail = !rx_buffer.empty();
+            regs->r_mac_ctrl.tx_ready = !tx_buffer.full();
+            regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
             if(regs->r_mac_ctrl.rx_flush && !rx_buffer.empty())
                 rx_buffer.clear();
             if(regs->r_mac_ctrl.tx_flush && !tx_buffer.empty())
@@ -191,8 +192,8 @@ ethmac::ethmac(sc_core::sc_module_name nm)
     });
     regs->mac_ctrl.set_read_cb([this](scc::sc_register<uint32_t> const&, uint32_t& v, sc_core::sc_time& t) -> bool {
         if(!regs->in_reset()) {
-            regs->r_mac_ctrl.tx_space_avail = !tx_buffer.full();
-            regs->r_mac_ctrl.rx_data_avail = !rx_buffer.empty();
+            regs->r_mac_ctrl.tx_ready = !tx_buffer.full();
+            regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
             v = regs->r_mac_ctrl;
         }
         return true;
@@ -225,8 +226,8 @@ void ethmac::start_of_simulation() {
 }
 
 void ethmac::update_irq() {
-    irq_o[0].write(regs->r_mac_intr.tx_free_intr_enable && regs->r_mac_ctrl.tx_space_avail ||
-                   regs->r_mac_intr.rx_data_avail_intr_enable && regs->r_mac_ctrl.rx_data_avail);
+    irq_o[0].write(regs->r_mac_intr.tx_free_intr_enable && regs->r_mac_ctrl.tx_ready ||
+                   regs->r_mac_intr.rx_data_avail_intr_enable && regs->r_mac_ctrl.rx_pending);
 }
 } // namespace minres
 } // namespace vpvper
