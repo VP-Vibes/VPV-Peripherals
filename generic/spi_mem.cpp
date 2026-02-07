@@ -10,7 +10,7 @@
 #include <limits>
 #include <scc/report.h>
 #include <tlm/scc/tlm_extensions.h>
-#include <util/ihex_parser.h>
+#include <util/ihex.h>
 
 namespace vpvper {
 namespace generic {
@@ -100,16 +100,15 @@ void spi_mem::start_of_simulation() {
             } else if(buf[0] == ':') {
                 std::vector<uint8_t> write_data;
                 uint64_t last_addr{std::numeric_limits<uint64_t>::max()};
-                if(!util::ihex_parser::parse(ifs,
-                                             [this, &write_data, &last_addr](uint64_t addr, uint64_t size, const uint8_t* data) -> bool {
-                                                 tlm::tlm_generic_payload gp;
-                                                 gp.set_command(tlm::TLM_WRITE_COMMAND);
-                                                 gp.set_address(addr + mem_offset.get_value());
-                                                 gp.set_data_length(size);
-                                                 gp.set_data_ptr(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(data)));
-                                                 gp.set_streaming_width(size);
-                                                 return sckt->transport_dbg(gp) == size;
-                                             }))
+                if(!util::ihex::parse(ifs, [this, &write_data, &last_addr](uint64_t addr, uint64_t size, uint8_t const* data) -> bool {
+                       tlm::tlm_generic_payload gp;
+                       gp.set_command(tlm::TLM_WRITE_COMMAND);
+                       gp.set_address(addr + mem_offset.get_value());
+                       gp.set_data_length(size);
+                       gp.set_data_ptr(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(data)));
+                       gp.set_streaming_width(size);
+                       return sckt->transport_dbg(gp) == size;
+                   }))
                     SCCERR(SCMOD) << "Could not load IHEX file " << mem_file.get_value();
             }
         } else
