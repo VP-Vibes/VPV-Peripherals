@@ -23,6 +23,7 @@
 #include <scc/utilities.h>
 #include <stdexcept>
 #include <sysc/kernel/sc_simcontext.h>
+#include <sysc/kernel/sc_time.h>
 #include <tlm_core/tlm_2/tlm_generic_payload/tlm_gp.h>
 
 namespace vpvper {
@@ -195,6 +196,17 @@ ethmac::ethmac(sc_core::sc_module_name nm)
             regs->r_mac_ctrl.tx_ready = !tx_buffer.full();
             regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
             v = regs->r_mac_ctrl;
+        }
+        return true;
+    });
+    regs->mac_intr.set_write_cb([this](scc::sc_register<uint32_t>& r, uint32_t const& v, sc_core::sc_time& t) -> bool {
+        if(!regs->in_reset()) {
+            if(t.value())
+                wait(t);
+            r.put(v);
+            update_irq();
+            // let the update propagate
+            wait(sc_core::SC_ZERO_TIME);
         }
         return true;
     });
