@@ -109,22 +109,29 @@ ethmac::ethmac(sc_core::sc_module_name nm)
 , NAMEDD(regs, gen::ethmac_regs) {
     regs->registerResources(*this);
     // eth rx socket callback
-    eth_rx.register_b_transport([this](eth_packet_types::tlm_payload_type& ethp, sc_core::sc_time&) {
-        if(rx_buffer.full())
-            wait(rx_empty_evt);
+    eth_rx.register_b_transport([this](eth_packet_types::tlm_payload_type& ethp, sc_core::sc_time& t) {
+        if(t.value())
+            wait(t);
         auto& rx_data = ethp.get_data();
         if(pcap)
             pcap->write_frame(nonstd::span<uint8_t>(rx_data.data(), rx_data.size()));
         ethp.set_response_status(tlm::TLM_OK_RESPONSE);
         if(!regs->r_mac_ctrl.rx_flush) {
             uint32_t size = rx_data.size() * 8;
+            SCCDEBUG(SCOBJ) << "received ethernet frame #" << ethp.unique_id << " of size " << ethp.get_data().size();
+            if(rx_buffer.full())
+                wait(rx_buffer_changed_evt);
             rx_buffer.push_back(size & 0xff);
             rx_buffer.push_back((size >> 8) & 0xff);
             rx_buffer.push_back((size >> 16) & 0xff);
             rx_buffer.push_back((size >> 24) & 0xff);
-            for(auto c : rx_data)
+            for(auto c : rx_data) {
+                if(rx_buffer.full())
+                    wait(rx_buffer_changed_evt);
                 rx_buffer.push_back(c);
+            }
             regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
+            SCCDEBUG(SCOBJ) << "stored ethernet frame #" << ethp.unique_id;
             update_irq();
         }
     });
@@ -139,9 +146,9 @@ ethmac::ethmac(sc_core::sc_module_name nm)
                     tx_buffer.push_back((v >> (i * 8)) & 0xff);
                 }
                 if(tx_buffer.size() >= tx_expected_bytes) {
-                    SCCDEBUG(SCOBJ) << "Sending eth frame of length " << tx_expected_bytes;
                     eth_packet_types::tlm_payload_type ethp;
                     ethp.set_command(eth::ETH::FRAME);
+                    ethp.set_sender_clk_period({1.0 / (1000000 * pow(10, interface_speed.get_value())), sc_core::SC_SEC});
                     auto& tx_data = ethp.get_data();
                     tx_data.resize(0);
                     tx_data.reserve(tx_expected_bytes);
@@ -153,6 +160,7 @@ ethmac::ethmac(sc_core::sc_module_name nm)
                     if(pcap)
                         pcap->write_frame(nonstd::span<uint8_t>(tx_data.data(), tx_expected_bytes));
                     sc_core::sc_time delay;
+                    SCCDEBUG(SCOBJ) << "Sending ethernet frame #" << ethp.unique_id << " of size " << ethp.get_data().size();
                     eth_tx->b_transport(ethp, delay);
                     tx_state = tx_states::LENGTH;
                 }
@@ -169,11 +177,14 @@ ethmac::ethmac(sc_core::sc_module_name nm)
     regs->mac_rx.set_read_cb([this](scc::sc_register<uint32_t> const&, uint32_t& v, sc_core::sc_time& t) -> bool {
         v = 0;
         if(!regs->in_reset() && !regs->r_mac_ctrl.rx_flush) {
+            auto needs_nottification = rx_buffer.full();
             for(auto i = 0; i < 4 && !rx_buffer.empty(); ++i) {
                 v |= rx_buffer.front() << (i * 8);
                 rx_buffer.pop_front();
             }
             regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
+            if(needs_nottification)
+                rx_buffer_changed_evt.notify(sc_core::SC_ZERO_TIME);
             update_irq();
         }
         return true;
