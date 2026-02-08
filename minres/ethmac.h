@@ -44,6 +44,8 @@ public:
 
     scc::sc_out_opt<sc_dt::sc_bv<2>> events_o{"events_o"};
 
+    cci::cci_param<uint8_t> interface_speed{"speed_class", 3, "the transfer speed of the ethmac: 1=10MBit/s, 2=100MBit/s, 3=1GBit/s"};
+
     cci::cci_param<std::string> pcap_file_name{"pcap_file_name", "",
                                                "if set enbales the generation of a pcap file of sent frames with the given name"};
 
@@ -63,7 +65,7 @@ protected:
     void update_irq();
 
     sc_core::sc_time clk;
-    sc_core::sc_event rx_empty_evt;
+    sc_core::sc_event rx_buffer_changed_evt;
     std::unique_ptr<gen::ethmac_regs> regs;
     util::ring_buffer<uint8_t> tx_buffer{4096}, rx_buffer{8192};
     enum class tx_states { LENGTH, DATA };
