@@ -233,8 +233,8 @@ void ethmac::reset_cb() {
 }
 
 void ethmac::start_of_simulation() {
-    if(generate_pcap_file.get_value())
-        pcap = std::make_unique<pcap_writer>(fmt::format("capture_{}.pcap", basename()));
+    if(pcap_file_name.get_value().size())
+        pcap = std::make_unique<pcap_writer>(pcap_file_name.get_value());
 }
 
 void ethmac::update_irq() {

@@ -44,7 +44,8 @@ public:
 
     scc::sc_out_opt<sc_dt::sc_bv<2>> events_o{"events_o"};
 
-    cci::cci_param<bool> generate_pcap_file{"generate_pcap_file", true, "enebales the generation of a pcap file of sent frames"};
+    cci::cci_param<std::string> pcap_file_name{"pcap_file_name", "",
+                                               "if set enbales the generation of a pcap file of sent frames with the given name"};
 
     ethmac(sc_core::sc_module_name nm);
 
