@@ -2,6 +2,7 @@
 #include "gen/aclint_regs.h"
 #include <cstdint>
 #include <limits>
+#include <sysc/kernel/sc_module.h>
 #include <sysc/kernel/sc_time.h>
 
 namespace vpvper {
@@ -44,15 +45,14 @@ aclint::aclint(sc_module_name nm, size_t num_cpus)
         }
         return false;
     };
-    for(auto i = 0u; i < regs->mtimecmp.size(); ++i) {
+    for(auto i = 0u; i < num_cpus; ++i) {
         regs->mtimecmp[i].set_write_cb(mtime_write_cb_with_wait);
         regs->msip[i].set_write_cb([this, i](const sc_register<uint32_t>& reg, const uint32_t data, sc_time& d) -> bool {
             if(d.value())
                 wait(d);
             if(!regs->in_reset()) {
                 reg.put(data);
-                if(i < this->msip_int_o.size())
-                    this->msip_int_o[i].write(reg.get() & 0x1);
+                irq_val.notify((i << 1) + reg.get() & 0x1, sc_core::SC_ZERO_TIME);
                 return true;
             }
             return false;
@@ -63,6 +63,9 @@ aclint::aclint(sc_module_name nm, size_t num_cpus)
     dont_initialize();
     SC_METHOD(update_mtime_clk);
     sensitive << mtime_clk_i;
+    SC_METHOD(write_irq);
+    sensitive << irq_val.event();
+    dont_initialize();
 }
 void aclint::reset_cb() {
     if(rst_i.read()) {
@@ -71,6 +74,13 @@ void aclint::reset_cb() {
         regs->reset_stop();
     }
     update_mtime();
+}
+
+void aclint::write_irq() {
+    while(irq_val.has_next()) {
+        auto v = irq_val.get();
+        msip_int_o[v >> 1].write(v & 0x1);
+    }
 }
 
 void aclint::update_mtime() {

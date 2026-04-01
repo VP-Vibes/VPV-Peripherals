@@ -7,6 +7,7 @@
 #pragma once
 
 #include <scc/clock_if_mixins.h>
+#include <scc/peq.h>
 #include <scc/signal_opt_ports.h>
 #include <scc/tlm_target.h>
 #include <sysc/communication/sc_signal_ports.h>
@@ -36,9 +37,11 @@ protected:
     void reset_cb();
     void update_mtime();
     void update_mtime_clk() { mtime_clk_period = mtime_clk_i->read(); }
+    void write_irq();
     sc_core::sc_time clk_period, last_updt, mtime_clk_period;
     std::unique_ptr<aclint_regs> regs;
     sc_core::sc_event mtime_evt;
+    scc::peq<uint32_t> irq_val;
 };
 using aclint_tl = scc::tickless_clock<aclint>;
 using aclint_tc = scc::ticking_clock<aclint>;
