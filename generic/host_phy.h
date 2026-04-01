@@ -9,40 +9,65 @@
 
 #pragma once
 
-#include <cci/cfg/cci_param_typed.h>
+#include <cci_configuration>
 #include <eth/eth_tlm.h>
 #include <scc/async_queue.h>
-#include <scc/clock_if_mixins.h>
-#include <scc/tlm_target.h>
-#include <sysc/kernel/sc_event.h>
-#include <sysc/utils/sc_vector.h>
 #include <tlm/nw/initiator_mixin.h>
 #include <tlm/nw/target_mixin.h>
-#include <util/ring_buffer.h>
 
 namespace vpvper {
 namespace generic {
 
+/**
+ * @brief Bridges Ethernet TLM packet sockets to a Linux host raw Ethernet interface.
+ *
+ * Frames received on @ref rx are transmitted through an `AF_PACKET` raw socket to
+ * the configured Linux network interface. Frames captured from the Linux host
+ * interface are forwarded into the virtual platform through @ref tx.
+ *
+ * The module is intentionally transport-oriented: it passes complete Ethernet
+ * frames unchanged between the virtual platform and the host NIC.
+ */
 class host_phy : public sc_core::sc_module {
 public:
-    tlm::nw::initiator_mixin<eth::eth_pkt_initiator_socket<>> eth_tx{"eth_tx"};
-
-    tlm::nw::target_mixin<eth::eth_pkt_target_socket<>> eth_rx{"eth_rx"};
-
-    cci::cci_param<uint8_t> interface_speed{"speed_class", 3, "the transfer speed of the ethmac: 1=10MBit/s, 2=100MBit/s, 3=1GBit/s"};
-
+    /**
+     * @brief Socket emitting Ethernet frames received from the host NIC into the VP.
+     */
+    tlm::nw::initiator_mixin<eth::eth_pkt_initiator_socket<>> tx{"tx"};
+    /**
+     * @brief Socket receiving Ethernet frames from the VP for transmission to the host NIC.
+     */
+    tlm::nw::target_mixin<eth::eth_pkt_target_socket<>> rx{"rx"};
+    /**
+     * @brief Linux host interface name used for raw-socket binding.
+     */
     cci::cci_param<std::string> if_name{"if_name", "eth0", "eth interface to use"};
-
-    cci::cci_param<bool> promisc_mode{"promisc_mode", false, "use promisuous mode"};
-
+    /**
+     * @brief Enables promiscuous reception on the host interface when supported.
+     */
+    cci::cci_param<bool> promiscuous{"promiscuous", false, "use promisuous mode"};
+    /**
+     * @brief Construct a host Ethernet bridge.
+     *
+     * @param nm SystemC module name.
+     */
     host_phy(sc_core::sc_module_name nm);
-
-    virtual ~host_phy() override;
+    /**
+     * @brief Destroy the bridge and release any host-side raw-socket resources.
+     */
+    virtual ~host_phy();
 
 protected:
+    /**
+     * @brief Opens the raw socket if an interface has been configured.
+     */
     void start_of_simulation() override;
-    void receive();
-    int sock{0};
+    /**
+     * @brief Polls the async_queue and forwards received frames through @ref tx.
+     */
+    void rx_thread();
+
+    int sock{-1};
     int ifindex{0};
     scc::async_queue<std::vector<uint8_t>> que;
 };
