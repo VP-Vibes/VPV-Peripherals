@@ -52,7 +52,7 @@ aclint::aclint(sc_module_name nm, size_t num_cpus)
                 wait(d);
             if(!regs->in_reset()) {
                 reg.put(data);
-                irq_val.notify((i << 1) + reg.get() & 0x1, sc_core::SC_ZERO_TIME);
+                irq_val.notify((i << 1) | (reg.get() & 0x1), sc_core::SC_ZERO_TIME);
                 return true;
             }
             return false;
