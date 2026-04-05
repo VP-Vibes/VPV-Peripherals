@@ -93,7 +93,7 @@ void host_phy::start_of_simulation() {
     // get my MAC address
     struct ifreq ifr;
     memset(&ifr, 0, sizeof(ifr));
-    strncpy(ifr.ifr_name, "eth0", IFNAMSIZ - 1);
+    strncpy(ifr.ifr_name, if_name.get_value().c_str(), IFNAMSIZ - 1);
     if(ioctl(sock, SIOCGIFHWADDR, &ifr) < 0) {
         SCCFATAL(SCMOD) << "Could get MAC addr of socket (SIOCGIFHWADDR): " << strerror(errno);
         close(sock);
