@@ -2,6 +2,7 @@
 #include <cerrno>
 #include <cstdint>
 #include <cstring>
+#include <fmt/format.h>
 #include <linux/if_ether.h>
 #include <linux/if_packet.h>
 #include <net/if.h>
@@ -15,6 +16,9 @@
 
 namespace vpvper {
 namespace generic {
+namespace {
+const std::array<unsigned char, 6> broadcast_mac{0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+}
 namespace {
 int ifindex_of(int sock, const char* ifname) {
     struct ifreq ifr = {0};
@@ -30,6 +34,9 @@ int set_promisc(int sock, int ifindex, int enable) {
     int opt = enable ? PACKET_ADD_MEMBERSHIP : PACKET_DROP_MEMBERSHIP;
     return setsockopt(sock, SOL_PACKET, opt, &mreq, sizeof(mreq));
 }
+std::string mac2str(unsigned char* mac) {
+    return fmt::format("{:02x}:{:02x}:{:02x}:{:02x}:{:02x}:{:02x}", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+}
 } // namespace
 
 host_phy::host_phy(sc_core::sc_module_name nm)
@@ -42,11 +49,18 @@ host_phy::host_phy(sc_core::sc_module_name nm)
         }
         auto& frame = ethp.get_data();
         struct ethhdr* eth = reinterpret_cast<struct ethhdr*>(frame.data());
+        if(!model_mac_init) {
+            memcpy(model_mac, eth->h_source, 6);
+            model_mac_init = true;
+        }
+        // get destination MAC address and create socket addr, send frame to socket
         struct sockaddr_ll to = {0};
         to.sll_family = AF_PACKET;
         to.sll_ifindex = ifindex;
         to.sll_halen = ETH_ALEN;
         memcpy(to.sll_addr, eth->h_dest, 6);
+        SCCDEBUG(SCMOD) << "Sending frame of lenght " << frame.size() << " from " << mac2str(eth->h_source) << " to mac addr "
+                        << mac2str(eth->h_dest);
         ssize_t sent = sendto(sock, frame.data(), frame.size(), 0, (struct sockaddr*)&to, sizeof(to));
         if(sent < 0) {
             SCCWARN(SCMOD) << "failed to send Ethernet frame on interface '" << if_name.get_value() << "': " << std::strerror(errno);
@@ -63,43 +77,62 @@ host_phy::host_phy(sc_core::sc_module_name nm)
 }
 
 host_phy::~host_phy() {
-    if(promiscuous.get_value())
-        set_promisc(sock, ifindex, 0);
+    set_promisc(sock, ifindex, 0);
     close(sock);
     sock = -1;
     ifindex = 0;
 }
 
 void host_phy::start_of_simulation() {
-    // L2 packet socket: receives full Ethernet header + payload
+    // create L2 packet socket: receives full Ethernet header + payload
     sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
     if(sock < 0) {
         SCCFATAL(SCMOD) << "Could not open socket: " << strerror(errno);
+        return;
     }
+    // get my MAC address
+    struct ifreq ifr;
+    memset(&ifr, 0, sizeof(ifr));
+    strncpy(ifr.ifr_name, "eth0", IFNAMSIZ - 1);
+    if(ioctl(sock, SIOCGIFHWADDR, &ifr) < 0) {
+        SCCFATAL(SCMOD) << "Could get MAC addr of socket (SIOCGIFHWADDR): " << strerror(errno);
+        close(sock);
+        return;
+    }
+    memcpy(hw_mac, (unsigned char*)ifr.ifr_hwaddr.sa_data, 6);
+    // get eth interface index
     ifindex = ifindex_of(sock, if_name.get_value().c_str());
     if(ifindex < 0) {
         SCCFATAL(SCMOD) << "Could get index of socket (SIOCGIFINDEX): " << strerror(errno);
+        close(sock);
+        return;
     }
+    // bind the socket to the eth device
     struct sockaddr_ll sll = {0};
     sll.sll_family = AF_PACKET;
     sll.sll_protocol = htons(ETH_P_ALL);
     sll.sll_ifindex = ifindex;
     if(bind(sock, (struct sockaddr*)&sll, sizeof(sll)) < 0) {
         SCCFATAL(SCMOD) << "Could bind to socket: " << strerror(errno);
+        close(sock);
+        return;
     }
-    promiscuous.lock();
-    if(promiscuous.get_value()) {
-        if(set_promisc(sock, ifindex, 1) < 0)
-            SCCERR(SCMOD) << "Could not set promisc mode : " << strerror(errno);
+    // set promiscuous mode so we get all packets
+    if(set_promisc(sock, ifindex, 1) < 0) {
+        SCCFATAL(SCMOD) << "Could not set promisc mode : " << strerror(errno);
+        close(sock);
+        return;
     }
+    // start receiving thread filtering incoming packets
     std::thread rx_host_thread{[this]() {
         // Receive loop
         SCCINFO(SCMOD) << "Start listening on " << if_name.get_value().c_str() << " ...";
         std::vector<uint8_t> buf(65536);
+        // buf.resize(65536);
         while(1) {
             struct sockaddr_ll addr = {0};
             socklen_t addr_len = sizeof(addr);
-            auto len = recvfrom(sock, buf.data(), sizeof(buf), 0, (struct sockaddr*)&addr, &addr_len);
+            auto len = recvfrom(sock, buf.data(), buf.size(), 0, (struct sockaddr*)&addr, &addr_len);
             auto err_no = errno;
             if(len < 0) {
                 if(err_no == EAGAIN || err_no == EWOULDBLOCK)
@@ -109,9 +142,14 @@ void host_phy::start_of_simulation() {
             }
             if(len < sizeof(struct ethhdr) || addr.sll_pkttype == PACKET_OUTGOING)
                 continue;
-            struct ethhdr* rx = (struct ethhdr*)buf.data();
-            std::vector<uint8_t> frame{buf.begin(), buf.begin() + len};
-            que.push(frame);
+            struct ethhdr* eth = (struct ethhdr*)buf.data();
+            if(memcmp(eth->h_dest, model_mac, 6) == 0 || memcmp(eth->h_dest, broadcast_mac.data(), 6) == 0) {
+                SCCDEBUG(SCMOD) << "received frame of lenght " << len << " from mac addr " << mac2str(eth->h_source) << " with proto "
+                                << std::hex << eth->h_proto;
+                memcpy(eth->h_dest, model_mac, 6);
+                std::vector<uint8_t> frame{buf.begin(), buf.begin() + len};
+                que.push(frame);
+            }
         }
     }};
     rx_host_thread.detach();

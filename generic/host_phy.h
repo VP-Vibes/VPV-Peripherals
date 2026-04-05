@@ -43,10 +43,6 @@ public:
      */
     cci::cci_param<std::string> if_name{"if_name", "eth0", "eth interface to use"};
     /**
-     * @brief Enables promiscuous reception on the host interface when supported.
-     */
-    cci::cci_param<bool> promiscuous{"promiscuous", false, "use promisuous mode"};
-    /**
      * @brief Construct a host Ethernet bridge.
      *
      * @param nm SystemC module name.
@@ -68,6 +64,9 @@ protected:
     void rx_thread();
 
     int sock{-1};
+    unsigned char hw_mac[6];
+    unsigned char model_mac[6];
+    bool model_mac_init{false};
     int ifindex{0};
     scc::async_queue<std::vector<uint8_t>> que;
 };
