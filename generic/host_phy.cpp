@@ -144,7 +144,7 @@ void host_phy::start_of_simulation() {
                 continue;
             struct ethhdr* eth = (struct ethhdr*)buf.data();
             if(memcmp(eth->h_dest, model_mac, 6) == 0 || memcmp(eth->h_dest, broadcast_mac.data(), 6) == 0) {
-                SCCDEBUG(SCMOD) << "received frame of lenght " << len << " from mac addr " << mac2str(eth->h_source) << " with proto "
+                SCCDEBUG(SCMOD) << "received frame of length " << len << " from mac addr " << mac2str(eth->h_source) << " with proto "
                                 << std::hex << eth->h_proto;
                 memcpy(eth->h_dest, model_mac, 6);
                 std::vector<uint8_t> frame{buf.begin(), buf.begin() + len};
