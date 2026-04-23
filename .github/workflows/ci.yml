@@ -1,0 +1,38 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build python3-pip libbz2-dev
+
+      - name: Install Conan 2
+        run: pip3 install "conan>=2"
+
+      - name: Configure Conan profile
+        run: conan profile detect --force
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2/p
+          key: ${{ runner.os }}-conan2-${{ hashFiles('conanfile.txt') }}
+          restore-keys: ${{ runner.os }}-conan2-
+
+      - name: Install Conan dependencies
+        run: conan install . --output-folder=build --build=missing -s compiler.cppstd=17
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build sifive library
+        run: cmake --build build --target vpvper_sifive
