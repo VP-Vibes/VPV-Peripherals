@@ -54,6 +54,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "vpvper")
 endif()
 
 if(TARGET scc)
+	include(CTest)
 	add_subdirectory(generic)
 	add_subdirectory(sifive)
 	add_subdirectory(minres)
