@@ -32,7 +32,11 @@ jobs:
         run: |
           cmake -S . -B build \
             -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake \
-            -DCMAKE_BUILD_TYPE=Release
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=ON
 
-      - name: Build sifive library
-        run: cmake --build build --target vpvper_sifive
+      - name: Build
+        run: cmake --build build --target vpvper_sifive test_clint_timer
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
