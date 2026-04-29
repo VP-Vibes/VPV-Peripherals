@@ -30,6 +30,12 @@ endif()
 target_link_libraries(${PROJECT_NAME}_sifive PUBLIC ${PROJECT_NAME}_generic scc)
 add_library(${PROJECT_NAME}::sifive ALIAS ${PROJECT_NAME}_sifive)
 
+if(BUILD_TESTING)
+    add_executable(test_clint_timer test_clint_timer.cpp)
+    target_link_libraries(test_clint_timer PRIVATE ${PROJECT_NAME}_sifive)
+    add_test(NAME clint_timer_correctness COMMAND test_clint_timer)
+endif()
+
 install(TARGETS ${PROJECT_NAME}_sifive COMPONENT ${PROJECT_NAME}_sifive
   EXPORT ${PROJECT_NAME}_genericTargets                         # for downstream dependencies
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

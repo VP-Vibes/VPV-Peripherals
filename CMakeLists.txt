@@ -13,7 +13,7 @@ set(SCC_INSTALL_DIR "" CACHE PATH "installation location of SCC library")
 
 if(CMAKE_PROJECT_NAME STREQUAL "vpvper")
     message(STATUS "Building VPVper in standalone mode")
-	set(CMAKE_CXX_STANDARD 11)
+	set(CMAKE_CXX_STANDARD 17)
 	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 	set(CMAKE_CXX_EXTENSIONS OFF)
 	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -22,78 +22,44 @@ if(CMAKE_PROJECT_NAME STREQUAL "vpvper")
 	include(CheckCXXCompilerFlag)
     include(GNUInstallDirs)
 
-	if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-	  message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-	  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
-	                "${CMAKE_BINARY_DIR}/conan.cmake"
-	                TLS_VERIFY ON)
-	endif()
-	
-	include(${CMAKE_BINARY_DIR}/conan.cmake)
-    conan_check()
-    set(CONAN_PACKAGE_LIST seasocks/1.4.4)
-    set(CONAN_PACKAGE_OPTIONS seasocks:shared=False seasocks:fPIC=True)
-    if(NOT DEFINED ENV{SYSTEMC_HOME})
-        list(APPEND CONAN_PACKAGE_LIST systemc/2.3.3 systemc-cci/1.0.0)
-        #list(APPEND CONAN_PACKAGE_OPTIONS systemc-cci:shared=True)
+    set(Boost_NO_BOOST_CMAKE ON)
+
+    if(IS_DIRECTORY "${SCC_INSTALL_DIR}")
+        list(PREPEND CMAKE_PREFIX_PATH "${SCC_INSTALL_DIR}")
     endif()
-	list(APPEND CONAN_PACKAGE_LIST boost/1.75.0)    	
-	list(APPEND CONAN_PACKAGE_OPTIONS
-		boost:fPIC=True
-		boost:shared=True
-		boost:header_only=False 
-		boost:without_contract=True
-		boost:without_graph=True
-		boost:without_graph_parallel=True
-		boost:without_iostreams=True
-		boost:without_json=True
-		boost:without_locale=True
-		boost:without_log=True
-		boost:without_math=True
-		boost:without_mpi=True
-		boost:without_nowide=True
-		boost:without_python=True
-		boost:without_random=True
-		boost:without_regex=True
-		boost:without_stacktrace=True
-		boost:without_test=True
-		boost:without_timer=True
-		boost:without_type_erasure=True
-		boost:without_wave=True)
-    if(NOT IS_DIRECTORY ${SCC_INSTALL_DIR}/include)
-    	list(APPEND CONAN_PACKAGE_LIST scc/2022.08)
+
+    # SCC's installed cmake config uses find_dependency(boost_filesystem) / find_dependency(boost_date_time)
+    # (the per-component convention from a cmake-native Boost install).
+    # Conan's boost provides a single BoostConfig.cmake, so we drop in thin bridge configs.
+    foreach(_boost_comp filesystem date_time)
+        if(NOT EXISTS "${CMAKE_BINARY_DIR}/boost_${_boost_comp}Config.cmake")
+            file(WRITE "${CMAKE_BINARY_DIR}/boost_${_boost_comp}Config.cmake"
+                "find_package(Boost REQUIRED COMPONENTS ${_boost_comp})\nset(boost_${_boost_comp}_FOUND TRUE)\n")
+        endif()
+    endforeach()
+
+    find_package(scc QUIET)
+
+    if(NOT TARGET scc AND NOT TARGET scc::scc)
+        message(STATUS "SCC not found via find_package — fetching from GitHub")
+        include(FetchContent)
+        FetchContent_Declare(scc
+            GIT_REPOSITORY https://github.com/Minres/SystemC-Components.git
+            GIT_TAG        main
+            GIT_SHALLOW    TRUE
+        )
+        FetchContent_MakeAvailable(scc)
     endif()
-    
-	conan_cmake_configure(REQUIRES ${CONAN_PACKAGE_LIST}
-						  OPTIONS ${CONAN_PACKAGE_OPTIONS}
-	                      GENERATORS cmake_find_package)
-	
-	conan_cmake_autodetect(settings)
-	
-	conan_cmake_install(PATH_OR_REFERENCE .
-	                    BUILD missing
-	                    REMOTE conancenter
-	                    SETTINGS ${settings})
-                        
-    set(Boost_NO_BOOST_CMAKE ON) #  Don't do a find_package in config mode before searching for a regular boost install.
-    
-    find_package(SystemCLanguage)
-    find_package(systemc-cci)
-    if(IS_DIRECTORY ${SCC_INSTALL_DIR}/include)
-    	add_library(scc INTERFACE)
-    	target_include_directories(scc INTERFACE ${SCC_INSTALL_DIR}/include)
-    	target_link_directories(scc INTERFACE ${SCC_INSTALL_DIR}/lib)
-		target_link_libraries(scc INTERFACE busses scc-sysc scc-util scv-tr)	
-		target_link_libraries(scc INTERFACE systemc-cci::systemc-cci SystemC::SystemC)	
-    else()
-    	find_package(scc)
+
+    if(TARGET scc::scc AND NOT TARGET scc)
         add_library(scc INTERFACE IMPORTED)
-	    set_property(TARGET scc APPEND PROPERTY
-                 INTERFACE_LINK_LIBRARIES scc::scc)
+        set_property(TARGET scc APPEND PROPERTY
+                     INTERFACE_LINK_LIBRARIES scc::scc)
     endif()
 endif()
 
 if(TARGET scc)
+	include(CTest)
 	add_subdirectory(generic)
 	add_subdirectory(sifive)
 	add_subdirectory(minres)

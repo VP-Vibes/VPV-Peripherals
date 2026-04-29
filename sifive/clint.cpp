@@ -14,8 +14,6 @@ namespace vpvper {
 namespace sifive {
 using namespace sc_core;
 
-const int lfclk_mutiplier = 1 << 12;
-
 clint::clint(sc_module_name nm)
 : sc_module(nm)
 , tlm_target<>(clk)
@@ -85,7 +83,7 @@ void clint::update_mtime() {
         write_mtime_irq(regs->r_mtimecmp <= regs->r_mtime);
         mtime_evt.cancel();
         if(regs->r_mtimecmp > regs->r_mtime) {
-            sc_time next_trigger = (clk * lfclk_mutiplier) * (regs->r_mtimecmp - regs->mtime);
+            sc_time next_trigger = clk * (regs->r_mtimecmp - regs->r_mtime);
             mtime_evt.notify(next_trigger);
             SCCTRACE() << "Timer fires at " << sc_time_stamp() + next_trigger;
         }
