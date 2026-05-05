@@ -14,7 +14,7 @@ if(TARGET Seasocks::seasocks)
     set(SEASOCKS_LIB Seasocks::seasocks)
 endif()
 
-find_package(elfio REQUIRED)
+find_package(elfio QUIET)
 
 add_library(${PROJECT_NAME}_generic terminal.cpp ${WEBSOCKET_SRC} spi_mem.cpp)
 if(LINUX) 
