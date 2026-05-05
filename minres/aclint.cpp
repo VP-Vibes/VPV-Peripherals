@@ -79,7 +79,15 @@ void aclint::reset_cb() {
 void aclint::write_irq() {
     while(irq_val.has_next()) {
         auto v = irq_val.get();
-        msip_int_o[v >> 1].write(v & 0x1);
+#ifdef SC_SIGNAL_IF
+         msip_int_o[v >> 1].write(v & 0x1);
+#else
+        sc_core::sc_time t;
+        tlm::tlm_phase p{tlm::BEGIN_REQ};
+        tlm::scc::tlm_signal_gp<bool> gp;
+        gp.set_value(v & 0x1);
+        msip_int_o[v >> 1]->nb_transport_fw(gp, p, t);
+#endif
     }
 }
 
@@ -98,7 +106,15 @@ void aclint::update_mtime() {
         for(auto i = 0u; i < regs->mtimecmp.size(); ++i) {
             // check for and handle interrupts
             uint64_t smallest = std::numeric_limits<uint64_t>::max();
-            mtime_int_o[i].write(regs->r_mtimecmp[i] <= regs->r_mtime);
+#ifdef SC_SIGNAL_IF
+             mtime_int_o[i].write(regs->r_mtimecmp[i] <= regs->r_mtime);
+#else
+            sc_core::sc_time t;
+            tlm::tlm_phase p{tlm::BEGIN_REQ};
+            tlm::scc::tlm_signal_gp<bool> gp;
+            gp.set_value(regs->r_mtimecmp[i] <= regs->r_mtime);
+            mtime_int_o[i]->nb_transport_fw(gp, p, t);
+#endif
             mtimecmp_min = std::min(mtimecmp_min, regs->r_mtimecmp[i]);
         }
         // calculate next invocation

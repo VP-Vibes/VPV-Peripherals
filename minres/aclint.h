@@ -11,6 +11,10 @@
 #include <scc/signal_opt_ports.h>
 #include <scc/tlm_target.h>
 #include <sysc/communication/sc_signal_ports.h>
+#ifndef SC_SIGNAL_IF
+#include <tlm/scc/signal_initiator_mixin.h>
+#include <tlm/scc/tlm_signal.h>
+#endif
 
 namespace vpvper {
 namespace minres {
@@ -21,8 +25,13 @@ class aclint : public sc_core::sc_module, public scc::tlm_target<> {
 public:
     sc_core::sc_in<sc_core::sc_time> mtime_clk_i{"mtime_clk_i"};
     sc_core::sc_in<bool> rst_i{"rst_i"};
-    sc_core::sc_vector<sc_core::sc_out<bool>> mtime_int_o;
-    sc_core::sc_vector<sc_core::sc_out<bool>> msip_int_o;
+#ifdef SC_SIGNAL_IF
+     sc_core::sc_vector<sc_core::sc_out<bool>> mtime_int_o;
+     sc_core::sc_vector<sc_core::sc_out<bool>> msip_int_o;
+#else
+    sc_core::sc_vector<tlm::scc::tlm_signal_bool_out> mtime_int_o;
+    sc_core::sc_vector<tlm::scc::tlm_signal_bool_out> msip_int_o;
+#endif
     scc::sc_out_opt<uint64_t> mtime_o;
     aclint(sc_core::sc_module_name nm, size_t num_cpus = 1);
     virtual ~aclint();
