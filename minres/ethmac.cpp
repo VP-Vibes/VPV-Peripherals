@@ -112,24 +112,29 @@ ethmac::ethmac(sc_core::sc_module_name nm)
     eth_rx.register_b_transport([this](eth_packet_types::tlm_payload_type& ethp, sc_core::sc_time& t) {
         if(t.value())
             wait(t);
-        auto& rx_data = ethp.get_data();
+        auto& rx_payload = ethp.get_data();
+        auto rx_payload_size = rx_payload.size();
         if(pcap)
-            pcap->write_frame(nonstd::span<uint8_t>(rx_data.data(), rx_data.size()));
+            pcap->write_frame(nonstd::span<uint8_t>(rx_payload.data(), rx_payload_size));
         ethp.set_response_status(tlm::TLM_OK_RESPONSE);
         if(!regs->r_mac_ctrl.rx_flush) {
-            uint32_t size = rx_data.size() * 8;
-            SCCDEBUG(SCOBJ) << "received ethernet frame #" << ethp.unique_id << " of size " << ethp.get_data().size();
+            SCCDEBUG(SCOBJ) << "received ethernet frame #" << ethp.unique_id << " of size " << rx_payload_size;
             if(rx_buffer.full())
                 wait(rx_buffer_changed_evt);
-            rx_buffer.push_back(size & 0xff);
-            rx_buffer.push_back((size >> 8) & 0xff);
-            rx_buffer.push_back((size >> 16) & 0xff);
-            rx_buffer.push_back((size >> 24) & 0xff);
-            for(auto c : rx_data) {
+            auto rx_payload_bit_size = rx_payload_size * 8;
+            rx_buffer.push_back(rx_payload_bit_size & 0xff);
+            rx_buffer.push_back((rx_payload_bit_size >> 8) & 0xff);
+            rx_buffer.push_back((rx_payload_bit_size >> 16) & 0xff);
+            rx_buffer.push_back((rx_payload_bit_size >> 24) & 0xff);
+            for(auto c : rx_payload) {
                 if(rx_buffer.full())
                     wait(rx_buffer_changed_evt);
                 rx_buffer.push_back(c);
             }
+            auto padding = (4 - (rx_payload_size % 4)) % 4;
+            for(size_t i = 0; i < padding; ++i)
+                rx_buffer.push_back(0);
+
             regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
             SCCDEBUG(SCOBJ) << "stored ethernet frame #" << ethp.unique_id;
             update_irq();
