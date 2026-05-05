@@ -31,3 +31,6 @@
 *.out
 *.app
 /build/
+
+# Conan-generated CMake presets
+CMakeUserPresets.json
