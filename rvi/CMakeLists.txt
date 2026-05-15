@@ -22,6 +22,10 @@ endif()
 target_link_libraries(${PROJECT_NAME}_rvi PUBLIC ${PROJECT_NAME}_generic scc)
 add_library(${PROJECT_NAME}::rvi ALIAS ${PROJECT_NAME}_rvi)
 
+if(BUILD_TESTING)
+    add_subdirectory(test)
+endif()
+
 install(TARGETS ${PROJECT_NAME}_rvi COMPONENT ${PROJECT_NAME}_rvi
   EXPORT ${PROJECT_NAME}_genericTargets                         # for downstream dependencies
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
