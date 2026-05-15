@@ -36,7 +36,7 @@ jobs:
             -DBUILD_TESTING=ON
 
       - name: Build
-        run: cmake --build build --target vpvper_sifive test_clint_timer
+        run: cmake --build build --target vpvper_sifive test_clint_timer vpvper_rvi test_plic
 
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
