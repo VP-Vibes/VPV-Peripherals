@@ -39,8 +39,9 @@ std::string mac2str(unsigned char* mac) {
 }
 } // namespace
 
-host_phy::host_phy(sc_core::sc_module_name nm)
-: sc_core::sc_module(nm) {
+host_phy::host_phy(sc_core::sc_module_name nm, std::string eth_if_name)
+: sc_core::sc_module(nm)
+, if_name{"if_name", eth_if_name, "eth interface to use"} {
     rx.register_b_transport([this](eth::eth_packet_payload& ethp, sc_core::sc_time& t) {
         ethp.set_response_status(tlm::TLM_GENERIC_ERROR_RESPONSE);
         if(sock < 0 || ifindex == 0) {

@@ -47,7 +47,7 @@ public:
      *
      * @param nm SystemC module name.
      */
-    host_phy(sc_core::sc_module_name nm);
+    host_phy(sc_core::sc_module_name nm, std::string eth_if_name = "eth0");
     /**
      * @brief Destroy the bridge and release any host-side raw-socket resources.
      */
