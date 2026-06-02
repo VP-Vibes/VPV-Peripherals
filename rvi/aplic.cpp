@@ -34,6 +34,18 @@ aplic::aplic(sc_core::sc_module_name nm)
 
     // register callbacks
 
+    regs->domaincfg.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
+
+        SCCDEBUG(this->name()) << "domaincfg: " << data;
+
+        regs->r_domaincfg = data;
+        if(regs->r_domaincfg.interruptenable == 1){
+            handle_pending_int();
+        }
+
+        return true;
+    });
+
     regs->sourcecfg.set_write_cb([this](size_t index, scc::sc_register<uint32_t>& reg, uint32_t data) -> bool {
         uint32_t irq = index + 1;
         if(irq > external_global_interrupts_i.size()) {
@@ -74,7 +86,8 @@ aplic::aplic(sc_core::sc_module_name nm)
 
                 auto reg_idx = get_reg_index(irq);
                 auto bit_ofs = get_bit_pos(irq);
-                regs->r_enabled[reg_idx] |= (0x1 << bit_ofs);;
+                regs->r_enabled[reg_idx] |= (0x1 << bit_ofs);
+                handle_pending_int();
             }
         }
 
@@ -121,6 +134,24 @@ aplic::aplic(sc_core::sc_module_name nm)
         data = 0;
         return true;
     });
+
+    regs->delivery.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
+        SCCDEBUG(this->name()) << "delivery: " << data;
+        regs->r_delivery = data;
+        if(regs->r_delivery == 1){
+            handle_pending_int();
+        }
+
+        return true;
+    });
+
+    regs->threshold.set_write_cb([this](scc::sc_register<uint32_t>& reg, uint32_t data, sc_core::sc_time d) -> bool {
+        SCCDEBUG(this->name()) << "threshold: " << data;
+        regs->r_threshold = data;
+        handle_pending_int();
+        return true;
+    });
+
 #ifdef SC_SIGNAL_IF
     SC_METHOD(external_global_interrupts_cb);
     for(auto& irq : external_global_interrupts_i)
@@ -210,7 +241,8 @@ bool aplic::register_enabled_callback(size_t index, scc::sc_register<uint32_t>& 
 
             if(is_source_active(irq)) {
                 SCCDEBUG(this->name()) << "enabled interrupt: " << irq;
-                regs->r_enabled[index] |= (0x1 << bit_pos);;
+                regs->r_enabled[index] |= (0x1 << bit_pos);
+                handle_pending_int();
             }
         }
     }
