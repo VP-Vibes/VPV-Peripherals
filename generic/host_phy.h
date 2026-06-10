@@ -43,6 +43,10 @@ public:
      */
     cci::cci_param<std::string> if_name{"if_name", "eth0", "eth interface to use"};
     /**
+     * @brief Whether to map simulated MAC addr to host MAC addr.
+     */
+    cci::cci_param<bool> map_mac_addr{"map_mac_addr", false, "map simulated MAC addr to host MAC addr"};
+    /**
      * @brief Construct a host Ethernet bridge.
      *
      * @param nm SystemC module name.
