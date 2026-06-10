@@ -45,7 +45,7 @@ host_phy::host_phy(sc_core::sc_module_name nm, std::string eth_if_name)
     rx.register_b_transport([this](eth::eth_packet_payload& ethp, sc_core::sc_time& t) {
         ethp.set_response_status(tlm::TLM_GENERIC_ERROR_RESPONSE);
         if(sock < 0 || ifindex == 0) {
-            SCCWARN(SCMOD) << "dropping outgoing Ethernet frame because no host raw socket is available";
+            SCCWARN(SCMOD) << "Dropping outgoing Ethernet frame because no host raw socket is available";
             return;
         }
         auto& frame = ethp.get_data();
@@ -57,11 +57,15 @@ host_phy::host_phy(sc_core::sc_module_name nm, std::string eth_if_name)
         // get destination MAC address and create socket addr, send frame to socket
         struct sockaddr_ll to = {0};
         to.sll_family = AF_PACKET;
+        to.sll_protocol = htons(ETH_P_ALL);
         to.sll_ifindex = ifindex;
         to.sll_halen = ETH_ALEN;
         memcpy(to.sll_addr, eth->h_dest, 6);
-        SCCDEBUG(SCMOD) << "Sending frame of lenght " << frame.size() << " from " << mac2str(eth->h_source) << " to mac addr "
-                        << mac2str(eth->h_dest);
+        if(map_mac_addr.get_value())
+            memcpy(eth->h_source, hw_mac, 6);
+
+        SCCDEBUG(SCMOD) << "Sending frame of lenght " << frame.size() << " " << mac2str(eth->h_source) << " -> " << mac2str(eth->h_dest)
+                        << " with EtherType=0x" << std::hex << ntohs(eth->h_proto);
         ssize_t sent = sendto(sock, frame.data(), frame.size(), 0, (struct sockaddr*)&to, sizeof(to));
         if(sent < 0) {
             SCCWARN(SCMOD) << "failed to send Ethernet frame on interface '" << if_name.get_value() << "': " << std::strerror(errno);
@@ -133,7 +137,7 @@ void host_phy::start_of_simulation() {
         while(1) {
             struct sockaddr_ll addr = {0};
             socklen_t addr_len = sizeof(addr);
-            auto len = recvfrom(sock, buf.data(), buf.size(), 0, (struct sockaddr*)&addr, &addr_len);
+            auto len = recvfrom(sock, buf.data(), buf.size(), 0, nullptr, nullptr);
             auto err_no = errno;
             if(len < 0) {
                 if(err_no == EAGAIN || err_no == EWOULDBLOCK)
@@ -144,13 +148,18 @@ void host_phy::start_of_simulation() {
             if(len < sizeof(struct ethhdr) || addr.sll_pkttype == PACKET_OUTGOING)
                 continue;
             struct ethhdr* eth = (struct ethhdr*)buf.data();
-            if(memcmp(eth->h_dest, model_mac, 6) == 0 || memcmp(eth->h_dest, broadcast_mac.data(), 6) == 0) {
-                SCCDEBUG(SCMOD) << "received frame of length " << len << " from mac addr " << mac2str(eth->h_source) << " with proto "
-                                << std::hex << eth->h_proto;
+            SCCTRACE(SCMOD) << if_name.get_value() << " received packet " << mac2str(eth->h_source) << " -> " << mac2str(eth->h_dest)
+                            << " with protocol " << ntohs(eth->h_proto);
+            auto mac_addr = map_mac_addr.get_value() ? hw_mac : model_mac;
+            if(memcmp(eth->h_dest, mac_addr, 6) && memcmp(eth->h_dest, broadcast_mac.data(), 6))
+                // this is not our packet
+                continue;
+            SCCDEBUG(SCMOD) << "Received frame of length " << len << " " << mac2str(eth->h_source) << " -> " << mac2str(eth->h_dest)
+                            << " with EtherType=0x" << std::hex << ntohs(eth->h_proto);
+            if(map_mac_addr.get_value())
                 memcpy(eth->h_dest, model_mac, 6);
-                std::vector<uint8_t> frame{buf.begin(), buf.begin() + len};
-                que.push(frame);
-            }
+            std::vector<uint8_t> frame{buf.begin(), buf.begin() + len};
+            que.push(frame);
         }
     }};
     rx_host_thread.detach();
