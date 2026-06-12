@@ -118,7 +118,7 @@ ethmac::ethmac(sc_core::sc_module_name nm)
             pcap->write_frame(nonstd::span<uint8_t>(rx_payload.data(), rx_payload_size));
         ethp.set_response_status(tlm::TLM_OK_RESPONSE);
         if(!regs->r_mac_ctrl.rx_flush) {
-            SCCDEBUG(SCOBJ) << "received ethernet frame #" << ethp.unique_id << " of size " << rx_payload_size;
+            SCCDEBUG(SCOBJ) << "Received ethernet frame #" << ethp.unique_id << " of size " << rx_payload_size;
             if(rx_buffer.full())
                 wait(rx_buffer_changed_evt);
             auto rx_payload_bit_size = rx_payload_size * 8;
@@ -126,6 +126,11 @@ ethmac::ethmac(sc_core::sc_module_name nm)
             rx_buffer.push_back((rx_payload_bit_size >> 8) & 0xff);
             rx_buffer.push_back((rx_payload_bit_size >> 16) & 0xff);
             rx_buffer.push_back((rx_payload_bit_size >> 24) & 0xff);
+            if(regs->r_mac_ctrl.tx_aligner_enable) {
+                rx_buffer.push_back(0x0);
+                rx_buffer.push_back(0x0);
+                rx_payload_size+=2;
+            }
             for(auto c : rx_payload) {
                 if(rx_buffer.full())
                     wait(rx_buffer_changed_evt);
@@ -136,7 +141,6 @@ ethmac::ethmac(sc_core::sc_module_name nm)
                 rx_buffer.push_back(0);
 
             regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
-            SCCDEBUG(SCOBJ) << "stored ethernet frame #" << ethp.unique_id;
             update_irq();
         }
     });
@@ -144,12 +148,16 @@ ethmac::ethmac(sc_core::sc_module_name nm)
     regs->mac_tx.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool {
         if(!regs->in_reset() && !regs->r_mac_ctrl.tx_flush) {
             if(tx_state == tx_states::LENGTH) {
-                tx_expected_bytes = (v + 7) / 8;
-                tx_state = tx_states::DATA;
+                tx_expected_bytes = (v + 7) / 8 ;
+                tx_state = regs->r_mac_ctrl.tx_aligner_enable ? tx_states::ALIGN : tx_states::DATA;
             } else {
-                for(auto i = 0u; i < 4; ++i) {
-                    tx_buffer.push_back((v >> (i * 8)) & 0xff);
-                }
+                if(tx_state == tx_states::ALIGN) {
+                    for(auto i = 2u; i < 4; ++i)
+                        tx_buffer.push_back((v >> (i * 8)) & 0xff);
+                    tx_state = tx_states::DATA;
+                } else
+                    for(auto i = 0u; i < 4; ++i)
+                        tx_buffer.push_back((v >> (i * 8)) & 0xff);
                 if(tx_buffer.size() >= tx_expected_bytes) {
                     eth_packet_types::tlm_payload_type ethp;
                     ethp.set_command(eth::ETH::FRAME);

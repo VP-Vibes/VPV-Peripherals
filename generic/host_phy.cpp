@@ -64,15 +64,15 @@ host_phy::host_phy(sc_core::sc_module_name nm, std::string eth_if_name)
         if(map_mac_addr.get_value())
             memcpy(eth->h_source, hw_mac, 6);
 
-        SCCDEBUG(SCMOD) << "Sending frame of lenght " << frame.size() << " " << mac2str(eth->h_source) << " -> " << mac2str(eth->h_dest)
+        SCCDEBUG(SCMOD) << "Sending frame of length " << frame.size() << " " << mac2str(eth->h_source) << " -> " << mac2str(eth->h_dest)
                         << " with EtherType=0x" << std::hex << ntohs(eth->h_proto);
         ssize_t sent = sendto(sock, frame.data(), frame.size(), 0, (struct sockaddr*)&to, sizeof(to));
         if(sent < 0) {
-            SCCWARN(SCMOD) << "failed to send Ethernet frame on interface '" << if_name.get_value() << "': " << std::strerror(errno);
+            SCCWARN(SCMOD) << "Failed to send Ethernet frame on interface '" << if_name.get_value() << "': " << std::strerror(errno);
             return;
         }
         if(static_cast<std::size_t>(sent) != frame.size()) {
-            SCCWARN(SCMOD) << "short Ethernet frame write on interface '" << if_name.get_value() << "': " << sent << "/" << frame.size()
+            SCCWARN(SCMOD) << "Short Ethernet frame write on interface '" << if_name.get_value() << "': " << sent << "/" << frame.size()
                            << " bytes";
             return;
         }

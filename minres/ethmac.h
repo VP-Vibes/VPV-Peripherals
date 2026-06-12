@@ -68,7 +68,7 @@ protected:
     sc_core::sc_event rx_buffer_changed_evt;
     std::unique_ptr<gen::ethmac_regs> regs;
     util::ring_buffer<uint8_t> tx_buffer{4096}, rx_buffer{8192};
-    enum class tx_states { LENGTH, DATA };
+    enum class tx_states { LENGTH, ALIGN, DATA };
     tx_states tx_state{tx_states::LENGTH};
     size_t tx_expected_bytes{std::numeric_limits<size_t>::max()};
     std::unique_ptr<pcap_writer> pcap;
