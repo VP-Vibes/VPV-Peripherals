@@ -47,6 +47,13 @@ public:
      */
     cci::cci_param<bool> map_mac_addr{"map_mac_addr", false, "map simulated MAC addr to host MAC addr"};
     /**
+     * @brief Whether to fix IPv4 TCP or UDP checksums if the contain pseudo-header seed values.
+     *
+     * This may happen when running on virtual networks (e.g. Docker networks) so the host skips checksum offloading
+     */
+    cci::cci_param<bool> ipv4_checksum_fix{"ipv4_checksum_fix", true,
+                                           "fix IPv4 TCP or UDP checksums if the contain pseudo-header seed values"};
+    /**
      * @brief Construct a host Ethernet bridge.
      *
      * @param nm SystemC module name.

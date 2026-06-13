@@ -1,4 +1,5 @@
 #include "host_phy.h"
+#include <arpa/inet.h>
 #include <cerrno>
 #include <cstdint>
 #include <cstring>
@@ -14,12 +15,183 @@
 #include <unistd.h>
 #include <vector>
 
+#include <array>
+#include <cstdint>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
 namespace vpvper {
 namespace generic {
 namespace {
+
 const std::array<unsigned char, 6> broadcast_mac{0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+constexpr std::size_t kEthernetHeaderLength = 14U;
+constexpr std::uint16_t kEthertypeIpv4 = 0x0800U;
+constexpr std::size_t kIpv4MinHeaderLength = 20U;
+constexpr std::size_t kTcpMinHeaderLength = 20U;
+constexpr std::size_t kUdpHeaderLength = 8U;
+constexpr std::uint8_t kTcpProtocolNumber = 6U;
+constexpr std::uint8_t kUdpProtocolNumber = 17U;
+constexpr std::uint8_t kTcpChecksumOffset = 16U;
+constexpr std::uint8_t kUdpLengthOffset = 4U;
+constexpr std::uint8_t kUdpChecksumOffset = 6U;
+constexpr std::uint16_t kIpv4FragmentOffsetMask = 0x1FFFU;
+constexpr std::uint16_t kIpv4MoreFragmentsFlag = 0x2000U;
+
+std::uint16_t read_u16_be(const std::uint8_t* data) {
+    return static_cast<std::uint16_t>((static_cast<std::uint16_t>(data[0]) << 8) | data[1]);
 }
-namespace {
+
+std::uint32_t read_u32_be(const std::uint8_t* data) {
+    return (static_cast<std::uint32_t>(data[0]) << 24) | (static_cast<std::uint32_t>(data[1]) << 16) |
+           (static_cast<std::uint32_t>(data[2]) << 8) | data[3];
+}
+
+void write_u16_be(std::uint8_t* data, std::uint16_t value) {
+    data[0] = static_cast<std::uint8_t>(value >> 8);
+    data[1] = static_cast<std::uint8_t>(value & 0xFFU);
+}
+
+std::uint32_t checksum_add_bytes(std::uint32_t sum, const std::uint8_t* data, std::size_t length) {
+    std::size_t index = 0;
+    while(index + 1 < length) {
+        sum += static_cast<std::uint32_t>((static_cast<std::uint32_t>(data[index]) << 8) | data[index + 1]);
+        index += 2;
+    }
+    if(index < length) {
+        sum += static_cast<std::uint32_t>(data[index]) << 8;
+    }
+    return sum;
+}
+
+std::uint16_t checksum_fold(std::uint32_t sum) {
+    while((sum >> 16) != 0U) {
+        sum = (sum & 0xFFFFU) + (sum >> 16);
+    }
+    return static_cast<std::uint16_t>(sum);
+}
+
+std::uint16_t checksum_finish(std::uint32_t sum) {
+    sum = checksum_fold(sum);
+    return static_cast<std::uint16_t>(~sum & 0xFFFFU);
+}
+
+std::uint16_t calculate_transport_pseudo_header_seed_ipv4(const std::uint8_t* ip_packet, std::size_t transport_length,
+                                                          std::uint8_t protocol) {
+    std::array<std::uint8_t, 4> pseudo_tail{};
+    std::uint32_t sum = 0;
+    sum = checksum_add_bytes(sum, ip_packet + 12, 8);
+    pseudo_tail[0] = 0;
+    pseudo_tail[1] = protocol;
+    pseudo_tail[2] = static_cast<std::uint8_t>(transport_length >> 8);
+    pseudo_tail[3] = static_cast<std::uint8_t>(transport_length & 0xFFU);
+    sum = checksum_add_bytes(sum, pseudo_tail.data(), pseudo_tail.size());
+    return checksum_fold(sum);
+}
+
+std::uint16_t calculate_transport_checksum_ipv4(const std::uint8_t* ip_packet, const std::uint8_t* transport_segment,
+                                                std::size_t transport_length, std::uint8_t protocol) {
+    std::array<std::uint8_t, 4> pseudo_tail{};
+    std::uint32_t sum = 0;
+    sum = checksum_add_bytes(sum, ip_packet + 12, 8);
+    pseudo_tail[0] = 0;
+    pseudo_tail[1] = protocol;
+    pseudo_tail[2] = static_cast<std::uint8_t>(transport_length >> 8);
+    pseudo_tail[3] = static_cast<std::uint8_t>(transport_length & 0xFFU);
+    sum = checksum_add_bytes(sum, pseudo_tail.data(), pseudo_tail.size());
+    sum = checksum_add_bytes(sum, transport_segment, transport_length);
+    const std::uint16_t checksum = checksum_finish(sum);
+    if(protocol == kUdpProtocolNumber && checksum == 0U) {
+        return 0xFFFFU;
+    }
+    return checksum;
+}
+
+/*
+ * Parse an Ethernet II frame, detect an IPv4/TCP or IPv4/UDP payload,
+ * calculate the transport checksum, and replace the checksum field only when
+ * it currently contains the IPv4 pseudo-header seed used by checksum offload.
+ */
+int fix_ipv4_checksums(std::vector<std::uint8_t>& frame) {
+    if(frame.size() < kEthernetHeaderLength) { // frame is too short for Ethernet II
+        return 1;
+    }
+    auto ethertype = read_u16_be(frame.data() + 12);
+    if(ethertype != kEthertypeIpv4) { // unsupported EtherType
+        return 2;
+    }
+    auto ethernet_payload_length = frame.size() - kEthernetHeaderLength;
+    auto ip_packet = frame.data() + kEthernetHeaderLength;
+    if(ethernet_payload_length < kIpv4MinHeaderLength) { // IPv4 header is truncated
+        return 3;
+    }
+    if((ip_packet[0] >> 4) != 4U) { // payload is not IPv4
+        return 4;
+    }
+    auto ip_header_length = static_cast<std::size_t>(ip_packet[0] & 0x0FU) * 4U;
+    if(ip_header_length < kIpv4MinHeaderLength || ip_header_length > ethernet_payload_length) { // invalid IPv4 header length
+        return 5;
+    }
+    auto ip_total_length = read_u16_be(ip_packet + 2);
+    if(ip_total_length < ip_header_length || ip_total_length > ethernet_payload_length) { // invalid IPv4 total length
+        return 6;
+    }
+    auto protocol = ip_packet[9];
+    if(protocol != kTcpProtocolNumber && protocol != kUdpProtocolNumber) { // IPv4 payload is not TCP or UDP
+        return 0;
+    }
+    auto flags_and_fragment_offset = read_u16_be(ip_packet + 6);
+    if((flags_and_fragment_offset & kIpv4FragmentOffsetMask) != 0U ||
+       (flags_and_fragment_offset & kIpv4MoreFragmentsFlag) != 0U) { // fragmented IPv4 packets must be reassembled
+        return 0;
+    }
+    auto transport_segment = ip_packet + ip_header_length;
+    auto transport_length = ip_total_length - ip_header_length;
+    auto source_port = read_u16_be(transport_segment);
+    auto destination_port = read_u16_be(transport_segment + 2);
+    uint8_t checksum_offset = 0;
+    std::uint32_t sequence_number = 0;
+    uint16_t udp_length = 0;
+    bool rewrite_checksum = true;
+    if(protocol == kTcpProtocolNumber) {
+        checksum_offset = kTcpChecksumOffset;
+        if(transport_length < kTcpMinHeaderLength) { // TCP header is truncated
+            return 7;
+        }
+        const std::size_t tcp_header_length = static_cast<std::size_t>(transport_segment[12] >> 4) * 4U;
+        if(tcp_header_length < kTcpMinHeaderLength || tcp_header_length > transport_length) { // invalid TCP data offset
+            return 8;
+        }
+        sequence_number = read_u32_be(transport_segment + 4);
+    } else {
+        checksum_offset = kUdpChecksumOffset;
+        if(transport_length < kUdpHeaderLength) { // UDP header is truncated
+            return 9;
+        }
+        udp_length = read_u16_be(transport_segment + kUdpLengthOffset);
+        if(udp_length < kUdpHeaderLength || udp_length > transport_length) { // invalid UDP length
+            return 10;
+        }
+        transport_length = udp_length;
+        if(read_u16_be(transport_segment + kUdpChecksumOffset) == 0U) {
+            rewrite_checksum = false;
+        }
+    }
+    auto stored_checksum = read_u16_be(transport_segment + checksum_offset);
+    auto pseudo_header_seed = calculate_transport_pseudo_header_seed_ipv4(ip_packet, transport_length, protocol);
+    if(rewrite_checksum && stored_checksum == pseudo_header_seed) {
+        write_u16_be(transport_segment + checksum_offset, 0);
+        auto calculated_checksum = calculate_transport_checksum_ipv4(ip_packet, transport_segment, transport_length, protocol);
+        auto checksum_updated = stored_checksum != calculated_checksum;
+        write_u16_be(transport_segment + checksum_offset, checksum_updated ? calculated_checksum : stored_checksum);
+    }
+    return 0;
+}
+
 int ifindex_of(int sock, const char* ifname) {
     struct ifreq ifr = {0};
     strncpy(ifr.ifr_name, ifname, IFNAMSIZ - 1);
@@ -27,6 +199,7 @@ int ifindex_of(int sock, const char* ifname) {
         return -1;
     return ifr.ifr_ifindex;
 }
+
 int set_promisc(int sock, int ifindex, int enable) {
     struct packet_mreq mreq = {0};
     mreq.mr_ifindex = ifindex;
@@ -34,6 +207,7 @@ int set_promisc(int sock, int ifindex, int enable) {
     int opt = enable ? PACKET_ADD_MEMBERSHIP : PACKET_DROP_MEMBERSHIP;
     return setsockopt(sock, SOL_PACKET, opt, &mreq, sizeof(mreq));
 }
+
 std::string mac2str(unsigned char* mac) {
     return fmt::format("{:02x}:{:02x}:{:02x}:{:02x}:{:02x}:{:02x}", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 }
@@ -159,6 +333,8 @@ void host_phy::start_of_simulation() {
             if(map_mac_addr.get_value())
                 memcpy(eth->h_dest, model_mac, 6);
             std::vector<uint8_t> frame{buf.begin(), buf.begin() + len};
+            if(ipv4_checksum_fix.get_value())
+                fix_ipv4_checksums(frame);
             que.push(frame);
         }
     }};
