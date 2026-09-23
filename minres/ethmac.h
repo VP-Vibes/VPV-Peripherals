@@ -64,6 +64,8 @@ protected:
 
     void update_irq();
 
+    void push_rx_buffer(uint8_t);
+
     sc_core::sc_time clk;
     sc_core::sc_event rx_buffer_changed_evt;
     std::unique_ptr<gen::ethmac_regs> regs;

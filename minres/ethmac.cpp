@@ -120,36 +120,58 @@ ethmac::ethmac(sc_core::sc_module_name nm)
         if(!regs->r_mac_ctrl.rx_flush) {
             SCCDEBUG(SCOBJ) << "Received ethernet frame #" << ethp.unique_id << " of size " << rx_payload_size;
             if(rx_buffer.full())
-                wait(rx_buffer_changed_evt);
-            auto rx_payload_bit_size = rx_payload_size * 8;
-            rx_buffer.push_back(rx_payload_bit_size & 0xff);
-            rx_buffer.push_back((rx_payload_bit_size >> 8) & 0xff);
-            rx_buffer.push_back((rx_payload_bit_size >> 16) & 0xff);
-            rx_buffer.push_back((rx_payload_bit_size >> 24) & 0xff);
-            if(regs->r_mac_ctrl.tx_aligner_enable) {
-                rx_buffer.push_back(0x0);
-                rx_buffer.push_back(0x0);
-                rx_payload_size+=2;
-            }
-            for(auto c : rx_payload) {
-                if(rx_buffer.full())
-                    wait(rx_buffer_changed_evt);
-                rx_buffer.push_back(c);
-            }
-            auto padding = (4 - (rx_payload_size % 4)) % 4;
-            for(size_t i = 0; i < padding; ++i)
-                rx_buffer.push_back(0);
+                regs->r_mac_rx_stats.rx_drops = 1;
+            else {
+                if(regs->r_mac_ctrl.tx_aligner_enable) {
+                    rx_payload_size += 2;
+                }
+                rx_payload_size += 4; // FCS bytes
+                auto rx_payload_bit_size = rx_payload_size * 8;
+                push_rx_buffer(rx_payload_bit_size & 0xff);
+                push_rx_buffer((rx_payload_bit_size >> 8) & 0xff);
+                push_rx_buffer((rx_payload_bit_size >> 16) & 0xff);
+                push_rx_buffer((rx_payload_bit_size >> 24) & 0xff);
+                if(regs->r_mac_ctrl.tx_aligner_enable) {
+                    push_rx_buffer(0x0);
+                    push_rx_buffer(0x0);
+                }
+                uint32_t crc = 0xFFFFFFFFu;
+                for(auto c : rx_payload) {
+                    push_rx_buffer(c);
+                    crc ^= c;
+#ifdef EMULATE_CRC
+                    for(int bit = 0; bit < 8; ++bit) {
+                        if(crc & 1)
+                            crc = (crc >> 1) ^ 0xEDB88320u;
+                        else
+                            crc >>= 1;
+                    }
+#endif
+                }
+                crc ^= 0xFFFFFFFFu;
+                for(auto i = 0u; i < 4; ++i) {
+                    push_rx_buffer(crc & 0xff); // add FCS bytes
+                    crc >>= 8;
+                }
+                auto padding = (4 - (rx_payload_size % 4)) % 4;
+                for(size_t i = 0; i < padding; ++i)
+                    push_rx_buffer(0);
 
-            regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
-            update_irq();
+                regs->r_mac_ctrl.rx_pending = !rx_buffer.empty();
+                update_irq();
+            }
         }
     });
     // callback functions to enable readonly/writeonly functionality
     regs->mac_tx.set_write_cb([this](scc::sc_register<uint32_t>&, uint32_t const& v, sc_core::sc_time& t) -> bool {
         if(!regs->in_reset() && !regs->r_mac_ctrl.tx_flush) {
             if(tx_state == tx_states::LENGTH) {
-                tx_expected_bytes = (v + 7) / 8 ;
-                tx_state = regs->r_mac_ctrl.tx_aligner_enable ? tx_states::ALIGN : tx_states::DATA;
+                tx_expected_bytes = (v + 7) / 8;
+                if(regs->r_mac_ctrl.tx_aligner_enable) {
+                    tx_expected_bytes -= 2;
+                    tx_state = tx_states::ALIGN;
+                } else
+                    tx_state = tx_states::DATA;
             } else {
                 if(tx_state == tx_states::ALIGN) {
                     for(auto i = 2u; i < 4; ++i)
@@ -164,12 +186,14 @@ ethmac::ethmac(sc_core::sc_module_name nm)
                     ethp.set_sender_clk_period({1.0 / (1000000 * pow(10, interface_speed.get_value())), sc_core::SC_SEC});
                     auto& tx_data = ethp.get_data();
                     tx_data.resize(0);
-                    tx_data.reserve(tx_expected_bytes);
+                    tx_data.reserve(std::max(tx_expected_bytes, 60ul));
                     while(!tx_buffer.empty()) {
                         if(tx_data.size() < tx_expected_bytes)
                             tx_data.push_back(tx_buffer.front());
                         tx_buffer.pop_front();
                     }
+                    while(tx_data.size() < 60)
+                        tx_data.push_back(0);
                     if(pcap)
                         pcap->write_frame(nonstd::span<uint8_t>(tx_data.data(), tx_expected_bytes));
                     sc_core::sc_time delay;
@@ -259,6 +283,13 @@ void ethmac::reset_cb() {
 void ethmac::start_of_simulation() {
     if(pcap_file_name.get_value().size())
         pcap = std::make_unique<pcap_writer>(pcap_file_name.get_value());
+}
+
+inline void ethmac::push_rx_buffer(uint8_t data) {
+    if(!rx_buffer.full())
+        rx_buffer.push_back(data);
+    else
+        regs->r_mac_rx_stats.rx_drops = 1;
 }
 
 void ethmac::update_irq() {
