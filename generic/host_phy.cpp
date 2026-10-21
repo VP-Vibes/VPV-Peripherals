@@ -228,6 +228,7 @@ host_phy::host_phy(sc_core::sc_module_name nm, std::string eth_if_name)
             memcpy(model_mac, eth->h_source, 6);
             model_mac_init = true;
         }
+        memcpy(eth->h_source, hw_mac, 6);
         // get destination MAC address and create socket addr, send frame to socket
         struct sockaddr_ll to = {0};
         to.sll_family = AF_PACKET;
@@ -278,7 +279,7 @@ void host_phy::start_of_simulation() {
         close(sock);
         return;
     }
-    memcpy(hw_mac, (unsigned char*)ifr.ifr_hwaddr.sa_data, 6);
+    memcpy(hw_mac, (unsigned char*)ifr.ifr_ifru.ifru_hwaddr.sa_data, 6);
     // get eth interface index
     ifindex = ifindex_of(sock, if_name.get_value().c_str());
     if(ifindex < 0) {
