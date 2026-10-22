@@ -6,12 +6,14 @@
  * We wait 15 µs and assert the interrupt was seen.
  */
 
+#ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
+#endif
 #include <iostream>
+#include <scc/report.h>
 #include <systemc>
 #include <tlm>
 #include <tlm_utils/simple_initiator_socket.h>
-#include <scc/report.h>
 #ifndef SC_SIGNAL_IF
 #include <tlm/scc/signal_target_mixin.h>
 #include <tlm/scc/tlm_signal.h>
@@ -49,9 +51,9 @@ struct TestBench : sc_core::sc_module {
         dut.msip_int_o(msip_int_in);
         msip_int_in.error_if_no_callback = false;
         mtime_int_in.register_nb_transport(
-            [this](tlm::scc::tlm_signal_gp<bool>& gp,
-                   tlm::tlm_phase&, sc_core::sc_time&) -> tlm::tlm_sync_enum {
-                if(gp.get_value()) passed = true;
+            [this](tlm::scc::tlm_signal_gp<bool>& gp, tlm::tlm_phase&, sc_core::sc_time&) -> tlm::tlm_sync_enum {
+                if(gp.get_value())
+                    passed = true;
                 return tlm::TLM_COMPLETED;
             });
 #endif
