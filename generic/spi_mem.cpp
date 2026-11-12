@@ -6,6 +6,7 @@
  */
 
 #include "spi_mem.h"
+#include <cstdint>
 #include <elfio/elfio.hpp>
 #include <limits>
 #include <scc/report.h>
