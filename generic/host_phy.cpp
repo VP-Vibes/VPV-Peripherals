@@ -253,6 +253,9 @@ host_phy::host_phy(sc_core::sc_module_name nm, std::string eth_if_name)
         }
         ethp.set_response_status(tlm::TLM_OK_RESPONSE);
     });
+#if IEEE_1666_SYSTEMC < 202301L
+    SC_HAS_PROCESS(host_phy);
+#endif
     SC_THREAD(rx_thread);
 }
 
